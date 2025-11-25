@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { app } from '../firebase/config.js';
 import { isSignedIn } from '../auth/index.js';
-import PageFrame from './PageFrame.jsx';
-import EventCard from './EventCard.jsx';
+import PageFrame from '../components/PageFrame.jsx';
+import EventCard from '../components/EventCard/EventCard.jsx';
 import '../styles/RegisterForm.css';
 
 function SkeletonList({ count = 3 }) {

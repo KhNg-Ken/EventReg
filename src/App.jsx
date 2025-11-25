@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import AdminLogin from './AdminLogin.jsx';
-import RegisterForm from './RegisterForm.jsx';
-import CreateForm from './CreateForm.jsx';
-import EventList from './EventList.jsx';
-import { isSignedIn } from '../auth/index.js';
+import AdminLogin from './pages/AdminLogin.jsx';
+import RegisterForm from './pages/RegisterForm/RegisterForm.jsx';
+import CreateForm from './pages/CreateForm.jsx';
+import EventList from './pages/EventList.jsx';
+import { isSignedIn } from './auth/index.js';
 
 function parseHash() {
     const raw = window.location.hash || '#/events';

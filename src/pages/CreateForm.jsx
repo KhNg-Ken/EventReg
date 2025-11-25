@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createEventWorkbook } from '../api/graphApi.js';
-import PageFrame from './PageFrame.jsx';
+import PageFrame from '../components/PageFrame.jsx';
 import '../styles/RegisterForm.css';
 
 function CreateForm() {

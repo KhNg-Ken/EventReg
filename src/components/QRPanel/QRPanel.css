@@ -50,6 +50,7 @@
     font-size: 0.85rem;
     color: #228a54;
     font-weight: 700;
+    text-align: center;
 }
 
 .tds-invite {
@@ -58,6 +59,8 @@
     border-radius: 10px;
     background: linear-gradient(180deg, #fff, #fafafa);
     border: 1px solid #eee;
+    align-items: center;
+    justify-content: center;
 }
 
 .tds-qr img {

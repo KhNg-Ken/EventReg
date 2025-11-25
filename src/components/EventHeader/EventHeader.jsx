@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/EventHeader.css';
+import './EventHeader.css';
 
 export default function EventHeader({ config = {} }) {
     const title = config.eventName || config.name || 'Sự kiện';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { loginAndGetToken, isSignedIn, logout, msalInstance } from '../auth/index.js';
-import PageFrame from './PageFrame.jsx';
+import PageFrame from '../components/PageFrame.jsx';
 import '../styles/RegisterForm.css';
 
 export default function AdminLogin({ onSignedIn } = {}) {

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { sendInviteEmail } from '../api/email.js';
+import { queueEmail } from '../../utils/emailUtils.js';
 import {
     listEventWorkbooks,
     readEventConfig,
     registerAttendee,
-} from '../utils/registrationUtils.js';
-import PageFrame from './PageFrame.jsx';
-import EventHeader from './EventHeader.jsx';
-import RegistrationFields from './RegistrationFields.jsx';
-import QRPanel from './QRPanel.jsx';
-import '../styles/RegisterForm.css';
+} from '../../utils/registrationUtils.js';
+import PageFrame from '../../components/PageFrame.jsx';
+import EventHeader from '../../components/EventHeader/EventHeader.jsx';
+import RegistrationFields from '../../components/RegisterField/RegistrationFields.jsx';
+import QRPanel from '../../components/QRPanel/QRPanel.jsx';
+import './RegisterForm.css';
 
 function RegisterForm({ eventId: propEventId } = {}) {
     const [formData, setFormData] = useState({
@@ -62,7 +62,6 @@ function RegisterForm({ eventId: propEventId } = {}) {
         return () => window.removeEventListener('hashchange', onHashChange);
     }, [propEventId]);
     const [qrSrc, setQrSrc] = useState(null);
-    const [inviteId, setInviteId] = useState(null);
     const [photoFile, setPhotoFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -83,9 +82,6 @@ function RegisterForm({ eventId: propEventId } = {}) {
             alert('Vui lòng điền tất cả các trường bắt buộc trước khi gửi.');
             return;
         }
-
-        // Prepare phone value for Excel (ensure text)
-        // (kept as raw `phone` for storage; no Excel write here)
 
         // Enforce selected event
         if (!selectedEventId) {
@@ -109,19 +105,53 @@ function RegisterForm({ eventId: propEventId } = {}) {
                 photoFile,
                 onProgress: (p) => setUploadProgress(p),
             });
-            const { inviteId: newInviteId, qrDataUrl } = result;
-            setInviteId(newInviteId);
+            const { qrDataUrl } = result;
             setQrSrc(qrDataUrl);
-            // Send invite email (best-effort). Do not roll back registration if email fails.
+            // Queue invite email (best-effort). Do not roll back registration if queuing fails.
             (async () => {
                 try {
                     if (email && qrDataUrl) {
-                        const subject = `Mã mời sự kiện: ${newInviteId}`;
-                        const body = `Chào ${name},\n\nCảm ơn bạn đã đăng ký. Mã mời của bạn là ${newInviteId}.\n\nTrân trọng,\nTDSouth`;
-                        await sendInviteEmail(email, subject, body, qrDataUrl);
+                        // Build event identifier in the form EVTYYMMDD - {Event Name}
+                        let evt = null;
+                        try {
+                            if (selectedEventConfig && selectedEventConfig.eventID) {
+                                evt = selectedEventConfig.eventID; // already YYMMDD
+                            } else if (selectedEventConfig && selectedEventConfig.eventDate) {
+                                const d = new Date(selectedEventConfig.eventDate);
+                                const yy = String(d.getFullYear()).slice(-2);
+                                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                                const dd = String(d.getDate()).padStart(2, '0');
+                                evt = `${yy}${mm}${dd}`;
+                            } else {
+                                const d = new Date();
+                                const yy = String(d.getFullYear()).slice(-2);
+                                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                                const dd = String(d.getDate()).padStart(2, '0');
+                                evt = `${yy}${mm}${dd}`;
+                            }
+                        } catch {
+                            console.alert('Failed to compute event ID for email');
+                            evt = '000000';
+                       }
+
+                        const eventLabel = `EVT${evt} - ${
+                            selectedEventConfig?.name
+                        }`;
+
+                        const subject = `Mã mời sự kiện: ${eventLabel}`;
+                        const bodyText = `Chào ${name},\n\nCảm ơn bạn đã đăng ký cho sự kiện ${eventLabel}. Vui lòng sử dụng mã QR đính kèm để điểm danh tại sự kiện.\n\nTrân trọng,\nTDSouth`;
+                        const bodyHtml = `
+                            <p>Chào ${name},</p>
+                            <p>Cảm ơn bạn đã đăng ký cho sự kiện <strong>${eventLabel}</strong>.</p>
+                            <p>Vui lòng sử dụng mã QR đính kèm để điểm danh tại sự kiện:</p>
+                            <p><img src="${qrDataUrl}" alt="QR code" style="max-width:240px; height:auto;"/></p>
+                            <p>Trân trọng,<br/>TDSouth</p>
+                        `;
+
+                        await queueEmail({ to: email, subject, bodyText, bodyHtml });
                     }
                 } catch (mailErr) {
-                    console.warn('Failed to send invite email (non-fatal):', mailErr);
+                    console.warn('Failed to queue invite email (non-fatal):', mailErr);
                 }
             })();
             alert('Đã gửi! Mã mời của bạn đã được tạo.');
@@ -227,7 +257,7 @@ function RegisterForm({ eventId: propEventId } = {}) {
                     </div>
                 </form>
 
-                <QRPanel inviteId={inviteId} qrSrc={qrSrc} />
+                <QRPanel qrSrc={qrSrc} />
             </div>
         </PageFrame>
     );

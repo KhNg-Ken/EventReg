@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/QRPanel.css';
+import './QRPanel.css';
 
 export default function QRPanel({ inviteId, qrSrc }) {
     return (
@@ -18,7 +18,8 @@ export default function QRPanel({ inviteId, qrSrc }) {
                     <div
                         style={{
                             display: 'flex',
-                            justifyContent: 'space-between',
+                            flexDirection: 'column',
+                            justifyContent:  "center",
                             alignItems: 'center',
                         }}
                     >
@@ -37,7 +38,7 @@ export default function QRPanel({ inviteId, qrSrc }) {
                                             marginTop: 8,
                                             display: 'flex',
                                             gap: 8,
-                                            justifyContent: 'flex-end',
+                                            justifyContent: 'center',
                                         }}
                                     >
                                         <button
@@ -70,7 +71,7 @@ export default function QRPanel({ inviteId, qrSrc }) {
                         </div>
                     </div>
                     <div className="tds-success-note">
-                        Đăng ký thành công — vui lòng lưu mã mời này
+                        Đăng ký thành công <br/> Vui lòng lưu mã mời này!
                     </div>
                 </div>
             )}

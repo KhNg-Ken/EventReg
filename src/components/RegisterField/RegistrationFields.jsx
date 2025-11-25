@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/RegistrationFields.css';
+import './RegistrationFields.css';
 
 export default function RegistrationFields({
     formData,
@@ -80,8 +80,8 @@ export default function RegistrationFields({
                     accept="image/*"
                     className="tds-input"
                     onChange={(e) => {
-                        const f = e.target.files && e.target.files[0] ? e.target.files[0] : null;
-                        setPhotoFile(f);
+                        photoFile = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+                        setPhotoFile(photoFile);
                     }}
                 />
                 <div style={{ fontSize: 12, color: 'var(--tds-gray)', marginTop: 6 }}>
