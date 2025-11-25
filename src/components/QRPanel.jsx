@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/QRPanel.css';
 
 export default function QRPanel({ inviteId, qrSrc }) {
     return (

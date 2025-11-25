@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/RegistrationFields.css';
 
 export default function RegistrationFields({
     formData,
