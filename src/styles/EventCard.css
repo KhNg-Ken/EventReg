@@ -1,0 +1,64 @@
+/* Styles specific to the EventCard component */
+.event-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+.event-card-left {
+    flex: 1 1 70%;
+    min-width: 0;
+}
+.event-name {
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.event-meta {
+    color: var(--tds-gray);
+    font-size: 13px;
+    margin-top: 6px;
+}
+.event-meta div {
+    line-height: 1.2;
+}
+.event-location {
+    margin-top: 6px;
+    color: var(--tds-gray);
+    font-size: 13px;
+}
+
+.event-card-right {
+    text-align: right;
+    flex: 0 0 30%;
+    min-width: 160px;
+}
+.event-right-meta {
+    font-size: 13px;
+    color: var(--tds-gray);
+}
+.event-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+    .event-card-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .event-card-right {
+        text-align: left;
+        min-width: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
