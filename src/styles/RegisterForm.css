@@ -10,10 +10,10 @@
 
 .tds-form-wrap {
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* use top space so content sits near top */
     justify-content: center;
-    padding: 2rem 1rem;
-    min-height: calc(100vh - 40px); /* center vertically and use most of viewport */
+    padding: 1rem 1rem; /* reduce top padding */
+    min-height: auto; /* do not force vertical centering */
     box-sizing: border-box;
 }
 
@@ -23,7 +23,7 @@
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
     width: 98%;
     max-width: 1200px; /* occupy more horizontal space */
-    padding: 2.5rem 3rem;
+    padding: 1.75rem 2.25rem; /* tighten internal padding so content sits higher */
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
         'Helvetica Neue', Arial;
     color: var(--tds-black);
@@ -66,9 +66,153 @@
 
 .tds-form {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 1rem;
     margin-top: 1rem;
+    grid-column: 1 / 2; /* keep form in the left column of the page layout */
+}
+
+/* Layout for the registration page: form on left, QR panel on right */
+.tds-register-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+/* Event header styles (two-column: title/desc left, meta right) */
+.tds-event-header {
+    grid-column: 1 / 2;
+    /* stronger, warm-tinted background to emphasize the header */
+    background: linear-gradient(90deg, rgba(248, 228, 231, 0.9), rgba(255, 255, 255, 0.95));
+    border-left: 8px solid var(--tds-red);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 1fr; /* single column so meta can span full width */
+    gap: 8px;
+    align-items: start;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+}
+.tds-event-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--tds-red);
+    margin-bottom: 0;
+    letter-spacing: -0.2px;
+    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.6), 0 6px 18px rgba(200, 16, 46, 0.04);
+    padding: 2px 6px;
+    background: linear-gradient(90deg, rgba(255, 240, 242, 0.6), rgba(255, 255, 255, 0));
+    border-radius: 6px;
+}
+.tds-event-description {
+    font-size: 13px;
+    color: var(--tds-gray);
+    line-height: 1.35;
+    margin-top: 2px;
+}
+
+.tds-event-meta {
+    /* Arrange meta items horizontally across the header */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 40px;
+    grid-column: 1 / -1; /* span full width under the title */
+    margin-top: 4px;
+    flex-wrap: nowrap; /* prefer single-line; allow overflow to scroll if necessary */
+    overflow-x: auto;
+    padding-right: 6px;
+}
+.tds-meta-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* allow items to shrink inside the flex row */
+}
+.tds-meta-label {
+    font-size: 12px;
+    color: var(--tds-gray);
+}
+.tds-meta-value {
+    font-size: 13px;
+    color: var(--tds-black);
+    font-weight: 700;
+}
+
+/* Email / Phone responsive row */
+.tds-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+.tds-col-email {
+    flex: 2 1 0;
+}
+.tds-col-phone {
+    flex: 1 1 0;
+}
+
+@media (max-width: 720px) {
+    .tds-register-grid {
+        grid-template-columns: 1fr;
+    }
+    .tds-row {
+        flex-direction: column;
+    }
+}
+
+.tds-qr-panel {
+    grid-column: 2 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 360px;
+}
+
+.tds-qr-placeholder {
+    width: 100%;
+    max-width: 300px;
+    height: 300px;
+    border-radius: 12px;
+    border: 2px dashed #e6e6e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #fff, #fafafa);
+}
+
+.tds-qr-empty {
+    text-align: center;
+    color: var(--tds-gray);
+    padding: 1rem;
+}
+.tds-qr-empty-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+.tds-qr-empty-text {
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
+
+/* Success state for the QR/invite panel */
+.tds-qr-success {
+    border: 2px solid rgba(34, 163, 84, 0.18);
+    box-shadow: 0 12px 30px rgba(34, 163, 84, 0.06);
+    transition: transform 240ms ease, box-shadow 240ms ease;
+    border-radius: 12px;
+    padding: 12px;
+}
+.tds-qr-success .tds-qr img {
+    transform: scale(1.02);
+    transition: transform 240ms ease;
+}
+.tds-success-note {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #228a54;
+    font-weight: 700;
 }
 
 .tds-field {
@@ -161,7 +305,7 @@ input.tds-input:-webkit-autofill:focus {
 }
 
 .tds-qr img {
-    max-width: 260px;
+    max-width: 280px;
     height: auto;
     border-radius: 8px;
     border: 1px solid #ddd;
@@ -193,6 +337,7 @@ input.tds-input:-webkit-autofill:focus {
 
 @media (max-width: 720px) {
     .tds-form {
+        grid-column: 1 / -1;
         grid-template-columns: 1fr;
     }
     .tds-logo {
@@ -202,5 +347,17 @@ input.tds-input:-webkit-autofill:focus {
     .tds-card {
         padding: 1rem;
         width: 94%;
+    }
+    .tds-register-grid {
+        grid-template-columns: 1fr;
+    }
+    .tds-event-header {
+        grid-template-columns: 1fr;
+    }
+    .tds-event-meta {
+        grid-column: 1 / -1;
+        margin-top: 6px;
+        gap: 6px;
+        flex-direction: column;
     }
 }

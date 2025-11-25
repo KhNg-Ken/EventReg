@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { sendInviteEmail } from '../api/email.js';
 import {
-    performRegistrationTransaction,
     listEventWorkbooks,
     readEventConfig,
-} from '../api/graphApi.js';
-import { sendInviteEmail } from '../api/email.js';
-import QRCode from 'qrcode';
+    registerAttendee,
+} from '../utils/registrationUtils.js';
 import PageFrame from './PageFrame.jsx';
+import EventHeader from './EventHeader.jsx';
+import RegistrationFields from './RegistrationFields.jsx';
+import QRPanel from './QRPanel.jsx';
 import '../styles/RegisterForm.css';
 
 function RegisterForm({ eventId: propEventId } = {}) {
@@ -17,7 +19,7 @@ function RegisterForm({ eventId: propEventId } = {}) {
         email: '',
         phone: '',
     });
-    const [events, setEvents] = useState([]);
+    const [, setEvents] = useState([]);
     const [selectedEventId, setSelectedEventId] = useState(null);
     const [selectedEventConfig, setSelectedEventConfig] = useState({
         eventName: null,
@@ -70,17 +72,7 @@ function RegisterForm({ eventId: propEventId } = {}) {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Generate a QR code data URL for the invite payload
-    async function generateQrDataUrl(inviteId, fileID, token) {
-        const payload = { inviteId, fileID, token };
-        try {
-            const dataUrl = await QRCode.toDataURL(JSON.stringify(payload));
-            return dataUrl;
-        } catch (err) {
-            console.error('Failed to generate QR code:', err);
-            return null;
-        }
-    }
+    // QR data will be returned by `registerAttendee` (server-side/Firestore-backed helper)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -93,7 +85,7 @@ function RegisterForm({ eventId: propEventId } = {}) {
         }
 
         // Prepare phone value for Excel (ensure text)
-        const phoneForExcel = "'" + phone;
+        // (kept as raw `phone` for storage; no Excel write here)
 
         // Enforce selected event
         if (!selectedEventId) {
@@ -111,22 +103,14 @@ function RegisterForm({ eventId: propEventId } = {}) {
         try {
             setUploading(true);
             setUploadProgress(0);
-            const result = await performRegistrationTransaction(
-                [name, position, company, email, phoneForExcel],
+            const result = await registerAttendee({
+                eventId: selectedEventId,
+                attendee: { name, position, company, email, phone },
                 photoFile,
-                name,
-                company,
-                {
-                    fileId: selectedEventId,
-                    tableName: selectedEventConfig.tableName,
-                    onProgress: (p) => {
-                        setUploadProgress(p);
-                    },
-                }
-            );
-            const { inviteId: newInviteId, token } = result;
+                onProgress: (p) => setUploadProgress(p),
+            });
+            const { inviteId: newInviteId, qrDataUrl } = result;
             setInviteId(newInviteId);
-            const qrDataUrl = await generateQrDataUrl(newInviteId, selectedEventId, token);
             setQrSrc(qrDataUrl);
             // Send invite email (best-effort). Do not roll back registration if email fails.
             (async () => {
@@ -219,214 +203,32 @@ function RegisterForm({ eventId: propEventId } = {}) {
             onBack={() => (window.location.hash = '#/events')}
             minHeight={420}
         >
-            <form className="tds-form" onSubmit={handleSubmit}>
-                <div className="tds-field">
-                    <label className="tds-subtitle">Chọn sự kiện</label>
-                    <select
-                        className="tds-input"
-                        value={selectedEventId || ''}
-                        onChange={(e) => setSelectedEventId(e.target.value)}
-                    >
-                        {events.length === 0 && <option value="">(Không có sự kiện)</option>}
-                        {events.map((ev) => (
-                            <option key={ev.id} value={ev.id}>
-                                {ev.name}
-                            </option>
-                        ))}
-                    </select>
-                    <div style={{ fontSize: 12, color: 'var(--tds-gray)', marginTop: 6 }}>
-                        {selectedEventConfig.eventName
-                            ? `Tên sự kiện: ${selectedEventConfig.eventName}`
-                            : ''}
-                        {selectedEventConfig.imageRequired ? ' (Yêu cầu ảnh)' : ''}
-                    </div>
-                </div>
-                <div className="tds-field">
-                    <label className="tds-subtitle">Họ và tên</label>
-                    <input
-                        name="name"
-                        className="tds-input"
-                        placeholder="Họ và tên"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
+            {/* Event title & description (moved to reusable component) */}
+            <EventHeader config={selectedEventConfig} />
+            <div className="tds-register-grid">
+                <form className="tds-form" onSubmit={handleSubmit}>
+                    <RegistrationFields
+                        formData={formData}
+                        handleChange={handleChange}
+                        photoFile={photoFile}
+                        setPhotoFile={setPhotoFile}
+                        uploading={uploading}
+                        uploadProgress={uploadProgress}
                     />
-                </div>
 
-                <div className="tds-field">
-                    <label className="tds-subtitle">Chức vụ</label>
-                    <input
-                        name="position"
-                        className="tds-input"
-                        placeholder="Chức vụ"
-                        value={formData.position}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="tds-field">
-                    <label className="tds-subtitle">Công ty</label>
-                    <input
-                        name="company"
-                        className="tds-input"
-                        placeholder="Công ty"
-                        value={formData.company}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="tds-field">
-                    <label className="tds-subtitle">Email</label>
-                    <input
-                        name="email"
-                        className="tds-input"
-                        type="email"
-                        placeholder="Email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="tds-field tds-field-full">
-                    <label className="tds-subtitle">Số điện thoại</label>
-                    <input
-                        name="phone"
-                        className="tds-input"
-                        placeholder="Số điện thoại"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="tds-field tds-field-full">
-                    <label className="tds-subtitle">Tải ảnh (tùy chọn)</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        className="tds-input"
-                        onChange={(e) => {
-                            const f =
-                                e.target.files && e.target.files[0] ? e.target.files[0] : null;
-                            setPhotoFile(f);
-                        }}
-                    />
-                    <div style={{ fontSize: 12, color: 'var(--tds-gray)', marginTop: 6 }}>
-                        Nếu tải ảnh, ảnh sẽ được lưu trong thư mục sự kiện và đổi tên theo định dạng
-                        Name_Company
-                    </div>
-                </div>
-
-                {/* Upload progress bar */}
-                {(uploading || uploadProgress > 0) && (
-                    <div className="tds-field tds-field-full">
-                        <div style={{ fontSize: 12, color: 'var(--tds-gray)', marginBottom: 6 }}>
-                            Tải ảnh: {Math.round(uploadProgress * 100)}%
-                        </div>
-                        <div
-                            style={{
-                                width: '100%',
-                                background: '#eee',
-                                height: 10,
-                                borderRadius: 6,
-                                overflow: 'hidden',
-                            }}
+                    <div className="tds-field tds-field-full tds-actions">
+                        <button
+                            className="tds-btn tds-btn-primary"
+                            type="submit"
+                            disabled={uploading}
                         >
-                            <div
-                                style={{
-                                    width: `${Math.min(Math.max(uploadProgress * 100, 0), 100)}%`,
-                                    height: '100%',
-                                    background: 'var(--tds-red)',
-                                    transition: 'width 200ms ease',
-                                }}
-                            />
-                        </div>
+                            Đăng ký & Tạo vé
+                        </button>
                     </div>
-                )}
+                </form>
 
-                <div className="tds-field tds-field-full tds-actions">
-                    <button className="tds-btn tds-btn-primary" type="submit" disabled={uploading}>
-                        Đăng ký & Tạo vé
-                    </button>
-                    <button
-                        className="tds-btn tds-btn-secondary"
-                        type="button"
-                        onClick={() =>
-                            setFormData({
-                                name: '',
-                                position: '',
-                                company: '',
-                                email: '',
-                                phone: '',
-                            })
-                        }
-                    >
-                        Đặt lại
-                    </button>
-                </div>
-            </form>
-
-            {inviteId && (
-                <div className="tds-invite">
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <div>
-                            <div style={{ fontSize: 14, color: 'var(--tds-gray)' }}>
-                                Mã mời của bạn
-                            </div>
-                            <div style={{ fontWeight: 800, fontSize: 18 }}>{inviteId}</div>
-                        </div>
-                        <div className="tds-qr">
-                            {qrSrc ? (
-                                <div>
-                                    <img src={qrSrc} alt="Mã QR mời" />
-                                    <div
-                                        style={{
-                                            marginTop: 8,
-                                            display: 'flex',
-                                            gap: 8,
-                                            justifyContent: 'flex-end',
-                                        }}
-                                    >
-                                        <button
-                                            className="tds-btn tds-btn-secondary"
-                                            type="button"
-                                            onClick={async () => {
-                                                try {
-                                                    const res = await fetch(qrSrc);
-                                                    const blob = await res.blob();
-                                                    const url = URL.createObjectURL(blob);
-                                                    const a = document.createElement('a');
-                                                    a.href = url;
-                                                    a.download = `${inviteId || 'invite'}.png`;
-                                                    document.body.appendChild(a);
-                                                    a.click();
-                                                    a.remove();
-                                                    URL.revokeObjectURL(url);
-                                                } catch (err) {
-                                                    console.error('Failed to download QR:', err);
-                                                }
-                                            }}
-                                        >
-                                            Tải QR
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <p>Đang tạo mã QR...</p>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
+                <QRPanel inviteId={inviteId} qrSrc={qrSrc} />
+            </div>
         </PageFrame>
     );
 }
