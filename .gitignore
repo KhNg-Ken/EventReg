@@ -27,6 +27,7 @@ dist-ssr
 # Common dotenv files
 .env
 .env.*
+.editorconfig
 
 # Firebase service account / credentials
 serviceAccountKey.json
