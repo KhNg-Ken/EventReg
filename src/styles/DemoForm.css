@@ -1,0 +1,193 @@
+:root {
+    --tds-red: #c8102e;
+    --tds-black: #111111;
+    --tds-gray: #6b6b6b;
+    --tds-light: #f5f5f6;
+    --tds-white: #ffffff;
+    --card-radius: 12px;
+    --max-width: 760px;
+}
+
+.tds-form-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    min-height: calc(100vh - 40px); /* center vertically and use most of viewport */
+    box-sizing: border-box;
+}
+
+.tds-card {
+    background: linear-gradient(180deg, var(--tds-white), var(--tds-light));
+    border-radius: var(--card-radius);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
+    width: 98%;
+    max-width: 1200px; /* occupy more horizontal space */
+    padding: 2.5rem 3rem;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial;
+    color: var(--tds-black);
+}
+
+.tds-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.tds-logo {
+    width: 84px;
+    height: 84px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent; /* image will provide the visual */
+    padding: 0;
+}
+
+.tds-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.tds-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+.tds-subtitle {
+    font-size: 0.875rem;
+    color: var(--tds-gray);
+}
+
+.tds-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.tds-field {
+    display: flex;
+    flex-direction: column;
+}
+.tds-field-full {
+    grid-column: 1/-1;
+}
+
+.tds-input {
+    padding: 0.75rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid #e6e6e6;
+    background: var(--tds-white);
+    color: var(--tds-black);
+    font-size: 0.95rem;
+    outline: none;
+    transition: box-shadow 0.15s, border-color 0.15s;
+}
+.tds-input::placeholder {
+    color: #9aa0a6;
+}
+.tds-input:focus {
+    box-shadow: 0 4px 18px rgba(200, 16, 46, 0.08);
+    border-color: var(--tds-red);
+}
+
+/* Ensure inputs always remain black text on white background regardless of state */
+.tds-input:disabled,
+.tds-input[readonly],
+.tds-input:valid,
+.tds-input:invalid {
+    color: var(--tds-black) !important;
+    background: var(--tds-white) !important;
+}
+
+/* Browser autofill can change colors; enforce desired appearance where supported */
+input.tds-input:-webkit-autofill,
+input.tds-input:-webkit-autofill:hover,
+input.tds-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--tds-black) !important;
+    box-shadow: 0 0 0px 1000px var(--tds-white) inset !important;
+}
+
+.tds-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.tds-btn {
+    padding: 0.8rem 1.1rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.tds-btn-primary {
+    background: var(--tds-red);
+    color: var(--tds-white);
+    box-shadow: 0 8px 20px rgba(200, 16, 46, 0.12);
+}
+.tds-btn-secondary {
+    background: transparent;
+    color: var(--tds-black);
+    border: 1px solid #e6e6e6;
+}
+
+.tds-invite {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #fff, #fafafa);
+    border: 1px solid #eee;
+}
+
+.tds-qr img {
+    max-width: 260px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+/* Event card styles - subtle 3D lift and pop on hover/focus */
+.tds-event-card {
+    background: linear-gradient(180deg, #ffffff, #fbfbfb);
+    transition: transform 180ms cubic-bezier(0.2, 0.9, 0.2, 1),
+        box-shadow 180ms cubic-bezier(0.2, 0.9, 0.2, 1), border-color 160ms ease;
+    will-change: transform, box-shadow;
+}
+.tds-event-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.14);
+    border-color: rgba(200, 16, 46, 0.12);
+}
+.tds-event-card:focus {
+    outline: none;
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 22px 46px rgba(0, 0, 0, 0.16);
+    border-color: var(--tds-red);
+}
+
+/* Ensure buttons inside the card don't inherit pointer cursor from parent */
+.tds-event-card button {
+    cursor: pointer;
+}
+
+@media (max-width: 720px) {
+    .tds-form {
+        grid-template-columns: 1fr;
+    }
+    .tds-logo {
+        width: 52px;
+        height: 52px;
+    }
+    .tds-card {
+        padding: 1rem;
+        width: 94%;
+    }
+}
