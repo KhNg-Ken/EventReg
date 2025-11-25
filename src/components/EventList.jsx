@@ -4,7 +4,7 @@ import { app } from '../firebase/config.js';
 import { isSignedIn } from '../auth/index.js';
 import PageFrame from './PageFrame.jsx';
 import EventCard from './EventCard.jsx';
-import '../styles/DemoForm.css';
+import '../styles/RegisterForm.css';
 
 function SkeletonList({ count = 3 }) {
     return (
@@ -103,7 +103,7 @@ export default function EventList({ onSelectEvent } = {}) {
         : 'Xem các sự kiện hiện có tại TDSouth!';
 
     return (
-        <PageFrame title="Danh sách sự kiện" subtitle={subtitle} minHeight={360}}>
+        <PageFrame title="Danh sách sự kiện" subtitle={subtitle} minHeight={360}>
             {loading ? (
                 <div>
                     <div style={{ marginBottom: 8, color: 'var(--tds-gray)' }}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/DemoForm.css';
+import '../styles/RegisterForm.css';
 
 export default function EventCard({ ev, onClick, actions }) {
     const eventDate = ev?.eventDate ? new Date(ev.eventDate) : null;

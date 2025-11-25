@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createEventWorkbook } from '../api/graphApi.js';
-import '../styles/DemoForm.css';
+import PageFrame from './PageFrame.jsx';
+import '../styles/RegisterForm.css';
 
 function CreateForm() {
     const [eventName, setEventName] = useState('');
@@ -39,104 +40,103 @@ function CreateForm() {
     };
 
     return (
-        <div className="tds-form-wrap">
-            <div className="tds-card">
-                <div className="tds-header">
-                    <div className="tds-title">Create Event Form</div>
-                    <div className="tds-subtitle">Quản trị: tạo mẫu đăng ký sự kiện</div>
+        <PageFrame
+            title="Create Event Form"
+            subtitle="Quản trị: tạo mẫu đăng ký sự kiện"
+            showBack
+            onBack={() => (window.location.hash = '#/events')}
+            minHeight={360}
+        >
+            <div className="tds-form">
+                <div className="tds-field">
+                    <label className="tds-subtitle">Tên sự kiện</label>
+                    <input
+                        className="tds-input"
+                        value={eventName}
+                        onChange={(e) => setEventName(e.target.value)}
+                        placeholder="Tên sự kiện"
+                    />
                 </div>
 
-                <div className="tds-form">
-                    <div className="tds-field">
-                        <label className="tds-subtitle">Tên sự kiện</label>
-                        <input
-                            className="tds-input"
-                            value={eventName}
-                            onChange={(e) => setEventName(e.target.value)}
-                            placeholder="Tên sự kiện"
-                        />
-                    </div>
-
-                    <div className="tds-field">
-                        <label className="tds-subtitle">Tùy chọn ảnh</label>
-                        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <input
-                                    type="radio"
-                                    name="imgopt"
-                                    checked={!requireImage}
-                                    onChange={() => setRequireImage(false)}
-                                />{' '}
-                                Không bắt buộc
-                            </label>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <input
-                                    type="radio"
-                                    name="imgopt"
-                                    checked={requireImage}
-                                    onChange={() => setRequireImage(true)}
-                                />{' '}
-                                Bắt buộc
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="tds-field tds-actions">
-                        <button
-                            className="tds-btn tds-btn-primary"
-                            onClick={handleCreate}
-                            disabled={creating}
-                        >
-                            Tạo form
-                        </button>
+                <div className="tds-field">
+                    <label className="tds-subtitle">Tùy chọn ảnh</label>
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <input
+                                type="radio"
+                                name="imgopt"
+                                checked={!requireImage}
+                                onChange={() => setRequireImage(false)}
+                            />{' '}
+                            Không bắt buộc
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <input
+                                type="radio"
+                                name="imgopt"
+                                checked={requireImage}
+                                onChange={() => setRequireImage(true)}
+                            />{' '}
+                            Bắt buộc
+                        </label>
                     </div>
                 </div>
 
-                {result && result.success && (
-                    <div style={{ marginTop: 12 }}>
-                        <div>
-                            Đã tạo: <strong>{result.fileName}</strong>
-                        </div>
-                        <div>File ID: {result.fileId}</div>
-                        <div>Table: {result.tableName}</div>
-                        <div>Image uploads: {result.requireImage ? 'Bắt buộc' : 'Tùy chọn'}</div>
-                        {result.shareUrl && (
-                            <div style={{ marginTop: 8 }}>
-                                <div style={{ fontSize: 13 }}>Shareable link</div>
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        gap: 8,
-                                        marginTop: 6,
-                                        alignItems: 'center',
+                <div className="tds-field tds-actions">
+                    <button
+                        className="tds-btn tds-btn-primary"
+                        onClick={handleCreate}
+                        disabled={creating}
+                    >
+                        Tạo form
+                    </button>
+                </div>
+            </div>
+
+            {result && result.success && (
+                <div style={{ marginTop: 12 }}>
+                    <div>
+                        Đã tạo: <strong>{result.fileName}</strong>
+                    </div>
+                    <div>File ID: {result.fileId}</div>
+                    <div>Table: {result.tableName}</div>
+                    <div>Image uploads: {result.requireImage ? 'Bắt buộc' : 'Tùy chọn'}</div>
+                    {result.shareUrl && (
+                        <div style={{ marginTop: 8 }}>
+                            <div style={{ fontSize: 13 }}>Shareable link</div>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    gap: 8,
+                                    marginTop: 6,
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <input
+                                    readOnly
+                                    value={result.shareUrl}
+                                    style={{ flex: 1, padding: 8, border: '1px solid #ddd' }}
+                                />
+                                <button
+                                    className="tds-btn tds-btn-secondary"
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(result.shareUrl);
                                     }}
                                 >
-                                    <input
-                                        readOnly
-                                        value={result.shareUrl}
-                                        style={{ flex: 1, padding: 8, border: '1px solid #ddd' }}
-                                    />
-                                    <button
-                                        className="tds-btn tds-btn-secondary"
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(result.shareUrl);
-                                        }}
-                                    >
-                                        Copy
-                                    </button>
-                                </div>
+                                    Copy
+                                </button>
                             </div>
-                        )}
-                    </div>
-                )}
+                        </div>
+                    )}
+                </div>
+            )}
 
-                {result && result.success === false && (
-                    <div style={{ marginTop: 12, color: 'var(--tds-red)' }}>
-                        Lỗi: {String(result.error)}
-                    </div>
-                )}
-            </div>
-        </div>
+            {result && result.success === false && (
+                <div style={{ marginTop: 12, color: 'var(--tds-red)' }}>
+                    Lỗi: {String(result.error)}
+                </div>
+            )}
+        </PageFrame>
     );
 }
 

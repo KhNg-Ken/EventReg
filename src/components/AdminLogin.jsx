@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { loginAndGetToken, isSignedIn, logout, msalInstance } from '../auth/index.js';
-import '../styles/DemoForm.css';
-import tdsLogo from '../assets/tds_logo.png';
+import PageFrame from './PageFrame.jsx';
+import '../styles/RegisterForm.css';
 
 export default function AdminLogin({ onSignedIn } = {}) {
     const [signedIn, setSignedIn] = useState(false);
@@ -72,72 +72,63 @@ export default function AdminLogin({ onSignedIn } = {}) {
     }
 
     return (
-        <div className="tds-form-wrap">
-            <div className="tds-card" style={{ maxWidth: 720 }}>
-                <div className="tds-header">
-                    <div className="tds-logo">
-                        <img src={tdsLogo} alt="TDSouth" />
-                    </div>
+        <PageFrame
+            title="Quản trị viên / Đăng nhập"
+            subtitle="Đăng nhập bằng Microsoft để quản lý sự kiện"
+            showBack
+            onBack={() => (window.location.hash = '#/events')}
+            minHeight={360}
+        >
+            <div style={{ marginTop: 12 }}>
+                {signedIn ? (
                     <div>
-                        <div className="tds-title">Quản trị viên / Đăng nhập</div>
-                        <div className="tds-subtitle">
-                            Đăng nhập bằng Microsoft để quản lý sự kiện
+                        <div style={{ marginBottom: 8, fontSize: 14 }}>
+                            Đã đăng nhập dưới tên: <strong>{accountName || 'Người dùng'}</strong>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <button
+                                className="tds-btn tds-btn-primary"
+                                onClick={() =>
+                                    typeof onSignedIn === 'function' ? onSignedIn() : null
+                                }
+                            >
+                                Tiếp tục
+                            </button>
+                            <button
+                                className="tds-btn tds-btn-secondary"
+                                onClick={handleSignOut}
+                                disabled={loading}
+                            >
+                                Đăng xuất
+                            </button>
                         </div>
                     </div>
-                </div>
-
-                <div style={{ marginTop: 12 }}>
-                    {signedIn ? (
-                        <div>
-                            <div style={{ marginBottom: 8, fontSize: 14 }}>
-                                Đã đăng nhập dưới tên:{' '}
-                                <strong>{accountName || 'Người dùng'}</strong>
-                            </div>
-                            <div style={{ display: 'flex', gap: 8 }}>
-                                <button
-                                    className="tds-btn tds-btn-primary"
-                                    onClick={() =>
-                                        typeof onSignedIn === 'function' ? onSignedIn() : null
-                                    }
-                                >
-                                    Tiếp tục
-                                </button>
-                                <button
-                                    className="tds-btn tds-btn-secondary"
-                                    onClick={handleSignOut}
-                                    disabled={loading}
-                                >
-                                    Đăng xuất
-                                </button>
-                            </div>
+                ) : (
+                    <div>
+                        <div style={{ marginBottom: 12, color: 'var(--tds-gray)' }}>
+                            Bạn có thể đăng nhập để quản lý sự kiện, hoặc tiếp tục xem sự kiện nếu
+                            không muốn đăng nhập.
                         </div>
-                    ) : (
-                        <div>
-                            <div style={{ marginBottom: 12, color: 'var(--tds-gray)' }}>
-                                Bạn có thể đăng nhập để quản lý sự kiện, hoặc tiếp tục xem sự kiện
-                                nếu không muốn đăng nhập.
-                            </div>
-                            <div style={{ display: 'flex', gap: 8 }}>
-                                <button
-                                    className="tds-btn tds-btn-primary"
-                                    onClick={handleSignIn}
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Đang đăng nhập...' : 'Đăng nhập bằng Microsoft'}
-                                </button>
-                                <button
-                                    className="tds-btn tds-btn-secondary"
-                                    onClick={() =>
-                                        typeof onSignedIn === 'function' ? onSignedIn(false) : null
-                                    }
-                                >
-                                    Tiếp tục không đăng nhập
-                                </button>
-                            </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <button
+                                className="tds-btn tds-btn-primary"
+                                onClick={handleSignIn}
+                                disabled={loading}
+                            >
+                                {loading ? 'Đang đăng nhập...' : 'Đăng nhập bằng Microsoft'}
+                            </button>
+                            <button
+                                className="tds-btn tds-btn-secondary"
+                                onClick={() =>
+                                    typeof onSignedIn === 'function' ? onSignedIn(false) : null
+                                }
+                            >
+                                Tiếp tục không đăng nhập
+                            </button>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
-        </div>
+        </PageFrame>
     );
 }

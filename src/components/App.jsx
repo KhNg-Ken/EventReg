@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AdminLogin from './AdminLogin.jsx';
-import DemoForm from './DemoForm.jsx';
+import RegisterForm from './RegisterForm.jsx';
 import CreateForm from './CreateForm.jsx';
 import EventList from './EventList.jsx';
 import { isSignedIn } from '../auth/index.js';
@@ -62,12 +62,12 @@ function App() {
                 {page === 'events' && (
                     <EventList
                         onSelectEvent={(ev) => {
-                            // navigate with eventId in hash so DemoForm can read it from URL
-                            navigateTo(`/demo?eventId=${encodeURIComponent(ev.id)}`);
+                            // navigate with eventId in hash so RegisterForm can read it from URL
+                            navigateTo(`/register?eventId=${encodeURIComponent(ev.id)}`);
                         }}
                     />
                 )}
-                {page === 'demo' && <DemoForm eventId={selectedEventId} />}
+                {page === 'register' && <RegisterForm eventId={selectedEventId} />}
                 {page === 'create' && isAdmin && <CreateForm />}
                 {page === 'create' && !isAdmin && (
                     <div style={{ padding: 16 }}>

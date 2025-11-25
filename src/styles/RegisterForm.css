@@ -140,6 +140,18 @@ input.tds-input:-webkit-autofill:focus {
     border: 1px solid #e6e6e6;
 }
 
+/* small back button (icon-only) */
+.tds-back-btn {
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    line-height: 1;
+    min-width: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .tds-invite {
     margin-top: 1.25rem;
     padding: 1rem;
