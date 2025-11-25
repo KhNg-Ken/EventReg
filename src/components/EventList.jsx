@@ -99,11 +99,11 @@ export default function EventList({ onSelectEvent } = {}) {
     }, []);
 
     const subtitle = signedIn
-        ? 'Bạn đang đăng nhập — bạn sẽ thấy thêm thao tác quản trị.'
-        : 'Xem các sự kiện hiện có. Đăng nhập để quản lý.';
+        ? 'Bạn đang đăng nhập là một nhân viên của TDSouth!\nBạn sẽ thấy thêm thao tác quản trị.'
+        : 'Xem các sự kiện hiện có tại TDSouth!';
 
     return (
-        <PageFrame title="Danh sách sự kiện" subtitle={subtitle} minHeight={360}>
+        <PageFrame title="Danh sách sự kiện" subtitle={subtitle} minHeight={360}}>
             {loading ? (
                 <div>
                     <div style={{ marginBottom: 8, color: 'var(--tds-gray)' }}>

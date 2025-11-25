@@ -42,7 +42,10 @@ function App() {
             setSelectedEventId(h.params.eventId || null);
         }
         window.addEventListener('hashchange', onHash);
-        // sync initial
+        // sync initial: if there's no hash, route to the public events list
+        if (!window.location.hash || window.location.hash === '#') {
+            navigateTo('/events');
+        }
         onHash();
         return () => window.removeEventListener('hashchange', onHash);
     }, []);
