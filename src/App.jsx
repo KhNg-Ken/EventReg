@@ -33,13 +33,13 @@ function navigateTo(hashPath) {
 function App() {
     const [{ page, params }, setRoute] = useState(() => parseHash());
     const [isAdmin, setIsAdmin] = useState(isSignedIn());
-    const [selectedEventId, setSelectedEventId] = useState(params.eventId || null);
+    const [selectedEvent, setSelectedEvent] = useState(params.event || null);
 
     useEffect(() => {
         function onHash() {
             const h = parseHash();
             setRoute(h);
-            setSelectedEventId(h.params.eventId || null);
+            setSelectedEvent(h.params.event || null);
         }
         window.addEventListener('hashchange', onHash);
         // sync initial: if there's no hash, route to the public events list
@@ -62,12 +62,12 @@ function App() {
                 {page === 'events' && (
                     <EventList
                         onSelectEvent={(ev) => {
-                            // navigate with eventId in hash so RegisterForm can read it from URL
-                            navigateTo(`/register?eventId=${encodeURIComponent(ev.id)}`);
+                            // navigate with event in hash so RegisterForm can read it from URL
+                            navigateTo(`/register?event=${encodeURIComponent(ev.id)}`);
                         }}
                     />
                 )}
-                {page === 'register' && <RegisterForm eventId={selectedEventId} />}
+                {page === 'register' && <RegisterForm event={selectedEvent} />}
                 {page === 'create' && isAdmin && <CreateForm />}
                 {page === 'create' && !isAdmin && (
                     <div style={{ padding: 16 }}>

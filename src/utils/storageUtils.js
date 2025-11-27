@@ -5,7 +5,12 @@ import {
     getDownloadURL,
     deleteObject,
 } from 'firebase/storage';
-import { getFirestore, doc as firestoreDoc, setDoc, getDoc } from 'firebase/firestore';
+import {
+    getFirestore,
+    doc as firestoreDoc,
+    setDoc,
+    getDoc
+} from 'firebase/firestore';
 import { makeEventId } from './registrationUtils.js';
 
 /**

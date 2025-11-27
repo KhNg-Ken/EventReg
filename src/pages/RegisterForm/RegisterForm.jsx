@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { queueEmail } from '../../utils/emailUtils.js';
-import {
-    listEventWorkbooks,
-    readEventConfig,
-    registerAttendee,
-} from '../../utils/registrationUtils.js';
+import { listEvents, readEventConfig, registerAttendee } from '../../utils/registrationUtils.js';
 import PageFrame from '../../components/PageFrame.jsx';
 import EventHeader from '../../components/EventHeader/EventHeader.jsx';
 import RegistrationFields from '../../components/RegisterField/RegistrationFields.jsx';
 import QRPanel from '../../components/QRPanel/QRPanel.jsx';
 import './RegisterForm.css';
 
-function RegisterForm({ eventId: propEventId } = {}) {
+function RegisterForm({ event: propEvent } = {}) {
     const [formData, setFormData] = useState({
         name: '',
         position: '',
@@ -20,22 +16,22 @@ function RegisterForm({ eventId: propEventId } = {}) {
         phone: '',
     });
     const [, setEvents] = useState([]);
-    const [selectedEventId, setSelectedEventId] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState(null);
     const [selectedEventConfig, setSelectedEventConfig] = useState({
         eventName: null,
         imageRequired: false,
     });
-    // determine eventId from (1) prop passed by router, (2) URL search, (3) hash fragment
-    const [urlEventId, setUrlEventId] = useState(() => {
+    // determine eventID from (1) prop passed by router, (2) URL search, (3) hash fragment
+    const [urlEvent, setUrlEvent] = useState(() => {
         try {
-            if (propEventId) return propEventId;
-            const s = new URLSearchParams(window.location.search).get('eventId');
+            if (propEvent) return propEvent;
+            const s = new URLSearchParams(window.location.search).get('event');
             if (s) return s;
             const raw = window.location.hash || '';
             const parts = raw.split('?');
             if (parts.length > 1) {
                 const sp = new URLSearchParams(parts[1]);
-                return sp.get('eventId');
+                return sp.get('event');
             }
             return null;
         } catch {
@@ -45,14 +41,14 @@ function RegisterForm({ eventId: propEventId } = {}) {
 
     // respond to changes in propEventId or hash changes (so browser back/forward works)
     useEffect(() => {
-        if (propEventId) setUrlEventId(propEventId);
+        if (propEvent) setUrlEvent(propEvent);
         function onHashChange() {
             try {
                 const raw = window.location.hash || '';
                 const parts = raw.split('?');
                 if (parts.length > 1) {
                     const sp = new URLSearchParams(parts[1]);
-                    setUrlEventId(sp.get('eventId'));
+                    setUrlEvent(sp.get('event'));
                 }
             } catch {
                 // ignore
@@ -60,8 +56,9 @@ function RegisterForm({ eventId: propEventId } = {}) {
         }
         window.addEventListener('hashchange', onHashChange);
         return () => window.removeEventListener('hashchange', onHashChange);
-    }, [propEventId]);
+    }, [propEvent]);
     const [qrSrc, setQrSrc] = useState(null);
+    const [inviteId, setInviteId] = useState(null);
     const [photoFile, setPhotoFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -84,7 +81,7 @@ function RegisterForm({ eventId: propEventId } = {}) {
         }
 
         // Enforce selected event
-        if (!selectedEventId) {
+        if (!selectedEvent) {
             alert('Vui lòng chọn sự kiện');
             return;
         }
@@ -100,62 +97,80 @@ function RegisterForm({ eventId: propEventId } = {}) {
             setUploading(true);
             setUploadProgress(0);
             const result = await registerAttendee({
-                eventId: selectedEventId,
+                eventDoc: selectedEvent,
                 attendee: { name, position, company, email, phone },
                 photoFile,
                 onProgress: (p) => setUploadProgress(p),
             });
-            const { qrDataUrl } = result;
-            setQrSrc(qrDataUrl);
+            // registerAttendee now returns a hosted `qrCodeUrl` (falls back to data URI)
+            const { inviteId, qrCodeUrl } = result;
+            console.log('Registration successful, QR code URL:', qrCodeUrl);
+            setInviteId(inviteId);
+            setQrSrc(qrCodeUrl);
             // Queue invite email (best-effort). Do not roll back registration if queuing fails.
             (async () => {
                 try {
-                    if (email && qrDataUrl) {
-                        // Build event identifier in the form EVTYYMMDD - {Event Name}
-                        let evt = null;
-                        try {
-                            if (selectedEventConfig && selectedEventConfig.eventID) {
-                                evt = selectedEventConfig.eventID; // already YYMMDD
-                            } else if (selectedEventConfig && selectedEventConfig.eventDate) {
-                                const d = new Date(selectedEventConfig.eventDate);
-                                const yy = String(d.getFullYear()).slice(-2);
-                                const mm = String(d.getMonth() + 1).padStart(2, '0');
-                                const dd = String(d.getDate()).padStart(2, '0');
-                                evt = `${yy}${mm}${dd}`;
-                            } else {
-                                const d = new Date();
-                                const yy = String(d.getFullYear()).slice(-2);
-                                const mm = String(d.getMonth() + 1).padStart(2, '0');
-                                const dd = String(d.getDate()).padStart(2, '0');
-                                evt = `${yy}${mm}${dd}`;
+                    if (email && qrCodeUrl) {
+                        // Build event identifier YYMMDD (prefer eventID field, otherwise derive from eventDate or today)
+                        let evt;
+                        if (selectedEventConfig && selectedEventConfig.eventID) {
+                            evt = selectedEventConfig.eventID;
+                        } else {
+                            const d =
+                                selectedEventConfig && selectedEventConfig.eventDate
+                                    ? new Date(selectedEventConfig.eventDate)
+                                    : new Date();
+                            const yy = String(d.getFullYear()).slice(-2);
+                            const mm = String(d.getMonth() + 1).padStart(2, '0');
+                            const dd = String(d.getDate()).padStart(2, '0');
+                            evt = `${yy}${mm}${dd}`;
+                        }
+
+                        // Convert eventDate to a locale string (handles Firestore Timestamp-like objects)
+                        const formatEventDate = (val) => {
+                            if (!val) return '';
+                            try {
+                                if (typeof val === 'object' && (val.seconds || val._seconds)) {
+                                    const seconds = val.seconds || val._seconds;
+                                    const nanos = val.nanoseconds || val._nanoseconds || 0;
+                                    const ms = seconds * 1000 + Math.floor(nanos / 1e6);
+                                    return new Date(ms).toLocaleString();
+                                }
+                                const d = new Date(val);
+                                return isNaN(d) ? String(val) : d.toLocaleString();
+                            } catch {
+                                return String(val);
                             }
-                        } catch {
-                            console.alert('Failed to compute event ID for email');
-                            evt = '000000';
-                       }
+                        };
 
-                        const eventLabel = `EVT${evt} - ${
-                            selectedEventConfig?.name
-                        }`;
+                        // Prefer a string location; fall back to common object fields or empty string
+                        const eventLocation = (() => {
+                            const loc =
+                                selectedEventConfig?.location ?? selectedEventConfig?.eventLocation;
+                            if (!loc) return '';
+                            if (typeof loc === 'string') return loc;
+                            return (
+                                loc.address || loc.name || loc.displayName || JSON.stringify(loc)
+                            );
+                        })();
 
-                        const subject = `Mã mời sự kiện: ${eventLabel}`;
-                        const bodyText = `Chào ${name},\n\nCảm ơn bạn đã đăng ký cho sự kiện ${eventLabel}. Vui lòng sử dụng mã QR đính kèm để điểm danh tại sự kiện.\n\nTrân trọng,\nTDSouth`;
-                        const bodyHtml = `
-                            <p>Chào ${name},</p>
-                            <p>Cảm ơn bạn đã đăng ký cho sự kiện <strong>${eventLabel}</strong>.</p>
-                            <p>Vui lòng sử dụng mã QR đính kèm để điểm danh tại sự kiện:</p>
-                            <p><img src="${qrDataUrl}" alt="QR code" style="max-width:240px; height:auto;"/></p>
-                            <p>Trân trọng,<br/>TDSouth</p>
-                        `;
+                        // Template data (primitives only)
+                        const templateData = {
+                            name: name || '',
+                            eventName: selectedEventConfig?.name || '',
+                            eventID: evt,
+                            eventDate: formatEventDate(selectedEventConfig?.eventDate),
+                            eventLocation: eventLocation,
+                            qrCodeUrl: qrCodeUrl,
+                        };
 
-                        await queueEmail({ to: email, subject, bodyText, bodyHtml });
+                        await queueEmail({ to: email, data: templateData });
                     }
                 } catch (mailErr) {
                     console.warn('Failed to queue invite email (non-fatal):', mailErr);
                 }
             })();
             alert('Đã gửi! Mã mời của bạn đã được tạo.');
-            setFormData({ name: '', position: '', company: '', email: '', phone: '' });
         } catch (err) {
             console.error('Registration transaction failed:', err);
             alert('Đăng ký thất bại. Không có dữ liệu nào được lưu. Vui lòng thử lại.');
@@ -172,23 +187,23 @@ function RegisterForm({ eventId: propEventId } = {}) {
         let mounted = true;
         async function load() {
             try {
-                const ev = await listEventWorkbooks();
+                const ev = await listEvents();
                 if (!mounted) return;
                 setEvents(ev);
-                if (urlEventId) {
-                    // if URL specified an eventId, try to select it (even if it's not in the list)
-                    setSelectedEventId(urlEventId);
+                if (urlEvent) {
+                    // if URL specified an event, try to select it (even if it's not in the list)
+                    setSelectedEvent(urlEvent);
                     try {
-                        const cfg = await readEventConfig(urlEventId);
+                        const cfg = await readEventConfig(urlEvent);
                         if (!mounted) return;
                         setSelectedEventConfig(
                             cfg || { eventName: null, imageRequired: false, tableName: null }
                         );
                     } catch (e) {
-                        console.warn('Failed to read config for URL eventId', e);
+                        console.warn('Failed to read config for URL event', e);
                     }
                 } else if (ev && ev.length) {
-                    setSelectedEventId(ev[0].id);
+                    setSelectedEvent(ev[0].id);
                     const cfg = await readEventConfig(ev[0].id);
                     if (!mounted) return;
                     setSelectedEventConfig(
@@ -203,15 +218,15 @@ function RegisterForm({ eventId: propEventId } = {}) {
         return () => {
             mounted = false;
         };
-    }, [urlEventId]);
+    }, [urlEvent]);
 
     // when selectedEventId changes, reload config
     useEffect(() => {
         let mounted = true;
-        if (!selectedEventId) return;
+        if (!selectedEvent) return;
         async function loadCfg() {
             try {
-                const cfg = await readEventConfig(selectedEventId);
+                const cfg = await readEventConfig(selectedEvent);
                 if (!mounted) return;
                 setSelectedEventConfig(
                     cfg || { eventName: null, imageRequired: false, tableName: null }
@@ -224,7 +239,7 @@ function RegisterForm({ eventId: propEventId } = {}) {
         return () => {
             mounted = false;
         };
-    }, [selectedEventId]);
+    }, [selectedEvent]);
     return (
         <PageFrame
             title="Đăng ký sự kiện TDSouth"
@@ -257,7 +272,7 @@ function RegisterForm({ eventId: propEventId } = {}) {
                     </div>
                 </form>
 
-                <QRPanel qrSrc={qrSrc} />
+                <QRPanel qrSrc={qrSrc} inviteId={inviteId} />
             </div>
         </PageFrame>
     );

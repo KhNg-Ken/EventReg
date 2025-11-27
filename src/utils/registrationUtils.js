@@ -1,4 +1,5 @@
 import QRCode from 'qrcode';
+import { uploadToCloudinary, deleteByToken } from './cloudinary';
 import {
     collection,
     query,
@@ -11,70 +12,16 @@ import {
     getFirestore,
 } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { uploadFile } from './storageUtils.js';
+import { sanitizeForId, normalizePhone } from './stringUtils';
 
-export function normalizePhone(phone) {
-    if (!phone) return '';
-    return phone.toString().replace(/\D/g, '');
-}
-
-export function validatePhoneNumber(phone) {
-    const p = normalizePhone(phone);
-    if (!p) return { ok: false, reason: 'Số điện thoại trống.' };
-    if (!/^\d+$/.test(p)) return { ok: false, reason: 'Số điện thoại chỉ chứa chữ số.' };
-    if (!p.startsWith('0')) return { ok: false, reason: 'Số điện thoại phải bắt đầu bằng 0.' };
-    if (p.startsWith('02')) {
-        if (p.length !== 11) return { ok: false, reason: 'Số bắt đầu bằng 02 phải có 11 chữ số.' };
-    } else {
-        if (p.length !== 10) return { ok: false, reason: 'Số điện thoại phải có 10 chữ số.' };
-    }
-    return { ok: true };
-}
-
-export function validateEmailFormat(email) {
-    if (!email) return { ok: false, reason: 'Email trống.' };
-    const s = email.toString().trim().toLowerCase();
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return { ok: re.test(s) };
-}
-
-export function sanitizeForId(name) {
-    if (!name) return '';
-    try {
-        name = name.normalize('NFKD').replace(/\p{Diacritic}/gu, '');
-    } catch {
-        name = name.replace(/[\u0300-\u036f]/g, '');
-    }
-    return name
-        .toString()
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-+|-+$/g, '');
-}
-
-export function makeEventId(ev) {
-    const date = ev && ev.eventDate ? new Date(ev.eventDate) : new Date();
-    const yy = String(date.getFullYear()).slice(-2);
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const yymmdd = `${yy}${mm}${dd}`;
-    const slug = sanitizeForId(ev && ev.name ? ev.name : 'event');
-    return `EVT${yymmdd}-${slug}`;
-}
-
-export function generateInviteId() {
-    const num = Math.floor(Math.random() * 900000) + 100000; // 6 digits
-    const s = String(num).padStart(6, '0');
-    return `EVT${s.slice(0, 3)}-${s.slice(3)}`;
+export function generateInviteId(eventID, token) {
+    return `INV${eventID}-${token.slice(0, 8)}`;
 }
 
 /**
  * List events from Firestore `events` collection. Falls back to localStorage if Firestore is not available.
  */
-export async function listEventWorkbooks() {
+export async function listEvents() {
     try {
         const app = getApp();
         const db = getFirestore(app);
@@ -95,22 +42,22 @@ export async function listEventWorkbooks() {
     } catch {
         // ignore
     }
-    return [{ id: 'EVT001-000', name: 'TDSouth - Sample Event' }];
+    return [{ id: 'EVT000000', name: 'TDSouth - Sample Event' }];
 }
 
-export async function readEventConfig(eventId) {
-    if (!eventId) return { eventName: null, imageRequired: false, tableName: null };
+export async function readEventConfig(event) {
+    if (!event) return { eventName: null, imageRequired: false, tableName: null };
     try {
         const app = getApp();
         const db = getFirestore(app);
-        const dref = firestoreDoc(db, 'events', eventId);
+        const dref = firestoreDoc(db, 'events', event);
         const snap = await getDoc(dref);
         if (snap.exists()) return snap.data();
     } catch {
         // ignore
     }
     try {
-        const raw = localStorage.getItem(`tds_event_config_${eventId}`);
+        const raw = localStorage.getItem(`tds_event_config_${event}`);
         if (raw) return JSON.parse(raw);
     } catch {
         // ignore
@@ -119,27 +66,40 @@ export async function readEventConfig(eventId) {
 }
 
 /**
- * Register an attendee under events/{eventId}/attendees with optional photo upload.
- * Returns { inviteId, token, qrDataUrl }
+ * Register an attendee under events/{eventDoc}/registrants with optional photo upload.
+ * Returns { inviteId, token, qrCodeUrl }
  */
-export async function registerAttendee({ eventId, attendee, photoFile, onProgress } = {}) {
-    const inviteId = generateInviteId();
-    const token = await generateHmacToken(
-        JSON.stringify({ inviteId, email: attendee.email || '' })
-    );
-
+export async function registerAttendee({ eventDoc, attendee, photoFile, onProgress } = {}) {
     const phoneNormalized = normalizePhone(attendee.phone || '');
     const phoneLast4 = phoneNormalized.slice(-4);
 
+    const token = await generateHmacToken(JSON.stringify({ eventDoc: eventDoc, email: attendee.email || '' }));
+
+    const eventID = eventDoc ? eventDoc.replace(/^EVT/, '').split('-')[0] : '000000';
+    const inviteId = generateInviteId(eventID, token);
+
     let photoUrl = null;
+    let photoUploadInfo = null; // store Cloudinary response for potential rollback
     if (photoFile) {
         try {
             const compressed = await compressImage(photoFile);
-            const app = getApp();
-            const path = `events/${eventId}/attendees/${inviteId}/${compressed.name}`;
-            photoUrl = await uploadFile(app, path, compressed, (p) => {
-                if (onProgress) onProgress(p / 100);
+            const folder = eventDoc ? `events/${eventDoc}/photos` : 'events/photos';
+            // Build a sanitized filename: {sanitized_name}_{last4}
+            const nameSource = (attendee && (attendee.name || attendee.company)) || 'attendee';
+            const sanitized = sanitizeForId(nameSource) || 'attendee';
+            const last4 = phoneLast4 || '0000';
+            const publicId = `${sanitized}_${last4}`;
+
+            const cloudRes = await uploadToCloudinary(compressed, {
+                folder,
+                publicId,
+                onProgress: (p) => {
+                    if (onProgress) onProgress(p / 100);
+                },
             });
+            // cloudRes contains secure_url, public_id, delete_token (if returned)
+            photoUploadInfo = cloudRes;
+            photoUrl = cloudRes?.secure_url || null;
         } catch (err) {
             console.warn('Photo upload failed', err);
         }
@@ -148,7 +108,7 @@ export async function registerAttendee({ eventId, attendee, photoFile, onProgres
     try {
         const app = getApp();
         const db = getFirestore(app);
-        const attendeesCol = collection(db, 'events', eventId, 'attendees');
+        const attendeesCol = collection(db, 'events', eventDoc, 'registrants');
         const payload = {
             company: attendee.company || null,
             createdAt: serverTimestamp(),
@@ -161,12 +121,43 @@ export async function registerAttendee({ eventId, attendee, photoFile, onProgres
             inviteId,
             photoUrl,
         };
-
         await addDoc(attendeesCol, payload);
     } catch (err) {
-        console.warn('Failed to write attendee to Firestore, falling back to localStorage', err);
+        console.warn(
+            'Failed to write attendee to Firestore, attempting rollback/cleanup and falling back to localStorage',
+            err
+        );
+        // Attempt to clean up uploaded photo if possible
         try {
-            const key = `tds_registrations_${eventId || 'default'}`;
+            const cn = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+            if (photoUploadInfo && photoUploadInfo.delete_token && cn) {
+                // Try immediate delete by token
+                try {
+                    await deleteByToken(cn, photoUploadInfo.delete_token);
+                } catch (e) {
+                    console.warn('Immediate delete_by_token failed', e);
+                }
+            } else if (photoUploadInfo && photoUploadInfo.public_id) {
+                // As a fallback, enqueue a cleanup job in Firestore `media_cleanup`
+                try {
+                    const app = getApp();
+                    const db = getFirestore(app);
+                    const col = collection(db, 'media_cleanup');
+                    await addDoc(col, {
+                        public_id: photoUploadInfo.public_id,
+                        eventDoc,
+                        queuedAt: serverTimestamp(),
+                    });
+                } catch (e) {
+                    // If we can't write to Firestore either, give up and leave the asset; operator can prune later.
+                    console.warn('Failed to enqueue media cleanup', e);
+                }
+            }
+        } catch (cleanupErr) {
+            console.warn('Photo cleanup attempt failed', cleanupErr);
+        }
+        try {
+            const key = `tds_registrations_${eventDoc || 'default'}`;
             const raw = localStorage.getItem(key);
             const list = raw ? JSON.parse(raw) : [];
             list.push({ inviteId, token, attendee, photoUrl, createdAt: new Date().toISOString() });
@@ -176,18 +167,37 @@ export async function registerAttendee({ eventId, attendee, photoFile, onProgres
         }
     }
 
-    // derive event short id (YYMMDD) from eventId like EVTYYMMDD-slug
-    let eventShort = null;
+    const qrDataUrl = await generateQr(eventID, phoneLast4, token);
+
+    // Try to upload the generated QR (data URI) to Cloudinary using unsigned preset 'reg_qr'
+    // so emails receive a public HTTPS URL instead of a data URI which many email clients block.
+    let qrCodeUrl = qrDataUrl;
     try {
-        const m = (eventId || '').match(/^EVT(\d{6})/);
-        if (m) eventShort = m[1];
-        else eventShort = new Date().toISOString().slice(2, 10).replace(/-/g, '').slice(0, 6);
-    } catch {
-        eventShort = new Date().toISOString().slice(2, 10).replace(/-/g, '').slice(0, 6);
+        if (qrDataUrl && qrDataUrl.startsWith('data:')) {
+            // Convert data URI to Blob
+            const resp = await fetch(qrDataUrl);
+            const blob = await resp.blob();
+            const fileName = `qrcode_${inviteId}.png`;
+            const file = new File([blob], fileName, { type: blob.type || 'image/png' });
+            const folder = eventDoc ? `${eventDoc}/qrcodes` : 'events/qrcodes';
+            const publicId = `qrcode_${inviteId}`;
+            try {
+                const cloudRes = await uploadToCloudinary(file, {
+                    folder,
+                    publicId,
+                    uploadPreset: 'reg_qr',
+                });
+                if (cloudRes && cloudRes.secure_url) qrCodeUrl = cloudRes.secure_url;
+                console.log('QR code uploaded to Cloudinary', qrCodeUrl);
+            } catch (e) {
+                console.warn('QR upload to Cloudinary failed, falling back to data URI', e);
+            }
+        }
+    } catch (err) {
+        console.warn('Failed to convert or upload QR data URI', err);
     }
 
-    const qrDataUrl = await generateQr(eventShort, phoneLast4, token);
-    return { inviteId, token, qrDataUrl };
+    return { inviteId, qrCodeUrl };
 }
 
 export async function generateHmacToken(message) {
@@ -220,7 +230,8 @@ export async function generateHmacToken(message) {
 
 export async function generateQr(eventID, phoneLast4, token) {
     try {
-        return await QRCode.toDataURL(JSON.stringify({ eventID, phoneLast4, token }));
+        let resultStr = eventID + phoneLast4 + token;
+        return await QRCode.toDataURL(resultStr);
     } catch (err) {
         console.error('QR generation failed', err);
         return null;
@@ -230,13 +241,13 @@ export async function generateQr(eventID, phoneLast4, token) {
 /**
  * Check for an existing attendee with the same email or phoneNumber in the event's attendees subcollection.
  * @param {import('firebase/firestore').Firestore} db - Firestore database instance
- * @param {string} eventID - canonical event id (EVT...)
+ * @param {string} eventDoc - canonical eventDoc (EVT...)
  * @param {{email?: string, phone?: string}} opts
  * @returns {Promise<{duplicate: boolean, field?: 'email'|'phone', doc?: any}>}
  */
-export async function checkDuplicateRegistration(db, eventID, { email, phone } = {}) {
+export async function checkDuplicateRegistration(db, eventDoc, { email, phone } = {}) {
     try {
-        const attendeesCol = collection(db, 'events', eventID, 'attendees');
+        const attendeesCol = collection(db, 'events', eventDoc, 'attendees');
         const normalizedEmail = email ? email.toString().trim().toLowerCase() : '';
         const normalizedPhone = phone ? normalizePhone(phone) : '';
 
@@ -264,16 +275,6 @@ export async function checkDuplicateRegistration(db, eventID, { email, phone } =
         console.warn('Duplicate check failed', err);
         return { duplicate: false };
     }
-}
-
-export function validateImageFile(file) {
-    if (!file) return { ok: false, reason: 'No file' };
-    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowed.includes(file.type))
-        return { ok: false, reason: 'Định dạng ảnh không được hỗ trợ (jpg/png/webp).' };
-    if (file.size > 25 * 1024 * 1024)
-        return { ok: false, reason: 'Tệp quá lớn (hạn chế 25MB trước khi nén).' };
-    return { ok: true };
 }
 
 export async function compressImage(file, maxBytes = 4 * 1024 * 1024) {

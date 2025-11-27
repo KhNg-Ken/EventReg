@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import './RegistrationFields.css';
 
 export default function RegistrationFields({
@@ -9,6 +9,18 @@ export default function RegistrationFields({
     uploading,
     uploadProgress,
 }) {
+    const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        // when parent clears photoFile (e.g., after successful registration), reset the file input
+        if (!photoFile && fileInputRef.current) {
+            try {
+                fileInputRef.current.value = '';
+            } catch {
+                // ignore any DOM exceptions
+            }
+        }
+    }, [photoFile]);
     return (
         <>
             <div className="tds-field">
@@ -76,12 +88,13 @@ export default function RegistrationFields({
             <div className="tds-field tds-field-full">
                 <label className="tds-subtitle">Tải ảnh của bản thân (tùy chọn)</label>
                 <input
+                    ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     className="tds-input"
                     onChange={(e) => {
-                        photoFile = e.target.files && e.target.files[0] ? e.target.files[0] : null;
-                        setPhotoFile(photoFile);
+                        const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+                        setPhotoFile(file);
                     }}
                 />
                 <div style={{ fontSize: 12, color: 'var(--tds-gray)', marginTop: 6 }}>

@@ -12,8 +12,10 @@
   },
   "dependencies": {
     "@azure/msal-browser": "^4.26.1",
+    "@sendgrid/mail": "^8.1.6",
     "axios": "^1.13.2",
     "firebase": "^12.6.0",
+    "firebase-admin": "^13.6.0",
     "qrcode": "^1.5.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

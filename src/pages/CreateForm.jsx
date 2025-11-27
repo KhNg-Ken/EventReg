@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { createEventWorkbook } from '../api/graphApi.js';
 import PageFrame from '../components/PageFrame.jsx';
-import '../styles/RegisterForm.css';
 
 function CreateForm() {
     const [eventName, setEventName] = useState('');

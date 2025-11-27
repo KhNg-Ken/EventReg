@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/RegisterForm.css';
 
 export default function PageFrame({
     title,

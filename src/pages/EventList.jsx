@@ -4,7 +4,6 @@ import { app } from '../firebase/config.js';
 import { isSignedIn } from '../auth/index.js';
 import PageFrame from '../components/PageFrame.jsx';
 import EventCard from '../components/EventCard/EventCard.jsx';
-import '../styles/RegisterForm.css';
 
 function SkeletonList({ count = 3 }) {
     return (
