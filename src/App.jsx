@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { isSignedIn } from './auth/index.js';
 import AdminLogin from './pages/AdminLogin.jsx';
-import RegisterForm from './pages/RegisterForm/RegisterForm.jsx';
+import CheckinStatistics from './pages/CheckinStatistics.jsx';
 import CreateForm from './pages/CreateForm.jsx';
 import EventList from './pages/EventList.jsx';
-import { isSignedIn } from './auth/index.js';
+import LivePoster from './pages/LivePoster.jsx';
+import RegisterForm from './pages/RegisterForm/RegisterForm.jsx';
 
 function parseHash() {
     const raw = window.location.hash || '#/events';
@@ -69,6 +71,8 @@ function App() {
                 )}
                 {page === 'register' && <RegisterForm event={selectedEvent} />}
                 {page === 'create' && isAdmin && <CreateForm />}
+                {page === 'liveposter' && <LivePoster event={selectedEvent} />}
+                {page === 'checkin-statistics' && <CheckinStatistics event={selectedEvent} />}
                 {page === 'create' && !isAdmin && (
                     <div style={{ padding: 16 }}>
                         <strong>Admin access required</strong>

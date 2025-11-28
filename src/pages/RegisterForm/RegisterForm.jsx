@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { queueEmail } from '../../utils/emailUtils.js';
-import { listEvents, readEventConfig, registerAttendee } from '../../utils/registrationUtils.js';
+import { registerAttendee } from '../../utils/registrationUtils.js';
+import { listEvents, readEventConfig } from '../../utils/firestoreUtils.js';
 import PageFrame from '../../components/PageFrame.jsx';
 import EventHeader from '../../components/EventHeader/EventHeader.jsx';
 import RegistrationFields from '../../components/RegisterField/RegistrationFields.jsx';

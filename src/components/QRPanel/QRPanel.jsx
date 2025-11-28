@@ -27,7 +27,6 @@ export default function QRPanel({ inviteId, qrSrc }) {
                             <div style={{ fontSize: 14, color: 'var(--tds-gray)' }}>
                                 Mã mời của bạn
                             </div>
-                            <div style={{ fontWeight: 800, fontSize: 18 }}>{inviteId}</div>
                         </div>
                         <div className="tds-qr">
                             {qrSrc ? (

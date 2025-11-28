@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { getFirestore, collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { app } from '../firebase/config.js';
+import { collection, getDocs, getFirestore, orderBy, query } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import { isSignedIn } from '../auth/index.js';
-import PageFrame from '../components/PageFrame.jsx';
 import EventCard from '../components/EventCard/EventCard.jsx';
+import PageFrame from '../components/PageFrame.jsx';
+import { app } from '../firebase/config.js';
 
 function SkeletonList({ count = 3 }) {
     return (
@@ -147,15 +147,51 @@ export default function EventList({ onSelectEvent } = {}) {
                 </div>
             ) : (
                 <div style={{ display: 'grid', gap: 10 }}>
-                    {events.map((ev) => (
-                        <EventCard
-                            key={ev.id}
-                            ev={ev}
-                            onClick={() =>
-                                typeof onSelectEvent === 'function' ? onSelectEvent(ev) : null
-                            }
-                        />
-                    ))}
+                    {events.map((ev) => {
+                        const actions = signedIn ? (
+                            <div style={{ display: 'inline-flex', gap: 8 }}>
+                                <button
+                                    className="tds-btn tds-btn-secondary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const liveHash = `#/liveposter?event=${encodeURIComponent(
+                                            ev.id
+                                        )}`;
+                                        const statsHash = `#/checkin-statistics?event=${encodeURIComponent(
+                                            ev.id
+                                        )}`;
+                                        // open poster in new window and navigate main tab to stats
+                                        try {
+                                            window.open(
+                                                window.location.origin +
+                                                    window.location.pathname +
+                                                    liveHash,
+                                                '_blank',
+                                                'noopener'
+                                            );
+                                        } catch {
+                                            window.open(liveHash, '_blank', 'noopener');
+                                        }
+                                        window.location.hash = statsHash;
+                                    }}
+                                    type="button"
+                                >
+                                    Live Checkin
+                                </button>
+                            </div>
+                        ) : null;
+
+                        return (
+                            <EventCard
+                                key={ev.id}
+                                ev={ev}
+                                actions={actions}
+                                onClick={() =>
+                                    typeof onSelectEvent === 'function' ? onSelectEvent(ev) : null
+                                }
+                            />
+                        );
+                    })}
                 </div>
             )}
         </PageFrame>
