@@ -22,7 +22,9 @@ export function normalizePhone(phone) {
 
 // Return DD/MM/YYYY HH:MM AM/PM format
 export function normalizedDateString(date) {
-    if (!(date instanceof Date)) return '';
+    if (typeof date.toDate === 'function') {
+        date = date.toDate();
+    } else if (!(date instanceof Date)) return ''; 
 
     const dd = String(date.getDate()).padStart(2, '0');
     const mm = String(date.getMonth() + 1).padStart(2, '0');

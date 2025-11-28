@@ -16,11 +16,12 @@ import Poster from '../components/Poster.jsx';
 import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('LivePoster');
+const enablePosterChannel = new BroadcastChannel('enable-live-poster');
 
 export default function LivePoster({ event: propEvent } = {}) {
+    const [enablePoster, setEnablePoster] = useState(true);
     const [hasAccessChecked, setHasAccessChecked] = useState(false);
     const [registrant, setRegistrant] = useState(null);
-    const [cleared, setCleared] = useState(false);
     const [eventDoc, setEventDoc] = useState(() => {
         try {
             if (propEvent) return propEvent;
@@ -42,35 +43,30 @@ export default function LivePoster({ event: propEvent } = {}) {
         if (propEvent) setEventDoc(propEvent);
     }, [propEvent]);
 
+    // Listen to clear poster messages
+    useEffect(() => {
+        function handleClearMessage(msg) {
+            if (msg?.data?.type === 'enable') {
+                setEnablePoster(true);
+            }
+            else if (msg?.data?.type === 'disable') {
+                setEnablePoster(false);
+            }
+        }
+        enablePosterChannel.onmessage = handleClearMessage;
+        return () => {
+            enablePosterChannel.onmessage = null;
+        };
+    }, []);
+
     useEffect(() => {
         if (!eventDoc) return;
         const app = getApp();
         const db = getFirestore(app);
-        // Read control doc to know when the poster was last cleared.
-        const controlRef = firestoreDoc(db, 'events', eventDoc, 'attendants_control', 'current');
 
-        // Combined logic: listen to the latest attendee and also listen to control doc.
+        // Listen to the latest attendant.
         const attendeesCol = collection(db, 'events', eventDoc, 'attendants');
         const q = query(attendeesCol, orderBy('checkedInAt', 'desc'), limit(1));
-
-        let latestClearedAt = null;
-
-        const controlUnsub = onSnapshot(
-            controlRef,
-            (snap) => {
-                const d = snap.data ? snap.data() : null;
-                if (d && d.clearedAt && typeof d.clearedAt.toMillis === 'function') {
-                    latestClearedAt = d.clearedAt.toMillis();
-                } else {
-                    latestClearedAt = null;
-                }
-            },
-            (err) => {
-                // Control doc is optional; log but continue
-                logger.debug('attendants_control snapshot error', err);
-                latestClearedAt = null;
-            }
-        );
 
         const unsub = onSnapshot(
             q,
@@ -82,24 +78,6 @@ export default function LivePoster({ event: propEvent } = {}) {
 
                 const d = snap.docs[0];
                 const data = d.data();
-
-                // If attendant checkedInAt is before or equal to clearedAt, ignore until a newer one appears
-                try {
-                    const ts = data.checkedInAt || data.timestamp;
-                    const tsMillis =
-                        ts && typeof ts.toMillis === 'function'
-                            ? ts.toMillis()
-                            : ts
-                            ? new Date(ts).getTime()
-                            : null;
-                    if (latestClearedAt && tsMillis && tsMillis <= latestClearedAt) {
-                        // ignore
-                        return;
-                    }
-                } catch {
-                    // ignore timestamp parsing errors
-                    logger.debug('LivePoster: checkedInAt parse error');
-                }
 
                 // Expecting a reference to the registrant doc
                 let reg = null;
@@ -140,7 +118,6 @@ export default function LivePoster({ event: propEvent } = {}) {
                 } catch (err) {
                     logger.warn('Failed to resolve registrant for live poster', err);
                 }
-
                 setRegistrant(reg);
             },
             (err) => {
@@ -150,11 +127,6 @@ export default function LivePoster({ event: propEvent } = {}) {
 
         return () => {
             unsub();
-            try {
-                controlUnsub();
-            } catch (err) {
-                logger.debug('LivePoster: controlUnsub cleanup failed', err);
-            }
         };
     }, [eventDoc]);
 
@@ -201,20 +173,9 @@ export default function LivePoster({ event: propEvent } = {}) {
     }
 
     return (
-        <PageFrame title="Live Poster" subtitle="Latest successful registration" showBack>
-            <div style={{ padding: 12 }}>
-                <div className="admin-controls" style={{ marginBottom: 12 }}>
-                    <button className="tds-btn tds-btn-secondary" onClick={() => setCleared(true)}>
-                        Clear Poster (local)
-                    </button>
-                    <button className="tds-btn tds-btn-primary" onClick={() => setCleared(false)}>
-                        Restore Poster
-                    </button>
-                </div>
-            </div>
-
+        <PageFrame title="Live Poster" subtitle="Latest successful registration" showBack={false}>
             <div className="page-centered">
-                <div className={cleared ? 'poster-hidden' : 'poster-visible'}>
+                <div className={enablePoster ? 'poster-visible' : 'poster-hidden'}>
                     <Poster registrant={registrant} />
                 </div>
             </div>

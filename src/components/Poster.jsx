@@ -18,6 +18,7 @@ export default function Poster({ registrant } = {}) {
 
     if (!registrant) {
         return (
+            // TODO: REPLACE DURING PRODUCTION
             <div className="page-centered">
                 <div className="poster-card poster-empty">No attendee yet</div>
             </div>

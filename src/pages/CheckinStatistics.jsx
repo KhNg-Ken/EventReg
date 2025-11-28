@@ -1,15 +1,12 @@
 import { getApp } from 'firebase/app';
 import {
     collection,
-    doc,
     doc as firestoreDoc,
     getDoc,
     getFirestore,
     onSnapshot,
     orderBy,
     query,
-    serverTimestamp,
-    setDoc,
 } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { isSignedIn } from '../auth/index.js';
@@ -18,6 +15,8 @@ import { createLogger } from '../utils/logger.js';
 import AttendeeRow from '../components/AttendeeRow.jsx';
 
 const logger = createLogger('CheckInStatistics');
+const enablePosterChannel = new BroadcastChannel('enable-live-poster');
+let posterEnabled = true;
 
 export default function CheckInStatistics({ event: propEvent } = {}) {
     const [eventDoc, setEventDoc] = useState(() => {
@@ -54,6 +53,9 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
         const unsub = onSnapshot(
             q,
             async (snap) => {
+                posterEnabled = true;
+                enablePosterChannel.postMessage({ type: 'enable' });
+                
                 const rows = [];
                 for (const d of snap.docs) {
                     const data = d.data();
@@ -104,13 +106,16 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
         return () => unsub();
     }, [eventDoc, sortAsc]);
 
-    async function clearPoster() {
+    async function togglePoster() {
         if (!isSignedIn()) return alert('Admin access required');
         try {
-            const app = getApp();
-            const db = getFirestore(app);
-            const ctrlRef = doc(db, 'events', eventDoc, 'attendants_control', 'current');
-            await setDoc(ctrlRef, { clearedAt: serverTimestamp() });
+            if (posterEnabled) {
+                posterEnabled = false;
+                enablePosterChannel.postMessage({ type: 'disable' });
+            } else {
+                posterEnabled = true;
+                enablePosterChannel.postMessage({ type: 'enable' });
+            }
         } catch (err) {
             logger.error('Failed to clear live poster', err);
             alert('Không thể xóa poster: ' + (err?.message || err));
@@ -137,7 +142,7 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
                                 <button className="tds-btn" onClick={() => setSortAsc((s) => !s)}>
                                     {sortAsc ? 'Sort: Oldest' : 'Sort: Newest'}
                                 </button>
-                                <button className="tds-btn tds-btn-danger" onClick={clearPoster}>
+                                <button className="tds-btn tds-btn-danger" onClick={togglePoster}>
                                     Clear Live Poster
                                 </button>
                             </div>
