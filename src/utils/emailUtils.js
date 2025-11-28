@@ -1,6 +1,6 @@
 import { getApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import createLogger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('emailUtils');
 

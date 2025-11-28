@@ -8,6 +8,7 @@ import RegistrationFields from '../../components/RegisterField/RegistrationField
 import QRPanel from '../../components/QRPanel/QRPanel.jsx';
 import './RegisterForm.css';
 import { createLogger } from '../../utils/logger.js';
+import { normalizedDateString } from '../../utils/stringUtils.js';
 
 const logger = createLogger('RegisterForm');
 
@@ -130,23 +131,6 @@ function RegisterForm({ event: propEvent } = {}) {
                             evt = `${yy}${mm}${dd}`;
                         }
 
-                        // Convert eventDate to a locale string (handles Firestore Timestamp-like objects)
-                        const formatEventDate = (val) => {
-                            if (!val) return '';
-                            try {
-                                if (typeof val === 'object' && (val.seconds || val._seconds)) {
-                                    const seconds = val.seconds || val._seconds;
-                                    const nanos = val.nanoseconds || val._nanoseconds || 0;
-                                    const ms = seconds * 1000 + Math.floor(nanos / 1e6);
-                                    return new Date(ms).toLocaleString();
-                                }
-                                const d = new Date(val);
-                                return isNaN(d) ? String(val) : d.toLocaleString();
-                            } catch {
-                                return String(val);
-                            }
-                        };
-
                         // Prefer a string location; fall back to common object fields or empty string
                         const eventLocation = (() => {
                             const loc =
@@ -163,7 +147,7 @@ function RegisterForm({ event: propEvent } = {}) {
                             name: name || '',
                             eventName: selectedEventConfig?.name || '',
                             eventID: evt,
-                            eventDate: formatEventDate(selectedEventConfig?.eventDate),
+                            eventDate: normalizedDateString(selectedEventConfig?.eventDate),
                             eventLocation: eventLocation,
                             qrCodeUrl: qrCodeUrl,
                         };

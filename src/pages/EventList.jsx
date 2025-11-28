@@ -4,7 +4,7 @@ import { isSignedIn } from '../auth/index.js';
 import EventCard from '../components/EventCard/EventCard.jsx';
 import PageFrame from '../components/PageFrame.jsx';
 import { app } from '../firebase/config.js';
-import createLogger from '../utils/logger.js';
+import { createLogger }  from '../utils/logger.js';
 
 const logger = createLogger('EventList');
 

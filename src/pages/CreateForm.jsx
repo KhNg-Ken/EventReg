@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createEventWorkbook } from '../api/graphApi.js';
 import PageFrame from '../components/PageFrame.jsx';
-import createLogger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('CreateForm');
 

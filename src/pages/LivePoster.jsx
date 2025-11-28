@@ -12,63 +12,15 @@ import {
 import { useEffect, useState } from 'react';
 import { isSignedIn } from '../auth/index.js';
 import PageFrame from '../components/PageFrame.jsx';
-import createLogger from '../utils/logger.js';
+import Poster from '../components/Poster.jsx';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('LivePoster');
-
-function CenteredPoster({ registrant }) {
-    const placeholder = {
-        photoUrl:
-            'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="%23f5f5f7"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23888" font-size="24">No attendee yet</text></svg>',
-    };
-
-    const r = registrant || {};
-    const photo = r.photoUrl || placeholder.photoUrl;
-    const name = r.name || '';
-    const position = r.position || '';
-    const company = r.company || '';
-
-    return (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div
-                style={{
-                    width: 780,
-                    height: 540,
-                    borderRadius: 12,
-                    background: 'white',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: 24,
-                    textAlign: 'center',
-                }}
-            >
-                <div style={{ width: 320, height: 320, marginBottom: 18 }}>
-                    <img
-                        src={photo}
-                        alt={name}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            borderRadius: 8,
-                        }}
-                    />
-                </div>
-
-                <div style={{ fontSize: 42, fontWeight: 700, marginBottom: 6 }}>{name}</div>
-                <div style={{ fontSize: 20, color: '#444', marginBottom: 2 }}>{position}</div>
-                <div style={{ fontSize: 18, color: '#666' }}>{company}</div>
-            </div>
-        </div>
-    );
-}
 
 export default function LivePoster({ event: propEvent } = {}) {
     const [hasAccessChecked, setHasAccessChecked] = useState(false);
     const [registrant, setRegistrant] = useState(null);
+    const [cleared, setCleared] = useState(false);
     const [eventDoc, setEventDoc] = useState(() => {
         try {
             if (propEvent) return propEvent;
@@ -250,16 +202,21 @@ export default function LivePoster({ event: propEvent } = {}) {
 
     return (
         <PageFrame title="Live Poster" subtitle="Latest successful registration" showBack>
-            <div
-                style={{
-                    padding: 20,
-                    minHeight: 480,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <CenteredPoster registrant={registrant} />
+            <div style={{ padding: 12 }}>
+                <div className="admin-controls" style={{ marginBottom: 12 }}>
+                    <button className="tds-btn tds-btn-secondary" onClick={() => setCleared(true)}>
+                        Clear Poster (local)
+                    </button>
+                    <button className="tds-btn tds-btn-primary" onClick={() => setCleared(false)}>
+                        Restore Poster
+                    </button>
+                </div>
+            </div>
+
+            <div className="page-centered">
+                <div className={cleared ? 'poster-hidden' : 'poster-visible'}>
+                    <Poster registrant={registrant} />
+                </div>
             </div>
         </PageFrame>
     );

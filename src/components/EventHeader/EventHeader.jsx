@@ -1,20 +1,10 @@
 import React from 'react';
 import './EventHeader.css';
+import { normalizedDateString } from '../../utils/stringUtils';
 
 export default function EventHeader({ config = {} }) {
     const title = config.eventName || config.name || 'Sự kiện';
     const desc = config.description || config.eventDescription || '';
-
-    const formatDate = (d) => {
-        if (!d) return '';
-        try {
-            // If Firestore Timestamp, convert
-            if (d.toDate && typeof d.toDate === 'function') return d.toDate().toLocaleString();
-            return new Date(d).toLocaleString();
-        } catch {
-            return String(d);
-        }
-    };
 
     return (
         <div className="tds-event-header">
@@ -34,14 +24,14 @@ export default function EventHeader({ config = {} }) {
                 {config.eventDate ? (
                     <div className="tds-meta-item">
                         <div className="tds-meta-label">Ngày sự kiện</div>
-                        <div className="tds-meta-value">{formatDate(config.eventDate)}</div>
+                        <div className="tds-meta-value">{normalizedDateString(config.eventDate)}</div>
                     </div>
                 ) : null}
 
                 {config.endDate ? (
                     <div className="tds-meta-item">
                         <div className="tds-meta-label">Hết hạn đăng ký</div>
-                        <div className="tds-meta-value">{formatDate(config.endDate)}</div>
+                        <div className="tds-meta-value">{normalizedDateString(config.endDate)}</div>
                     </div>
                 ) : null}
             </div>

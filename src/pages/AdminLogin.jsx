@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { loginAndGetToken, isSignedIn, logout, msalInstance } from '../auth/index.js';
+import { useEffect, useState } from 'react';
+import { isSignedIn, loginAndGetToken, logout, msalInstance } from '../auth/index.js';
 import PageFrame from '../components/PageFrame.jsx';
-import createLogger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('AdminLogin');
 

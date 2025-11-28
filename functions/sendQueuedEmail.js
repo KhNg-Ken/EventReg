@@ -4,7 +4,7 @@ import admin from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 import { defineString } from 'firebase-functions/params';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
-import createLogger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('functions:sendQueuedEmail');
 

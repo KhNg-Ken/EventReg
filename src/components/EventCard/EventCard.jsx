@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../pages/RegisterForm/RegisterForm.css';
 import './EventCard.css';
+import { normalizedDateString } from '../../utils/stringUtils.js';
 
 export default function EventCard({ ev, onClick, actions }) {
     const eventDate = ev?.eventDate ? new Date(ev.eventDate) : null;
@@ -20,7 +21,7 @@ export default function EventCard({ ev, onClick, actions }) {
                 <div className="event-card-left">
                     <div className="event-name">{ev?.name || 'Untitled event'}</div>
                     <div className="event-meta">
-                        <div>Ngày sự kiện: {eventDate ? eventDate.toLocaleString() : 'TBD'}</div>
+                        <div>Ngày sự kiện: {eventDate ? normalizedDateString(eventDate) : 'TBD'}</div>
                         <div className="event-location">Địa điểm: {ev?.location || 'TBD'}</div>
                     </div>
                 </div>
@@ -29,7 +30,7 @@ export default function EventCard({ ev, onClick, actions }) {
                     <div className="event-right-meta">
                         Hạn đăng ký:
                         <br />
-                        {endDate ? endDate.toLocaleDateString() : '—'}
+                        {endDate ? normalizedDateString(endDate) : '—'}
                     </div>
                     <div className="event-actions">
                         {actions}

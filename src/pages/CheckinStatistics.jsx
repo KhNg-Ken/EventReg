@@ -14,54 +14,10 @@ import {
 import { useEffect, useState } from 'react';
 import { isSignedIn } from '../auth/index.js';
 import PageFrame from '../components/PageFrame.jsx';
-import createLogger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
+import AttendeeRow from '../components/AttendeeRow.jsx';
 
 const logger = createLogger('CheckInStatistics');
-
-function Row({ item }) {
-    const r = item.registrant || {};
-    const ts = item.timestamp
-        ? typeof item.timestamp.toDate === 'function'
-            ? item.timestamp.toDate()
-            : new Date(item.timestamp)
-        : null;
-    return (
-        <div
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: 8,
-                borderBottom: '1px solid #eee',
-            }}
-        >
-            <div
-                style={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: 6,
-                    overflow: 'hidden',
-                    background: '#fafafa',
-                }}
-            >
-                <img
-                    src={r.photoUrl || ''}
-                    alt={r.name || ''}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-            </div>
-            <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700 }}>{r.name || '—'}</div>
-                <div style={{ color: '#666', fontSize: 13 }}>
-                    {r.position || ''} {r.company ? `· ${r.company}` : ''}
-                </div>
-            </div>
-            <div style={{ width: 180, textAlign: 'right', color: '#444' }}>
-                {ts ? ts.toLocaleString() : '—'}
-            </div>
-        </div>
-    );
-}
 
 export default function CheckInStatistics({ event: propEvent } = {}) {
     const [eventDoc, setEventDoc] = useState(() => {
@@ -199,7 +155,7 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
                                     Chưa có ai check-in
                                 </div>
                             ) : (
-                                items.map((it) => <Row key={it.id} item={it} />)
+                                items.map((it) => <AttendeeRow key={it.id} item={it} />)
                             )}
                         </div>
                     </>

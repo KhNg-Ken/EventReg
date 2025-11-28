@@ -1,6 +1,6 @@
 import { PublicClientApplication } from '@azure/msal-browser';
 import { msalConfig, loginRequest } from './config.js';
-import createLogger from '../utils/logger.js';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('auth:index');
 
