@@ -1,4 +1,4 @@
-const enabled = import.meta.env.VITE_PROJECT_PROD === 'false';
+const enabled = import.meta.env.VITE_PROJECT_PROD;
 
 export const createLogger = (namespace) => ({
     log: (...args) => {
