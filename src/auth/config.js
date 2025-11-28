@@ -1,4 +1,4 @@
-const isProd = import.meta.env.VITE_PROJECT_PROD === 'true';
+const isProd = import.meta.env.VITE_PROJECT_PROD;
 const redirectUri = isProd
     ? import.meta.env.VITE_AZURE_REDIRECT_URI_PROD
     : import.meta.env.VITE_AZURE_REDIRECT_URI;
