@@ -1,0 +1,62 @@
+/* Styles for the registration form fields */
+.tds-field {
+    display: flex;
+    flex-direction: column;
+}
+.tds-field-full {
+    grid-column: 1/-1;
+}
+
+.tds-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+.tds-col-email {
+    flex: 2 1 0;
+}
+.tds-col-phone {
+    flex: 1 1 0;
+}
+
+.tds-input {
+    padding: 0.75rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid #e6e6e6;
+    background: var(--tds-white);
+    color: var(--tds-black);
+    font-size: 0.95rem;
+    outline: none;
+    transition: box-shadow 0.15s, border-color 0.15s;
+}
+.tds-input::placeholder {
+    color: #9aa0a6;
+}
+.tds-input:focus {
+    box-shadow: 0 4px 18px rgba(200, 16, 46, 0.08);
+    border-color: var(--tds-red);
+}
+
+/* Ensure inputs always remain black text on white background regardless of state */
+.tds-input:disabled,
+.tds-input[readonly],
+.tds-input:valid,
+.tds-input:invalid {
+    color: var(--tds-black) !important;
+    background: var(--tds-white) !important;
+}
+
+/* Browser autofill can change colors; enforce desired appearance where supported */
+input.tds-input:-webkit-autofill,
+input.tds-input:-webkit-autofill:hover,
+input.tds-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--tds-black) !important;
+    box-shadow: 0 0 0px 1000px var(--tds-white) inset !important;
+}
+
+.tds-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 1rem;
+}

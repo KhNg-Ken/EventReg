@@ -1,5 +1,8 @@
 import { PublicClientApplication } from '@azure/msal-browser';
 import { msalConfig, loginRequest } from './config.js';
+import { createLogger } from '../utils/logger.js';
+
+const logger = createLogger('auth:index');
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
@@ -24,13 +27,13 @@ export async function loginAndGetToken() {
                 try {
                     localStorage.setItem('tds_signed_in', '1');
                 } catch (e) {
-                    console.warn('localStorage unavailable', e);
+                    logger.warn('localStorage unavailable', e);
                 }
                 return tokenResponse.accessToken;
             } catch (silentErr) {
                 // silent acquisition failed - fall through to interactive if required
                 // If interaction is required or failed, we'll attempt interactive below
-                console.warn(
+                logger.warn(
                     'Silent token acquisition failed, will attempt interactive if needed',
                     silentErr?.errorCode || silentErr?.message || silentErr
                 );
@@ -53,7 +56,7 @@ export async function loginAndGetToken() {
                 try {
                     localStorage.setItem('tds_signed_in', '1');
                 } catch (e) {
-                    console.warn('localStorage unavailable', e);
+                    logger.warn('localStorage unavailable', e);
                 }
                 return tokenResponse.accessToken;
             } finally {
@@ -71,12 +74,12 @@ export async function loginAndGetToken() {
             try {
                 return await interactivePromise;
             } catch (e) {
-                console.error('Interactive login (shared) failed:', e);
+                logger.error('Interactive login (shared) failed:', e);
                 throw e;
             }
         }
 
-        console.error('Error during login or token acquisition:', err);
+        logger.error('Error during login or token acquisition:', err);
         throw err;
     }
 }
@@ -89,7 +92,7 @@ export function isSignedIn() {
             const hint = localStorage.getItem('tds_signed_in');
             if (hint === '1') return true;
         } catch (e) {
-            console.debug('localStorage unavailable', e);
+            logger.debug('localStorage unavailable', e);
         }
 
         const accounts = msalInstance.getAllAccounts();
@@ -114,7 +117,7 @@ export async function logout() {
         try {
             localStorage.removeItem('tds_signed_in');
         } catch (e) {
-            console.debug('localStorage unavailable', e);
+            logger.debug('localStorage unavailable', e);
         }
     } catch {
         try {
@@ -123,10 +126,10 @@ export async function logout() {
             try {
                 localStorage.removeItem('tds_signed_in');
             } catch (e) {
-                console.debug('localStorage unavailable', e);
+                logger.debug('localStorage unavailable', e);
             }
         } catch (e) {
-            console.warn('Logout failed', e);
+            logger.warn('Logout failed', e);
             throw e;
         }
     }
@@ -138,7 +141,7 @@ export async function ensureMsalInitialized() {
         await msalInstance.initialize();
         return true;
     } catch (e) {
-        console.warn('MSAL initialization failed:', e);
+        logger.warn('MSAL initialization failed:', e);
         return false;
     }
 }

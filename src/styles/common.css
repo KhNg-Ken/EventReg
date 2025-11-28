@@ -1,0 +1,235 @@
+/* Shared variables and common UI styles used across components */
+:root {
+    --tds-red: #c8102e;
+    --tds-black: #111111;
+    --tds-gray: #6b6b6b;
+    --tds-light: #f5f5f6;
+    --tds-white: #ffffff;
+    --card-radius: 12px;
+    --max-width: 760px;
+}
+
+.tds-card {
+    background: linear-gradient(180deg, var(--tds-white), var(--tds-light));
+    border-radius: var(--card-radius);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
+    width: 98%;
+    max-width: 1200px;
+    padding: 1.75rem 2.25rem;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial;
+    color: var(--tds-black);
+}
+
+.tds-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.tds-logo {
+    width: 84px;
+    height: 84px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    padding: 0;
+}
+.tds-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.tds-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+.tds-subtitle {
+    font-size: 0.875rem;
+    color: var(--tds-gray);
+    white-space: pre-line;
+}
+
+.tds-btn {
+    padding: 0.8rem 1.1rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.tds-btn-primary {
+    background: var(--tds-red);
+    color: var(--tds-white);
+    box-shadow: 0 8px 20px rgba(200, 16, 46, 0.12);
+}
+.tds-btn-secondary {
+    background: transparent;
+    color: var(--tds-black);
+    border: 1px solid #e6e6e6;
+}
+
+.tds-back-btn {
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    line-height: 1;
+    min-width: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Event card styles - subtle 3D lift and pop on hover/focus */
+.tds-event-card {
+    background: linear-gradient(180deg, #ffffff, #fbfbfb);
+    transition: transform 180ms cubic-bezier(0.2, 0.9, 0.2, 1),
+        box-shadow 180ms cubic-bezier(0.2, 0.9, 0.2, 1), border-color 160ms ease;
+    will-change: transform, box-shadow;
+}
+.tds-event-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.14);
+    border-color: rgba(200, 16, 46, 0.12);
+}
+.tds-event-card:focus {
+    outline: none;
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 22px 46px rgba(0, 0, 0, 0.16);
+    border-color: var(--tds-red);
+}
+.tds-event-card button {
+    cursor: pointer;
+}
+
+/* Poster & Attendee styles */
+.page-centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 480px;
+}
+
+.poster-card {
+    width: 780px;
+    max-width: 96%;
+    height: 540px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+}
+
+.poster-photo {
+    width: 320px;
+    height: 320px;
+    margin-bottom: 18px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.poster-name {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--tds-black);
+}
+
+.poster-position {
+    font-size: 20px;
+    color: #444;
+    margin-bottom: 2px;
+}
+
+.poster-company {
+    font-size: 18px;
+    color: #666;
+}
+
+.poster-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #888;
+    font-size: 20px;
+}
+
+.poster-hidden {
+    opacity: 0;
+    transition: opacity 240ms ease;
+    pointer-events: none;
+}
+
+.poster-visible {
+    opacity: 1;
+    transition: opacity 240ms ease;
+}
+
+.attendee-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.attendee-avatar {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+}
+
+.attendee-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.attendee-name {
+    font-weight: 700;
+}
+
+.attendee-meta {
+    color: #666;
+    font-size: 13px;
+}
+
+.attendee-time {
+    width: 180px;
+    text-align: right;
+    color: #444;
+}
+
+.avatar-root {
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fafafa;
+    display: inline-block;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}

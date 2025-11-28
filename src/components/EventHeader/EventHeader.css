@@ -1,0 +1,70 @@
+/* Styles for the EventHeader component (moved from RegisterForm.css) */
+.tds-event-header {
+    grid-column: 1 / 2;
+    /* stronger, warm-tinted background to emphasize the header */
+    background: linear-gradient(90deg, rgba(248, 228, 231, 0.9), rgba(255, 255, 255, 0.95));
+    border-left: 8px solid var(--tds-red);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 1fr; /* single column so meta can span full width */
+    gap: 8px;
+    align-items: start;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+}
+.tds-event-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--tds-red);
+    margin-bottom: 0;
+    letter-spacing: -0.2px;
+    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.6), 0 6px 18px rgba(200, 16, 46, 0.04);
+    padding: 2px 6px;
+    background: linear-gradient(90deg, rgba(255, 240, 242, 0.6), rgba(255, 255, 255, 0));
+    border-radius: 6px;
+}
+.tds-event-description {
+    font-size: 13px;
+    color: var(--tds-gray);
+    line-height: 1.35;
+    margin-top: 2px;
+}
+
+.tds-event-meta {
+    /* Arrange meta items horizontally across the header */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 40px;
+    grid-column: 1 / -1; /* span full width under the title */
+    margin-top: 4px;
+    flex-wrap: nowrap; /* prefer single-line; allow overflow to scroll if necessary */
+    overflow-x: auto;
+    padding-right: 6px;
+}
+.tds-meta-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* allow items to shrink inside the flex row */
+}
+.tds-meta-label {
+    font-size: 12px;
+    color: var(--tds-gray);
+}
+.tds-meta-value {
+    font-size: 13px;
+    color: var(--tds-black);
+    font-weight: 700;
+}
+
+@media (max-width: 720px) {
+    .tds-event-meta {
+        grid-column: 1 / -1;
+        margin-top: 6px;
+        gap: 6px;
+        flex-direction: column;
+        overflow: visible;
+        padding-right: 0;
+    }
+}

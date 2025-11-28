@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import AdminLogin from './AdminLogin.jsx';
-import DemoForm from './DemoForm.jsx';
-import CreateForm from './CreateForm.jsx';
-import EventList from './EventList.jsx';
-import { isSignedIn } from '../auth/index.js';
+import { useEffect, useState } from 'react';
+import { isSignedIn } from './auth/index.js';
+import AdminLogin from './pages/AdminLogin.jsx';
+import CheckInStatistics from './pages/CheckInStatistics.jsx';
+import CreateForm from './pages/CreateForm.jsx';
+import EventList from './pages/EventList.jsx';
+import LivePoster from './pages/LivePoster.jsx';
+import RegisterForm from './pages/RegisterForm/RegisterForm.jsx';
 
 function parseHash() {
     const raw = window.location.hash || '#/events';
@@ -33,16 +35,19 @@ function navigateTo(hashPath) {
 function App() {
     const [{ page, params }, setRoute] = useState(() => parseHash());
     const [isAdmin, setIsAdmin] = useState(isSignedIn());
-    const [selectedEventId, setSelectedEventId] = useState(params.eventId || null);
+    const [selectedEvent, setSelectedEvent] = useState(params.event || null);
 
     useEffect(() => {
         function onHash() {
             const h = parseHash();
             setRoute(h);
-            setSelectedEventId(h.params.eventId || null);
+            setSelectedEvent(h.params.event || null);
         }
         window.addEventListener('hashchange', onHash);
-        // sync initial
+        // sync initial: if there's no hash, route to the public events list
+        if (!window.location.hash || window.location.hash === '#') {
+            navigateTo('/events');
+        }
         onHash();
         return () => window.removeEventListener('hashchange', onHash);
     }, []);
@@ -59,13 +64,15 @@ function App() {
                 {page === 'events' && (
                     <EventList
                         onSelectEvent={(ev) => {
-                            // navigate with eventId in hash so DemoForm can read it from URL
-                            navigateTo(`/demo?eventId=${encodeURIComponent(ev.id)}`);
+                            // navigate with event in hash so RegisterForm can read it from URL
+                            navigateTo(`/register?event=${encodeURIComponent(ev.id)}`);
                         }}
                     />
                 )}
-                {page === 'demo' && <DemoForm eventId={selectedEventId} />}
+                {page === 'register' && <RegisterForm event={selectedEvent} />}
                 {page === 'create' && isAdmin && <CreateForm />}
+                {page === 'liveposter' && <LivePoster event={selectedEvent} />}
+                {page === 'checkin-statistics' && <CheckInStatistics event={selectedEvent} />}
                 {page === 'create' && !isAdmin && (
                     <div style={{ padding: 16 }}>
                         <strong>Admin access required</strong>

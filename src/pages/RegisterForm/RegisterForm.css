@@ -10,10 +10,10 @@
 
 .tds-form-wrap {
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* use top space so content sits near top */
     justify-content: center;
-    padding: 2rem 1rem;
-    min-height: calc(100vh - 40px); /* center vertically and use most of viewport */
+    padding: 1rem 1rem; /* reduce top padding */
+    min-height: auto; /* do not force vertical centering */
     box-sizing: border-box;
 }
 
@@ -23,7 +23,7 @@
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
     width: 98%;
     max-width: 1200px; /* occupy more horizontal space */
-    padding: 2.5rem 3rem;
+    padding: 1.75rem 2.25rem; /* tighten internal padding so content sits higher */
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
         'Helvetica Neue', Arial;
     color: var(--tds-black);
@@ -61,64 +61,31 @@
 .tds-subtitle {
     font-size: 0.875rem;
     color: var(--tds-gray);
+    white-space: pre-line;
 }
 
 .tds-form {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 1rem;
     margin-top: 1rem;
+    grid-column: 1 / 2; /* keep form in the left column of the page layout */
 }
 
-.tds-field {
-    display: flex;
-    flex-direction: column;
-}
-.tds-field-full {
-    grid-column: 1/-1;
-}
-
-.tds-input {
-    padding: 0.75rem 0.9rem;
-    border-radius: 8px;
-    border: 1px solid #e6e6e6;
-    background: var(--tds-white);
-    color: var(--tds-black);
-    font-size: 0.95rem;
-    outline: none;
-    transition: box-shadow 0.15s, border-color 0.15s;
-}
-.tds-input::placeholder {
-    color: #9aa0a6;
-}
-.tds-input:focus {
-    box-shadow: 0 4px 18px rgba(200, 16, 46, 0.08);
-    border-color: var(--tds-red);
+/* Layout for the registration page: form on left, QR panel on right */
+.tds-register-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.25rem;
+    align-items: start;
 }
 
-/* Ensure inputs always remain black text on white background regardless of state */
-.tds-input:disabled,
-.tds-input[readonly],
-.tds-input:valid,
-.tds-input:invalid {
-    color: var(--tds-black) !important;
-    background: var(--tds-white) !important;
-}
+/* Event header styles moved to `src/styles/EventHeader.css` (imported by EventHeader.jsx) */
 
-/* Browser autofill can change colors; enforce desired appearance where supported */
-input.tds-input:-webkit-autofill,
-input.tds-input:-webkit-autofill:hover,
-input.tds-input:-webkit-autofill:focus {
-    -webkit-text-fill-color: var(--tds-black) !important;
-    box-shadow: 0 0 0px 1000px var(--tds-white) inset !important;
-}
-
-.tds-actions {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    margin-top: 1rem;
-}
+/* Field and QR styles moved to component-specific CSS files:
+   - src/styles/RegistrationFields.css
+   - src/styles/QRPanel.css
+   These files are imported by their respective components. */
 
 .tds-btn {
     padding: 0.8rem 1.1rem;
@@ -139,6 +106,18 @@ input.tds-input:-webkit-autofill:focus {
     border: 1px solid #e6e6e6;
 }
 
+/* small back button (icon-only) */
+.tds-back-btn {
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    line-height: 1;
+    min-width: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .tds-invite {
     margin-top: 1.25rem;
     padding: 1rem;
@@ -148,7 +127,7 @@ input.tds-input:-webkit-autofill:focus {
 }
 
 .tds-qr img {
-    max-width: 260px;
+    max-width: 280px;
     height: auto;
     border-radius: 8px;
     border: 1px solid #ddd;
@@ -180,6 +159,7 @@ input.tds-input:-webkit-autofill:focus {
 
 @media (max-width: 720px) {
     .tds-form {
+        grid-column: 1 / -1;
         grid-template-columns: 1fr;
     }
     .tds-logo {
@@ -189,5 +169,17 @@ input.tds-input:-webkit-autofill:focus {
     .tds-card {
         padding: 1rem;
         width: 94%;
+    }
+    .tds-register-grid {
+        grid-template-columns: 1fr;
+    }
+    .tds-event-header {
+        grid-template-columns: 1fr;
+    }
+    .tds-event-meta {
+        grid-column: 1 / -1;
+        margin-top: 6px;
+        gap: 6px;
+        flex-direction: column;
     }
 }
