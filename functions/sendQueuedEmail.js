@@ -4,16 +4,16 @@ import admin from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 import { defineString } from 'firebase-functions/params';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
+import createLogger from '../utils/logger.js';
+
+const logger = createLogger('functions:sendQueuedEmail');
 
 dotenv.config({ path: '.env' });
 
 admin.initializeApp();
 
 // Safe .env accessor
-const env =
-    typeof globalThis !== 'undefined' && globalThis.process && globalThis.process.env
-        ? globalThis.process.env
-        : {};
+const env = import.meta.env || {};
 
 // Import SendGrid API key and From address from environment variables or Firebase params
 const sendgridKeyParam = defineString('SENDGRID_API_KEY');
@@ -111,7 +111,7 @@ export const sendQueuedEmail = onDocumentCreated('mail_queue/{docId}', async (ev
 
         await docRef.update(updatePayload);
     } catch (err) {
-        console.error('Failed to send queued email', err);
+        logger.error('Failed to send queued email', err);
         const errMsg = err && err.message ? err.message : String(err);
         await docRef.update({ status: 'failed', error: errMsg });
     }

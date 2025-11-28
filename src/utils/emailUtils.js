@@ -1,5 +1,8 @@
 import { getApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import createLogger from '../utils/logger.js';
+
+const logger = createLogger('emailUtils');
 
 /**
  * Queue an email by writing a job document to Firestore `mail_queue` collection.
@@ -23,7 +26,7 @@ export async function queueEmail({ to, templateId, data, subject, bodyText, body
         };
         await addDoc(col, payload);
     } catch (err) {
-        console.warn('queueEmail failed', err);
+        logger.warn('queueEmail failed', err);
         throw err;
     }
 }

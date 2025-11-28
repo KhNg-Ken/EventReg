@@ -1,3 +1,5 @@
+// deprecated: use functions/sendQueuedEmail.js instead
+
 import axios from 'axios';
 import { loginAndGetToken } from '../auth/index.js';
 

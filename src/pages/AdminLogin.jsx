@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { loginAndGetToken, isSignedIn, logout, msalInstance } from '../auth/index.js';
 import PageFrame from '../components/PageFrame.jsx';
+import createLogger from '../utils/logger.js';
+
+const logger = createLogger('AdminLogin');
 
 export default function AdminLogin({ onSignedIn } = {}) {
     const [signedIn, setSignedIn] = useState(false);
@@ -21,9 +24,9 @@ export default function AdminLogin({ onSignedIn } = {}) {
                 const accounts = msalInstance?.getAllAccounts
                     ? msalInstance.getAllAccounts()
                     : null;
-                console.log('Checking signed-in accounts:', accounts);
+                logger.debug('Checking signed-in accounts:', accounts);
                 if (accounts && accounts.length) {
-                    console.log('Found signed-in account:', accounts[0]);
+                    logger.debug('Found signed-in account:', accounts[0]);
                     setAccountName(accounts[0].username || accounts[0].name || null);
                 }
             } catch {
@@ -50,7 +53,7 @@ export default function AdminLogin({ onSignedIn } = {}) {
             if (typeof onSignedIn === 'function') onSignedIn();
             return token;
         } catch (err) {
-            console.error('Login failed', err);
+            logger.error('Login failed', err);
             alert('Đăng nhập thất bại. Vui lòng thử lại.');
         } finally {
             setLoading(false);
@@ -64,7 +67,7 @@ export default function AdminLogin({ onSignedIn } = {}) {
             setSignedIn(false);
             setAccountName(null);
         } catch (err) {
-            console.warn('Logout failed', err);
+            logger.warn('Logout failed', err);
         } finally {
             setLoading(false);
         }

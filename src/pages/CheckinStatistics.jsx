@@ -14,6 +14,9 @@ import {
 import { useEffect, useState } from 'react';
 import { isSignedIn } from '../auth/index.js';
 import PageFrame from '../components/PageFrame.jsx';
+import createLogger from '../utils/logger.js';
+
+const logger = createLogger('CheckInStatistics');
 
 function Row({ item }) {
     const r = item.registrant || {};
@@ -60,7 +63,7 @@ function Row({ item }) {
     );
 }
 
-export default function CheckinStatistics({ event: propEvent } = {}) {
+export default function CheckInStatistics({ event: propEvent } = {}) {
     const [eventDoc, setEventDoc] = useState(() => {
         try {
             if (propEvent) return propEvent;
@@ -127,7 +130,7 @@ export default function CheckinStatistics({ event: propEvent } = {}) {
                             reg = data.registrant;
                         }
                     } catch (err) {
-                        console.warn('Failed to resolve registrant for statistics', err);
+                        logger.warn('Failed to resolve registrant for statistics', err);
                     }
                     rows.push({
                         id: d.id,
@@ -138,7 +141,7 @@ export default function CheckinStatistics({ event: propEvent } = {}) {
                 setItems(rows);
             },
             (err) => {
-                console.error('CheckinStatistics snapshot error', err);
+                logger.error('Snapshot error', err);
             }
         );
 
@@ -153,13 +156,13 @@ export default function CheckinStatistics({ event: propEvent } = {}) {
             const ctrlRef = doc(db, 'events', eventDoc, 'attendants_control', 'current');
             await setDoc(ctrlRef, { clearedAt: serverTimestamp() });
         } catch (err) {
-            console.error('Failed to clear live poster', err);
+            logger.error('Failed to clear live poster', err);
             alert('Không thể xóa poster: ' + (err?.message || err));
         }
     }
 
     return (
-        <PageFrame title="Checkin Statistics" subtitle="Attendees and controls" showBack>
+        <PageFrame title="Check-In Statistics" subtitle="Attendees and controls" showBack>
             <div style={{ padding: 16 }}>
                 {!eventDoc ? (
                     <div>Không tìm thấy sự kiện. Vui lòng chọn một sự kiện.</div>

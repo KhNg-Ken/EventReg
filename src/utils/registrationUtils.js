@@ -2,6 +2,10 @@ import QRCode from 'qrcode';
 import { deleteByToken, uploadToCloudinary } from './cloudinaryUtils.js';
 import { registerUserProxy } from './registerProxy.js';
 import { normalizePhone, sanitizeString } from './stringUtils.js';
+import { createLogger } from '../utils/logger.js';
+
+const logger = createLogger('registrationUtils');
+
 
 /**
  * Generate an invite ID in the format `INV{eventID}-{first8CharsOfToken}`
@@ -46,7 +50,7 @@ export async function generateHmacToken(message) {
         for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
         return btoa(binary);
     } catch (err) {
-        console.warn('HMAC generation failed, using fallback token', err);
+        logger.warn('HMAC generation failed, using fallback token', err);
         if (typeof crypto?.randomUUID === 'function') return crypto.randomUUID();
         return Math.random().toString(36).slice(2);
     }
@@ -64,7 +68,7 @@ export async function generateQr(eventID, phoneLast4, token) {
         let resultStr = eventID + phoneLast4 + token;
         return await QRCode.toDataURL(resultStr);
     } catch (err) {
-        console.error('QR generation failed', err);
+        logger.error('QR generation failed', err);
         return null;
     }
 }
@@ -181,7 +185,7 @@ export async function registerAttendee({ eventDoc, attendee, photoFile, onProgre
             photoUploadInfo = cloudRes;
             photoUrl = cloudRes?.secure_url || null;
         } catch (err) {
-            console.warn('Photo upload failed', err);
+            logger.warn('Photo upload failed', err);
         }
     }
 
@@ -207,13 +211,13 @@ export async function registerAttendee({ eventDoc, attendee, photoFile, onProgre
                     uploadPreset: 'reg_qr',
                 });
                 if (cloudRes && cloudRes.secure_url) qrCodeUrl = cloudRes.secure_url;
-                console.log('QR code uploaded to Cloudinary', qrCodeUrl);
+                logger.log('QR code uploaded to Cloudinary', qrCodeUrl);
             } catch (e) {
-                console.warn('QR upload to Cloudinary failed, falling back to data URI', e);
+                logger.warn('QR upload to Cloudinary failed, falling back to data URI', e);
             }
         }
     } catch (err) {
-        console.warn('Failed to convert or upload QR data URI', err);
+        logger.warn('Failed to convert or upload QR data URI', err);
     }
 
     // Call server callable to persist registrant via Admin SDK (complies with Firestore rules)
@@ -236,7 +240,7 @@ export async function registerAttendee({ eventDoc, attendee, photoFile, onProgre
         const res = await registerUserProxy(payload);
         if (res && res.inviteId) serverInviteId = res.inviteId;
     } catch (err) {
-        console.error('Server registration failed, falling back to local storage', err);
+        logger.error('Server registration failed, falling back to local storage', err);
         // Attempt to clean up uploaded photo if possible
         try {
             const cn = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
@@ -244,11 +248,11 @@ export async function registerAttendee({ eventDoc, attendee, photoFile, onProgre
                 try {
                     await deleteByToken(cn, photoUploadInfo.delete_token);
                 } catch (e) {
-                    console.warn('Immediate delete_by_token failed', e);
+                    logger.warn('Immediate delete_by_token failed', e);
                 }
             }
         } catch (cleanupErr) {
-            console.warn('Photo cleanup attempt failed', cleanupErr);
+            logger.warn('Photo cleanup attempt failed', cleanupErr);
         }
         try {
             const key = `tds_registrations_${eventDoc || 'default'}`;
@@ -268,7 +272,7 @@ export async function registerAttendee({ eventDoc, attendee, photoFile, onProgre
             localStorage.setItem(key, JSON.stringify(list));
             serverInviteId = fallbackId;
         } catch (e) {
-            console.warn('Local fallback failed', e);
+            logger.warn('Local fallback failed', e);
         }
     }
 

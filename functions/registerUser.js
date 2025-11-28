@@ -4,6 +4,9 @@ import admin from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 import { defineString } from 'firebase-functions/params';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
+import createLogger from '../utils/logger.js';
+
+const logger = createLogger('functions:registerUser');
 
 dotenv.config({ path: '.env' });
 
@@ -11,10 +14,7 @@ dotenv.config({ path: '.env' });
 initializeApp();
 
 // Safe .env accessor
-const env =
-    typeof globalThis !== 'undefined' && globalThis.process && globalThis.process.env
-        ? globalThis.process.env
-        : {};
+const env = import.meta.env || {};
 
 // Optional reCAPTCHA secret (set as Firebase Functions param or env var)
 const recaptchaSecretParam = defineString('RECAPTCHA_SECRET');
@@ -87,7 +87,7 @@ export const registerUser = onCall(async (req) => {
         }
     } catch (err) {
         if (err instanceof HttpsError) throw err;
-        console.error('Error during duplicate check', err);
+        logger.error('Error during duplicate check', err);
         throw new HttpsError('internal', 'Failed to validate registration');
     }
 
@@ -110,7 +110,7 @@ export const registerUser = onCall(async (req) => {
     try {
         await docRef.set(payload, { merge: true });
     } catch (err) {
-        console.error('Failed to write registrant', err);
+        logger.error('Failed to write registrant', err);
         throw new HttpsError('internal', 'Failed to save registration');
     }
 

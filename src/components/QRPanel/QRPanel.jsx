@@ -1,5 +1,8 @@
 import React from 'react';
-import './QRPanel.css';
+import './QRPanel.css'; 
+import { createLogger } from '../../utils/logger';
+
+const logger = createLogger('QRPanel');
 
 export default function QRPanel({ inviteId, qrSrc }) {
     return (
@@ -56,7 +59,7 @@ export default function QRPanel({ inviteId, qrSrc }) {
                                                     a.remove();
                                                     URL.revokeObjectURL(url);
                                                 } catch (err) {
-                                                    console.error('Failed to download QR:', err);
+                                                    logger.error('Failed to download QR:', err);
                                                 }
                                             }}
                                         >

@@ -12,6 +12,9 @@ import {
 import { useEffect, useState } from 'react';
 import { isSignedIn } from '../auth/index.js';
 import PageFrame from '../components/PageFrame.jsx';
+import createLogger from '../utils/logger.js';
+
+const logger = createLogger('LivePoster');
 
 function CenteredPoster({ registrant }) {
     const placeholder = {
@@ -112,7 +115,7 @@ export default function LivePoster({ event: propEvent } = {}) {
             },
             (err) => {
                 // Control doc is optional; log but continue
-                console.debug('attendants_control snapshot error', err);
+                logger.debug('attendants_control snapshot error', err);
                 latestClearedAt = null;
             }
         );
@@ -143,7 +146,7 @@ export default function LivePoster({ event: propEvent } = {}) {
                     }
                 } catch {
                     // ignore timestamp parsing errors
-                    console.debug && console.debug('LivePoster: checkedInAt parse error');
+                    logger.debug('LivePoster: checkedInAt parse error');
                 }
 
                 // Expecting a reference to the registrant doc
@@ -183,13 +186,13 @@ export default function LivePoster({ event: propEvent } = {}) {
                         reg = data.registrant;
                     }
                 } catch (err) {
-                    console.warn('Failed to resolve registrant for live poster', err);
+                    logger.warn('Failed to resolve registrant for live poster', err);
                 }
 
                 setRegistrant(reg);
             },
             (err) => {
-                console.error('LivePoster snapshot error', err);
+                logger.error('LivePoster snapshot error', err);
             }
         );
 
@@ -198,7 +201,7 @@ export default function LivePoster({ event: propEvent } = {}) {
             try {
                 controlUnsub();
             } catch (err) {
-                console.debug && console.debug('LivePoster: controlUnsub cleanup failed', err);
+                logger.debug('LivePoster: controlUnsub cleanup failed', err);
             }
         };
     }, [eventDoc]);

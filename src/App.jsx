@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { isSignedIn } from './auth/index.js';
 import AdminLogin from './pages/AdminLogin.jsx';
-import CheckinStatistics from './pages/CheckinStatistics.jsx';
+import CheckInStatistics from './pages/CheckInStatistics.jsx';
 import CreateForm from './pages/CreateForm.jsx';
 import EventList from './pages/EventList.jsx';
 import LivePoster from './pages/LivePoster.jsx';
@@ -72,7 +72,7 @@ function App() {
                 {page === 'register' && <RegisterForm event={selectedEvent} />}
                 {page === 'create' && isAdmin && <CreateForm />}
                 {page === 'liveposter' && <LivePoster event={selectedEvent} />}
-                {page === 'checkin-statistics' && <CheckinStatistics event={selectedEvent} />}
+                {page === 'checkin-statistics' && <CheckInStatistics event={selectedEvent} />}
                 {page === 'create' && !isAdmin && (
                     <div style={{ padding: 16 }}>
                         <strong>Admin access required</strong>

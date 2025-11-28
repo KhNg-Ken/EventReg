@@ -4,6 +4,9 @@ import { isSignedIn } from '../auth/index.js';
 import EventCard from '../components/EventCard/EventCard.jsx';
 import PageFrame from '../components/PageFrame.jsx';
 import { app } from '../firebase/config.js';
+import createLogger from '../utils/logger.js';
+
+const logger = createLogger('EventList');
 
 function SkeletonList({ count = 3 }) {
     return (
@@ -88,7 +91,7 @@ export default function EventList({ onSelectEvent } = {}) {
                 });
                 setEvents(items);
             } catch (err) {
-                console.error('Failed to load events from Firestore', err);
+                logger.error('Failed to load events from Firestore', err);
                 setEvents([]);
             } finally {
                 setLoading(false);

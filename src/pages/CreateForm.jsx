@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { createEventWorkbook } from '../api/graphApi.js';
 import PageFrame from '../components/PageFrame.jsx';
+import createLogger from '../utils/logger.js';
+
+const logger = createLogger('CreateForm');
 
 function CreateForm() {
     const [eventName, setEventName] = useState('');
@@ -30,7 +33,7 @@ function CreateForm() {
                 // ignore
             }
         } catch (err) {
-            console.error('Create event failed', err);
+            logger.error('Create event failed', err);
             alert('Không thể tạo file sự kiện. Kiểm tra quyền và thử lại.');
             setResult({ success: false, error: err });
         } finally {

@@ -7,6 +7,9 @@ import EventHeader from '../../components/EventHeader/EventHeader.jsx';
 import RegistrationFields from '../../components/RegisterField/RegistrationFields.jsx';
 import QRPanel from '../../components/QRPanel/QRPanel.jsx';
 import './RegisterForm.css';
+import { createLogger } from '../../utils/logger.js';
+
+const logger = createLogger('RegisterForm');
 
 function RegisterForm({ event: propEvent } = {}) {
     const [formData, setFormData] = useState({
@@ -105,7 +108,7 @@ function RegisterForm({ event: propEvent } = {}) {
             });
             // registerAttendee now returns a hosted `qrCodeUrl` (falls back to data URI)
             const { inviteId, qrCodeUrl } = result;
-            console.log('Registration successful, QR code URL:', qrCodeUrl);
+            logger.log('Registration successful, QR code URL:', qrCodeUrl);
             setInviteId(inviteId);
             setQrSrc(qrCodeUrl);
             // Queue invite email (best-effort). Do not roll back registration if queuing fails.
@@ -168,12 +171,12 @@ function RegisterForm({ event: propEvent } = {}) {
                         await queueEmail({ to: email, data: templateData });
                     }
                 } catch (mailErr) {
-                    console.warn('Failed to queue invite email (non-fatal):', mailErr);
+                    logger.warn('Failed to queue invite email (non-fatal):', mailErr);
                 }
             })();
             alert('Đã gửi! Mã mời của bạn đã được tạo.');
         } catch (err) {
-            console.error('Registration transaction failed:', err);
+            logger.error('Registration transaction failed:', err);
             alert('Đăng ký thất bại. Không có dữ liệu nào được lưu. Vui lòng thử lại.');
             return;
         } finally {
@@ -201,7 +204,7 @@ function RegisterForm({ event: propEvent } = {}) {
                             cfg || { eventName: null, imageRequired: false, tableName: null }
                         );
                     } catch (e) {
-                        console.warn('Failed to read config for URL event', e);
+                        logger.warn('Failed to read config for URL event', e);
                     }
                 } else if (ev && ev.length) {
                     setSelectedEvent(ev[0].id);
@@ -212,7 +215,7 @@ function RegisterForm({ event: propEvent } = {}) {
                     );
                 }
             } catch (err) {
-                console.warn('Failed to load events', err);
+                logger.warn('Failed to load events', err);
             }
         }
         load();
@@ -233,7 +236,7 @@ function RegisterForm({ event: propEvent } = {}) {
                     cfg || { eventName: null, imageRequired: false, tableName: null }
                 );
             } catch (e) {
-                console.warn('Failed to load event config', e);
+                logger.warn('Failed to load event config', e);
             }
         }
         loadCfg();
