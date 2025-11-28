@@ -1,11 +1,13 @@
-import { onDocumentCreated } from 'firebase-functions/v2/firestore';
-import { defineString } from 'firebase-functions/params';
-import { initializeApp } from 'firebase-admin/app';
-import admin from 'firebase-admin';
-import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
+import dotenv from 'dotenv';
+import admin from 'firebase-admin';
+import { initializeApp } from 'firebase-admin/app';
+import { defineString } from 'firebase-functions/params';
+import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 
 dotenv.config({ path: '.env' });
+
+admin.initializeApp();
 
 // Safe .env accessor
 const env =
@@ -21,20 +23,16 @@ const sendgridTemplateIdParam = defineString('SENDGRID_TEMPLATE_ID');
 // Runtime getters
 const getSendgridKey = () =>
     (typeof sendgridKeyParam?.value === 'function' ? sendgridKeyParam.value() : undefined) ||
-    env.SENDGRID_API_KEY ||
-    env.VITE_SENDGRID_API_KEY;
+    env.SENDGRID_API_KEY;
 
 const getSendgridFrom = () =>
     (typeof sendgridFromParam?.value === 'function' ? sendgridFromParam.value() : undefined) ||
-    env.SENDGRID_FROM ||
-    env.VITE_SENDGRID_FROM;
+    env.SENDGRID_FROM;
 
 const getSendgridTemplateId = () =>
     (typeof sendgridTemplateIdParam?.value === 'function'
         ? sendgridTemplateIdParam.value()
-        : undefined) ||
-    env.SENDGRID_TEMPLATE_ID ||
-    env.VITE_SENDGRID_TEMPLATE_ID;
+        : undefined) || env.SENDGRID_TEMPLATE_ID;
 
 /**
  * Firestore trigger: when a document is created in `mail_queue`, send the email via SendGrid
@@ -126,7 +124,7 @@ export const sendQueuedEmail = onDocumentCreated('mail_queue/{docId}', async (ev
 const sanitizeForFirestore = (value) => {
     try {
         return JSON.parse(JSON.stringify(value));
-    } catch (e) {
+    } catch {
         return value;
     }
 };
