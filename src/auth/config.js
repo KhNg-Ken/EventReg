@@ -1,7 +1,8 @@
 const isProd = import.meta.env.VITE_PROJECT_PROD;
-const redirectUri = isProd
-    ? import.meta.env.VITE_AZURE_REDIRECT_URI_PROD
-    : import.meta.env.VITE_AZURE_REDIRECT_URI;
+const redirectUri =
+    isProd == 'true'
+        ? import.meta.env.VITE_AZURE_REDIRECT_URI_PROD
+        : import.meta.env.VITE_AZURE_REDIRECT_URI;
 
 export const msalConfig = {
     auth: {
@@ -10,8 +11,8 @@ export const msalConfig = {
         redirectUri: redirectUri,
     },
     cache: {
-        // Persist tokens and accounts across page reloads so admin remains signed in until logout
-        // Note: localStorage is used intentionally here (vs sessionStorage) to survive refreshes.
+        // Use localStorage so auth is shared across windows/tabs.
+        // The auth state persists until explicitly logged out.
         cacheLocation: 'localStorage',
         storeAuthStateInCookie: false,
     },

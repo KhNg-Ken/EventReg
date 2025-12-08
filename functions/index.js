@@ -1,3 +1,15 @@
+import admin from 'firebase-admin';
+import * as functions from 'firebase-functions';
+import * as adminActions from './adminActions.js';
+import * as authActions from './authActions.js';
+
+admin.initializeApp();
+
+export const adminCreateEvent = functions.https.onCall(adminActions.adminCreateEvent);
+export const adminUpdateEvent = functions.https.onCall(adminActions.adminUpdateEvent);
+export const adminDeleteEvent = functions.https.onCall(adminActions.adminDeleteEvent);
+export const setAdminClaims = authActions.setAdminClaims;
+export const exchangeTokenForFirebase = authActions.exchangeTokenForFirebase;
 /**
  * Import function triggers from their respective submodules:
  *
@@ -6,12 +18,13 @@
  *
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
-import { setGlobalOptions } from 'firebase-functions';
-setGlobalOptions({
+functions.setGlobalOptions({
     maxInstances: 10,
-    secrets: ['RECAPTCHA_SECRET', 'SENDGRID_API_KEY'], 
+    secrets: ['RECAPTCHA_SECRET', 'SENDGRID_API_KEY', 'AZURE_CLIENT_SECRET', 'MSAL_REFRESH_TOKEN'],
 });
 
 // Re-export organized function triggers from separate files.
+export { msalCallback, msalLogin } from './msalOAuth.js';
 export { registerUser } from './registerUser.js';
+export { sendEmailViaGraph } from './sendEmailViaGraph.js';
 export { sendQueuedEmail } from './sendQueuedEmail.js';

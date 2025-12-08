@@ -9,26 +9,29 @@
 }
 
 .event-card-left {
-    flex: 1 1 70%;
     min-width: 0;
+    width: 60%;
 }
 .event-name {
     font-weight: 700;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 1.2rem;
+    color: var(--black);
 }
 .event-meta {
-    color: var(--tds-gray);
+    color: var(--gray);
     font-size: 13px;
-    margin-top: 6px;
+    margin-top: 15px;
 }
 .event-meta div {
     line-height: 1.2;
+    white-space: normal;
+    min-width: 130px;
 }
 .event-location {
-    margin-top: 6px;
-    color: var(--tds-gray);
+    color: var(--gray);
     font-size: 13px;
 }
 
@@ -39,7 +42,7 @@
 }
 .event-right-meta {
     font-size: 13px;
-    color: var(--tds-gray);
+    color: var(--gray);
 }
 .event-actions {
     margin-top: 8px;

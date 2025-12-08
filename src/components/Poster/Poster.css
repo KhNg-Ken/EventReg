@@ -1,0 +1,505 @@
+/* Unified Poster Styles - Applied to all templates */
+
+/* Base poster container styles */
+.page-centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+
+.poster-card {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.poster-visible {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.poster-hidden {
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+/* Modern Template */
+.modern-poster {
+    --poster-primary: #d32f2f;
+    --poster-secondary: #ffffff;
+    --poster-bg: #000000;
+    --poster-text: #ffffff;
+
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--poster-bg);
+    color: var(--poster-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.modern-poster-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.1;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.modern-poster-content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+    gap: 20px;
+}
+
+.modern-poster-logo {
+    max-width: 120px;
+    opacity: 0.8;
+}
+
+.modern-poster-logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+.modern-poster-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--poster-primary);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modern-poster-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modern-poster-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.modern-poster-name {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--poster-primary);
+    letter-spacing: -0.5px;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modern-poster-company {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--poster-secondary);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.modern-poster-position {
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.modern-poster-email {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 8px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.modern-poster-qr {
+    margin-top: 20px;
+    width: 80px;
+}
+
+.modern-poster-qr img {
+    width: 100%;
+    height: auto;
+    background: white;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.modern-poster.empty .modern-placeholder {
+    font-size: 28px;
+    opacity: 0.5;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Classic Template */
+.classic-poster {
+    --poster-primary: #d32f2f;
+    --poster-secondary: #000000;
+    --poster-bg: #ffffff;
+    --poster-text: #000000;
+
+    width: 100%;
+    height: 100%;
+    background: var(--poster-bg);
+    color: var(--poster-text);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Georgia', serif;
+}
+
+.classic-poster-header {
+    background: var(--poster-primary);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    border-bottom: 4px solid var(--poster-secondary);
+    flex-shrink: 0;
+}
+
+.classic-poster-logo {
+    max-width: 100px;
+}
+
+.classic-poster-logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+.classic-poster-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 60px;
+}
+
+.classic-poster-left {
+    flex-shrink: 0;
+}
+
+.classic-poster-photo {
+    width: 180px;
+    height: 200px;
+    overflow: hidden;
+    border: 3px solid var(--poster-primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.classic-poster-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.classic-poster-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.classic-poster-name {
+    font-size: 44px;
+    font-weight: bold;
+    color: var(--poster-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.classic-poster-company {
+    font-size: 22px;
+    color: var(--poster-secondary);
+    font-weight: 600;
+    margin: 8px 0 0 0;
+}
+
+.classic-poster-position {
+    font-size: 18px;
+    color: var(--poster-text);
+    opacity: 0.85;
+}
+
+.classic-poster-email {
+    font-size: 14px;
+    color: var(--poster-text);
+    opacity: 0.7;
+    margin-top: 12px;
+    font-family: 'Courier New', monospace;
+}
+
+.classic-poster-qr {
+    margin-top: 20px;
+    width: 100px;
+}
+
+.classic-poster-qr img {
+    width: 100%;
+    height: auto;
+}
+
+.classic-poster-footer {
+    background: white;
+    border-top: 2px solid var(--poster-secondary);
+    padding: 12px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.classic-footer-line {
+    height: 2px;
+    background: var(--poster-secondary);
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+.classic-poster.empty .classic-placeholder {
+    font-size: 32px;
+    opacity: 0.4;
+    font-weight: 300;
+}
+
+/* Minimal Template */
+.minimal-poster {
+    --poster-primary: #d32f2f;
+    --poster-secondary: #757575;
+    --poster-bg: #ffffff;
+    --poster-text: #000000;
+
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--poster-bg);
+    color: var(--poster-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.minimal-poster-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.minimal-poster-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 40px;
+    text-align: center;
+}
+
+.minimal-poster-logo {
+    max-width: 100px;
+    opacity: 0.7;
+}
+
+.minimal-poster-logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+.minimal-poster-main {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.minimal-poster-photo {
+    flex-shrink: 0;
+    width: 140px;
+    height: 140px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--poster-primary);
+}
+
+.minimal-poster-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.minimal-poster-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.minimal-poster-name {
+    font-size: 42px;
+    font-weight: 600;
+    color: var(--poster-primary);
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.minimal-poster-company {
+    font-size: 20px;
+    color: var(--poster-secondary);
+    font-weight: 500;
+}
+
+.minimal-poster-position {
+    font-size: 16px;
+    color: var(--poster-secondary);
+    opacity: 0.85;
+}
+
+.minimal-poster-qr {
+    width: 100px;
+}
+
+.minimal-poster-qr img {
+    width: 100%;
+    height: auto;
+}
+
+.minimal-poster.empty .minimal-placeholder {
+    font-size: 24px;
+    opacity: 0.3;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+/* Responsive adjustments for all templates */
+@media (max-width: 1024px) {
+    .modern-poster-name {
+        font-size: 36px;
+    }
+    .modern-poster-company {
+        font-size: 20px;
+    }
+
+    .classic-poster-name {
+        font-size: 32px;
+    }
+    .classic-poster-company {
+        font-size: 18px;
+    }
+
+    .minimal-poster-name {
+        font-size: 32px;
+    }
+    .minimal-poster-company {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .modern-poster-content {
+        padding: 24px;
+    }
+    .modern-poster-photo {
+        width: 120px;
+        height: 120px;
+    }
+    .modern-poster-name {
+        font-size: 28px;
+    }
+    .modern-poster-company {
+        font-size: 16px;
+    }
+    .modern-poster-position {
+        font-size: 14px;
+    }
+
+    .classic-poster-body {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+    .classic-poster-photo {
+        width: 140px;
+        height: 160px;
+    }
+    .classic-poster-name {
+        font-size: 24px;
+    }
+    .classic-poster-company {
+        font-size: 16px;
+    }
+
+    .minimal-poster-main {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .minimal-poster-text {
+        text-align: center;
+    }
+    .minimal-poster-photo {
+        width: 120px;
+        height: 120px;
+    }
+    .minimal-poster-name {
+        font-size: 24px;
+    }
+    .minimal-poster-company {
+        font-size: 14px;
+    }
+}
+
+.poster-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--gray);
+    font-size: 20px;
+}
+
+.poster-hidden {
+    opacity: 0;
+    transition: opacity 240ms ease;
+    pointer-events: none;
+}
+
+.poster-visible {
+    opacity: 1;
+    transition: opacity 240ms ease;
+}

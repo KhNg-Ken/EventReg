@@ -1,5 +1,5 @@
 /* Styles for the QR / invite panel */
-.tds-qr-panel {
+.qr-panel {
     grid-column: 2 / 3;
     display: flex;
     align-items: center;
@@ -7,7 +7,7 @@
     min-height: 360px;
 }
 
-.tds-qr-placeholder {
+.qr-placeholder {
     width: 100%;
     max-width: 300px;
     height: 300px;
@@ -19,33 +19,33 @@
     background: linear-gradient(180deg, #fff, #fafafa);
 }
 
-.tds-qr-empty {
+.qr-empty {
     text-align: center;
-    color: var(--tds-gray);
+    color: var(--gray);
     padding: 1rem;
 }
-.tds-qr-empty-icon {
+.qr-empty-icon {
     font-size: 48px;
     margin-bottom: 8px;
 }
-.tds-qr-empty-text {
+.qr-empty-text {
     font-size: 0.95rem;
     line-height: 1.3;
 }
 
 /* Success state for the QR/invite panel */
-.tds-qr-success {
+.qr-success {
     border: 2px solid rgba(34, 163, 84, 0.18);
     box-shadow: 0 12px 30px rgba(34, 163, 84, 0.06);
     transition: transform 240ms ease, box-shadow 240ms ease;
     border-radius: 12px;
     padding: 12px;
 }
-.tds-qr-success .tds-qr img {
+.qr-success .qr img {
     transform: scale(1.02);
     transition: transform 240ms ease;
 }
-.tds-success-note {
+.success-note {
     margin-top: 12px;
     font-size: 0.85rem;
     color: #228a54;
@@ -53,7 +53,7 @@
     text-align: center;
 }
 
-.tds-invite {
+.invite {
     margin-top: 1.25rem;
     padding: 1rem;
     border-radius: 10px;
@@ -64,7 +64,7 @@
 }
 
 /* Keep the QR area the same size as the placeholder to avoid resizing */
-.tds-invite .tds-qr {
+.invite .qr {
     width: 300px;
     height: 300px;
     display: flex;
@@ -72,7 +72,7 @@
     justify-content: center;
 }
 
-.tds-invite .tds-qr img {
+.invite .qr img {
     width: 100%;
     height: 100%;
     object-fit: contain;

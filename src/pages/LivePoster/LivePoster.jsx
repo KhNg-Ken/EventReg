@@ -10,46 +10,65 @@ import {
     query,
 } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { isSignedIn } from '../auth/index.js';
-import PageFrame from '../components/PageFrame.jsx';
-import Poster from '../components/Poster.jsx';
-import { createLogger } from '../utils/logger.js';
+import { ensureMsalInitialized, isSignedIn } from '../../auth/index.js';
+import Poster from '../../components/Poster/Poster.jsx';
+import { createLogger } from '../../utils/logger.js';
+import './LivePoster.css';
 
 const logger = createLogger('LivePoster');
 const enablePosterChannel = new BroadcastChannel('enable-live-poster');
 
-export default function LivePoster({ event: propEvent } = {}) {
+export default function LivePoster() {
     const [enablePoster, setEnablePoster] = useState(true);
     const [hasAccessChecked, setHasAccessChecked] = useState(false);
     const [registrant, setRegistrant] = useState(null);
-    const [eventDoc, setEventDoc] = useState(() => {
-        try {
-            if (propEvent) return propEvent;
-            const s = new URLSearchParams(window.location.search).get('event');
-            if (s) return s;
-            const raw = window.location.hash || '';
-            const parts = raw.split('?');
-            if (parts.length > 1) {
-                const sp = new URLSearchParams(parts[1]);
-                return sp.get('event');
-            }
-            return null;
-        } catch {
-            return null;
-        }
-    });
+    const [eventId, setEventId] = useState(null);
+    const [posterConfig, setPosterConfig] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+    // Read event ID from URL
     useEffect(() => {
-        if (propEvent) setEventDoc(propEvent);
-    }, [propEvent]);
+        try {
+            const hash = window.location.hash || '';
+            const urlParams = new URLSearchParams(hash.split('?')[1] || '');
+            const event = urlParams.get('event');
+            if (!event) {
+                setError('No event specified in URL');
+                setLoading(false);
+                return;
+            }
+            setEventId(event);
+            setLoading(false);
+        } catch (err) {
+            logger.error('Failed to parse URL params', err);
+            setError('Invalid URL parameters');
+            setLoading(false);
+        }
+    }, []);
+
+    // Hide admin navbar for fullscreen poster experience
+    useEffect(() => {
+        try {
+            document.documentElement.classList.add('liveposter-fullscreen');
+        } catch {
+            // ignore
+        }
+        return () => {
+            try {
+                document.documentElement.classList.remove('liveposter-fullscreen');
+            } catch {
+                // ignore
+            }
+        };
+    }, []);
 
     // Listen to clear poster messages
     useEffect(() => {
         function handleClearMessage(msg) {
             if (msg?.data?.type === 'enable') {
                 setEnablePoster(true);
-            }
-            else if (msg?.data?.type === 'disable') {
+            } else if (msg?.data?.type === 'disable') {
                 setEnablePoster(false);
             }
         }
@@ -60,12 +79,25 @@ export default function LivePoster({ event: propEvent } = {}) {
     }, []);
 
     useEffect(() => {
-        if (!eventDoc) return;
+        if (!eventId) return;
         const app = getApp();
         const db = getFirestore(app);
 
+        // Fetch event document to get poster config
+        const eventRef = firestoreDoc(db, 'events', eventId);
+        getDoc(eventRef)
+            .then((snap) => {
+                if (snap.exists()) {
+                    const eventData = snap.data();
+                    setPosterConfig(eventData.posterConfig || null);
+                }
+            })
+            .catch((err) => {
+                logger.warn('Failed to fetch event config:', err);
+            });
+
         // Listen to the latest attendant.
-        const attendeesCol = collection(db, 'events', eventDoc, 'attendants');
+        const attendeesCol = collection(db, 'events', eventId, 'attendants');
         const q = query(attendeesCol, orderBy('checkedInAt', 'desc'), limit(1));
 
         const unsub = onSnapshot(
@@ -90,7 +122,7 @@ export default function LivePoster({ event: propEvent } = {}) {
                         const ref = firestoreDoc(
                             db,
                             'events',
-                            eventDoc,
+                            eventId,
                             'registrants',
                             data.registrantId
                         );
@@ -101,7 +133,7 @@ export default function LivePoster({ event: propEvent } = {}) {
                         const ref = firestoreDoc(
                             db,
                             'events',
-                            eventDoc,
+                            eventId,
                             'registrants',
                             data.registrantRef
                         );
@@ -128,57 +160,77 @@ export default function LivePoster({ event: propEvent } = {}) {
         return () => {
             unsub();
         };
-    }, [eventDoc]);
+    }, [eventId]);
 
     // simple guard to hide content if not signed in
     useEffect(() => {
-        try {
-            if (!isSignedIn()) {
+        async function checkAuth() {
+            try {
+                // Ensure MSAL is initialized first
+                await ensureMsalInitialized();
+
+                // Small delay to ensure MSAL accounts are loaded
+                await new Promise((resolve) => setTimeout(resolve, 100));
+
+                const signedIn = isSignedIn();
+                logger.log('Auth check result:', signedIn);
                 setHasAccessChecked(true);
-                return;
+            } catch (err) {
+                logger.error('Auth check failed:', err);
+                setHasAccessChecked(true);
             }
-            setHasAccessChecked(true);
-        } catch {
-            setHasAccessChecked(true);
         }
+        checkAuth();
     }, []);
+
+    if (loading) {
+        return (
+            <div className="liveposter-fullscreen-container">
+                <div style={{ color: 'white', textAlign: 'center', paddingTop: '40vh' }}>
+                    Loading event...
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="liveposter-fullscreen-container">
+                <div style={{ color: 'white', textAlign: 'center', paddingTop: '40vh' }}>
+                    Error: {error}
+                </div>
+            </div>
+        );
+    }
 
     if (!hasAccessChecked) {
         return (
-            <PageFrame title="Live Poster" subtitle="Checking access..." showBack>
-                <div style={{ padding: 40 }}>Checking access...</div>
-            </PageFrame>
+            <div className="liveposter-fullscreen-container">
+                <div style={{ color: 'white', textAlign: 'center', paddingTop: '40vh' }}>
+                    Checking authentication...
+                </div>
+            </div>
         );
     }
 
     if (!isSignedIn()) {
         return (
-            <PageFrame title="Live Poster" subtitle="Access denied" showBack>
-                <div style={{ padding: 20 }}>
-                    <div style={{ fontSize: 18, fontWeight: 700 }}>Truy cập bị từ chối</div>
-                    <div style={{ marginTop: 8 }}>
-                        Bạn cần đăng nhập nhân viên để xem poster trực tiếp.
-                    </div>
-                    <div style={{ marginTop: 12 }}>
-                        <button
-                            className="tds-btn tds-btn-primary"
-                            onClick={() => (window.location.hash = '#/login')}
-                        >
-                            Đăng nhập
-                        </button>
-                    </div>
+            <div className="liveposter-fullscreen-container">
+                <div style={{ color: 'white', textAlign: 'center', paddingTop: '40vh' }}>
+                    <div style={{ fontSize: 24, marginBottom: 16 }}>Access Denied</div>
+                    <div>Please sign in as admin to view the live poster.</div>
                 </div>
-            </PageFrame>
+            </div>
         );
     }
 
     return (
-        <PageFrame title="Live Poster" subtitle="Latest successful registration" showBack={false}>
+        <div className="liveposter-fullscreen-container">
             <div className="page-centered">
                 <div className={enablePoster ? 'poster-visible' : 'poster-hidden'}>
-                    <Poster registrant={registrant} />
+                    <Poster registrant={registrant} config={posterConfig} />
                 </div>
             </div>
-        </PageFrame>
+        </div>
     );
 }

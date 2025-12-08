@@ -1,62 +1,77 @@
-/* Styles for the registration form fields */
-.tds-field {
+/* Styles for the registration form fields (component-scoped) */
+.reg-field {
     display: flex;
     flex-direction: column;
 }
-.tds-field-full {
+.reg-field-full {
     grid-column: 1/-1;
 }
 
-.tds-row {
+.reg-row {
     display: flex;
     gap: 12px;
     align-items: flex-start;
 }
-.tds-col-email {
+.reg-col-email {
     flex: 2 1 0;
 }
-.tds-col-phone {
+.reg-col-phone {
     flex: 1 1 0;
 }
 
-.tds-input {
+.reg-input {
     padding: 0.75rem 0.9rem;
     border-radius: 8px;
     border: 1px solid #e6e6e6;
-    background: var(--tds-white);
-    color: var(--tds-black);
+    background: var(--white);
+    color: var(--black);
     font-size: 0.95rem;
     outline: none;
     transition: box-shadow 0.15s, border-color 0.15s;
 }
-.tds-input::placeholder {
+.reg-input::placeholder {
     color: #9aa0a6;
 }
-.tds-input:focus {
+.reg-input:focus {
     box-shadow: 0 4px 18px rgba(200, 16, 46, 0.08);
-    border-color: var(--tds-red);
+    border-color: var(--red);
 }
 
 /* Ensure inputs always remain black text on white background regardless of state */
-.tds-input:disabled,
-.tds-input[readonly],
-.tds-input:valid,
-.tds-input:invalid {
-    color: var(--tds-black) !important;
-    background: var(--tds-white) !important;
+.reg-input:disabled,
+.reg-input[readonly],
+.reg-input:valid,
+.reg-input:invalid {
+    color: var(--black) !important;
+    background: var(--white) !important;
 }
 
 /* Browser autofill can change colors; enforce desired appearance where supported */
-input.tds-input:-webkit-autofill,
-input.tds-input:-webkit-autofill:hover,
-input.tds-input:-webkit-autofill:focus {
-    -webkit-text-fill-color: var(--tds-black) !important;
-    box-shadow: 0 0 0px 1000px var(--tds-white) inset !important;
+input.reg-input:-webkit-autofill,
+input.reg-input:-webkit-autofill:hover,
+input.reg-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--black) !important;
+    box-shadow: 0 0 0px 1000px var(--white) inset !important;
 }
 
-.tds-actions {
+.reg-actions {
     display: flex;
     gap: 0.75rem;
     align-items: center;
     margin-top: 1rem;
+}
+
+.reg-required {
+    color: var(--red);
+    margin-left: 4px;
+    font-weight: 700;
+}
+
+/* Small label style specific to registration fields */
+.reg-subtitle {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--black);
+    font-weight: 600;
+    font-size: 0.95rem;
 }

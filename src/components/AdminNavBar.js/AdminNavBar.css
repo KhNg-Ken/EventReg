@@ -1,0 +1,93 @@
+/* AdminNavBar specific styles (moved out of common.css) */
+.admin-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99999; /* ensure nav is top-most and cannot be overlapped */
+    display: flex;
+    height: 64px; /* fixed height to match header sticky offset */
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    gap: 12px;
+    /* solid opaque background so content underneath can't show through */
+    background: #0f1720; /* dark neutral background */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 4px 18px rgba(2, 6, 23, 0.45);
+}
+
+.admin-nav-left,
+.admin-nav-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Buttons: transparent by default, fill vertically, sharper corners */
+.admin-nav-btn {
+    height: 40px;
+    margin: 0;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px; /* less rounded */
+    border: transparent;
+    background: transparent;
+    color: var(--white);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 140ms ease, color 140ms ease, transform 120ms ease;
+}
+
+.admin-nav-btn:hover {
+    transform: translateY(-2px);
+}
+
+.admin-nav-btn-primary.active {
+    background: linear-gradient(90deg, var(--red), #002c80);
+    color: #ffffff;
+    border: none;
+}
+
+/* Logout with subtle inverse style */
+.admin-nav-logout {
+    padding: 0 12px;
+    height: 40px;
+    background: transparent;
+    color: var(--white);
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+
+.admin-nav-account {
+    /* solid opaque background so content underneath can't show through */
+    background: #0f1720; /* dark neutral background */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 4px 18px rgba(2, 6, 23, 0.45);
+}
+
+/* Ensure content below nav isn't obscured (App.jsx renders nav first) */
+
+/* Global rule when admin nav is present - ensure app content is pushed down */
+.has-admin-nav {
+    /* expose a CSS variable so other components can size against the nav */
+    --admin-nav-offset: 88px;
+}
+
+.has-admin-nav .app-content {
+    padding-top: var(--admin-nav-offset) !important; /* reserve nav height + breathing room */
+}
+
+/* default padding for app content so pages keep their spacing without inline style */
+.app-content {
+    padding: 20px;
+}
+
+.admin-nav-hidden {
+    display: none;
+}
+
+.admin-nav-visible {
+    display: flex;
+}

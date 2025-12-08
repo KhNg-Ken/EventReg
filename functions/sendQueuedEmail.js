@@ -4,9 +4,7 @@ import admin from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 import { defineString } from 'firebase-functions/params';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
-import { createLogger } from '../utils/logger.js';
 
-const logger = createLogger('functions:sendQueuedEmail');
 
 dotenv.config({ path: '.env' });
 
@@ -111,7 +109,7 @@ export const sendQueuedEmail = onDocumentCreated('mail_queue/{docId}', async (ev
 
         await docRef.update(updatePayload);
     } catch (err) {
-        logger.error('Failed to send queued email', err);
+        console.error('Failed to send queued email', err);
         const errMsg = err && err.message ? err.message : String(err);
         await docRef.update({ status: 'failed', error: errMsg });
     }

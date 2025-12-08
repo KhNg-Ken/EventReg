@@ -1,0 +1,130 @@
+/* PageFrame component styles */
+
+:root {
+    --page-max-width: 1400px;
+    --page-gutter: 20px;
+    /* default page vertical offset; prefers `--admin-nav-offset` when present */
+    --page-vertical-offset: var(--admin-nav-offset, 0px);
+}
+
+.page {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: var(--page-max-width);
+    /* ensure the full-page frame fills the viewport excluding the admin nav height
+       when present. Uses `--admin-nav-offset` set on the root when admin nav exists. */
+    min-height: calc(100vh - var(--page-vertical-offset));
+    /* rely on .app-content padding to reserve space for the navbar; remove top margin */
+    margin: 0 auto 40px;
+    padding: 18px var(--page-gutter);
+    display: block;
+    background: var(--white);
+    /* ensure the white background doesn't bleed behind rounded corners or borders */
+    background-clip: padding-box;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+.page-header {
+    /* centered title with anchored left/right controls: header is a positioned block */
+    position: relative;
+    display: block;
+    padding: 36px 0 18px; /* extra top/bottom padding so title clears rounded corner and spacing below */
+    background: transparent;
+    transition: box-shadow 160ms ease, background 160ms ease;
+}
+
+.page-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.page-title-block {
+    /* center the title block horizontally and cap its width so lines don't wrap tightly */
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+    pointer-events: auto;
+    width: auto;
+    max-width: 720px; /* comfortable single-column title width */
+    padding: 0 24px; /* breathing room when viewport is narrow */
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--black);
+}
+
+.page-subtitle {
+    font-size: 0.95rem;
+    color: var(--gray);
+    margin-top: 4px;
+    white-space: pre-line;
+}
+
+.page-actions {
+    /* keep actions anchored to the right */
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    pointer-events: auto;
+}
+
+/* anchor the back button to the left side of the header */
+.page-header .ui-back-btn {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: auto;
+}
+
+.page-content {
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 28px; /* increased gap to prevent overlap with header */
+    padding-bottom: 18px;
+}
+
+:root.admin-theme .page-header {
+    z-index: 1200;
+    backdrop-filter: blur(6px);
+    background: rgba(255, 255, 255, 0.66);
+    padding-top: 40px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 720px) {
+    .page {
+        padding-left: 12px;
+        padding-right: 12px;
+        margin: 12px auto;
+    }
+    .page-title {
+        font-size: 1.25rem;
+    }
+    /* On small screens, ensure header content flows vertically and side controls are inline */
+    .page-header {
+        display: block;
+        padding: 12px 0;
+    }
+    .page-title-block {
+        max-width: 100%;
+        margin: 6px 0;
+    }
+    .page-header .ui-back-btn,
+    .page-actions {
+        position: static;
+        transform: none;
+        display: inline-flex;
+        margin: 6px 0;
+    }
+}

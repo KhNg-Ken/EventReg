@@ -1,10 +1,12 @@
 import { collection, getDocs, getFirestore, orderBy, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { isSignedIn } from '../auth/index.js';
 import EventCard from '../components/EventCard/EventCard.jsx';
-import PageFrame from '../components/PageFrame.jsx';
+import PageFrame from '../components/PageFrame/PageFrame.jsx';
+import { useAuth } from '../contexts/AuthContext.jsx';
+import { useToast } from '../contexts/ToastContext.jsx';
 import { app } from '../firebase/config.js';
-import { createLogger }  from '../utils/logger.js';
+import { adminDeleteEvent } from '../utils/adminProxy.js';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('EventList');
 
@@ -61,56 +63,95 @@ function SkeletonList({ count = 3 }) {
     );
 }
 
-export default function EventList({ onSelectEvent } = {}) {
+export default function EventList() {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [signedIn, setSignedIn] = useState(false);
+    const { isAdmin, loading: authLoading } = useAuth();
+    const { showToast } = useToast();
+
+    // Redirect non-admins to home
+    useEffect(() => {
+        if (!authLoading && !isAdmin) {
+            window.location.hash = '#/';
+        }
+    }, [isAdmin, authLoading]);
+
+    // load function is defined so other handlers can refresh list
+    async function load() {
+        setLoading(true);
+        try {
+            const db = getFirestore(app);
+            const q = query(collection(db, 'events'), orderBy('eventDate', 'asc'));
+            const snap = await getDocs(q);
+            const items = snap.docs.map((d) => {
+                const raw = d.data();
+                // Normalize Firestore Timestamp fields to JS Date for safer rendering.
+                const eventDate = raw.eventDate
+                    ? typeof raw.eventDate.toDate === 'function'
+                        ? raw.eventDate.toDate()
+                        : new Date(raw.eventDate)
+                    : null;
+                const endDate = raw.endDate
+                    ? typeof raw.endDate.toDate === 'function'
+                        ? raw.endDate.toDate()
+                        : new Date(raw.endDate)
+                    : null;
+                return { id: d.id, ...raw, eventDate, endDate };
+            });
+            setEvents(items);
+        } catch (err) {
+            logger.error('Failed to load events from Firestore', err);
+            setEvents([]);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
-        setSignedIn(isSignedIn());
-        const db = getFirestore(app);
-        async function load() {
-            setLoading(true);
-            try {
-                const q = query(collection(db, 'events'), orderBy('eventDate', 'asc'));
-                const snap = await getDocs(q);
-                const items = snap.docs.map((d) => {
-                    const raw = d.data();
-                    // Normalize Firestore Timestamp fields to JS Date for safer rendering.
-                    const eventDate = raw.eventDate
-                        ? typeof raw.eventDate.toDate === 'function'
-                            ? raw.eventDate.toDate()
-                            : new Date(raw.eventDate)
-                        : null;
-                    const endDate = raw.endDate
-                        ? typeof raw.endDate.toDate === 'function'
-                            ? raw.endDate.toDate()
-                            : new Date(raw.endDate)
-                        : null;
-                    return { id: d.id, ...raw, eventDate, endDate };
-                });
-                setEvents(items);
-            } catch (err) {
-                logger.error('Failed to load events from Firestore', err);
-                setEvents([]);
-            } finally {
-                setLoading(false);
-            }
+        if (!authLoading && isAdmin) {
+            load();
         }
-        load();
-    }, []);
+    }, [authLoading, isAdmin]);
 
-    const subtitle = signedIn
-        ? 'Bạn đang đăng nhập là một nhân viên của TDSouth!\nBạn sẽ thấy thêm thao tác quản trị.'
-        : 'Xem các sự kiện hiện có tại TDSouth!';
+    async function handleDeleteEvent(id) {
+        if (!confirm('Delete this event? This cannot be undone.')) return;
+        try {
+            setLoading(true);
+            await adminDeleteEvent({ id });
+            await load();
+        } catch (err) {
+            logger.error('Failed to delete event', err);
+            showToast(err?.message || 'Delete failed', { type: 'error' });
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const subtitle = 'Quản lý các sự kiện của TDSouth';
+
+    // Show loading while checking auth
+    if (authLoading) {
+        return (
+            <PageFrame
+                title="Danh sách sự kiện"
+                subtitle="Đang kiểm tra quyền truy cập..."
+                minHeight={360}
+            >
+                <SkeletonList />
+            </PageFrame>
+        );
+    }
+
+    // Don't render anything if not admin (will redirect)
+    if (!isAdmin) {
+        return null;
+    }
 
     return (
         <PageFrame title="Danh sách sự kiện" subtitle={subtitle} minHeight={360}>
             {loading ? (
                 <div>
-                    <div style={{ marginBottom: 8, color: 'var(--tds-gray)' }}>
-                        Đang tải sự kiện...
-                    </div>
+                    <div style={{ marginBottom: 8, color: 'var(--gray)' }}>Đang tải sự kiện...</div>
                     <SkeletonList />
                 </div>
             ) : events.length === 0 ? (
@@ -125,36 +166,52 @@ export default function EventList({ onSelectEvent } = {}) {
                     }}
                 >
                     <div style={{ fontSize: 18, fontWeight: 700 }}>Chưa có sự kiện</div>
-                    <div style={{ color: 'var(--tds-gray)' }}>
+                    <div style={{ color: 'var(--gray)' }}>
                         Hiện tại chưa có sự kiện nào được lên lịch. Hãy kiểm tra lại sau.
                     </div>
-                    {signedIn ? (
-                        <div style={{ marginTop: 12 }}>
-                            <button
-                                className="tds-btn tds-btn-primary"
-                                onClick={() => (window.location.hash = '#/create')}
-                            >
-                                Tạo sự kiện mới
-                            </button>
-                        </div>
-                    ) : (
-                        <div style={{ marginTop: 12 }}>
-                            <button
-                                className="tds-btn tds-btn-secondary"
-                                onClick={() => (window.location.hash = '#/login')}
-                            >
-                                Đăng nhập để quản lý
-                            </button>
-                        </div>
-                    )}
+                    <div style={{ marginTop: 12 }}>
+                        <button
+                            className="ui-btn btn-primary"
+                            onClick={() => (window.location.hash = '#/create')}
+                        >
+                            Tạo sự kiện mới
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div style={{ display: 'grid', gap: 10 }}>
                     {events.map((ev) => {
-                        const actions = signedIn ? (
+                        const actions = (
                             <div style={{ display: 'inline-flex', gap: 8 }}>
                                 <button
-                                    className="tds-btn tds-btn-secondary"
+                                    className="ui-btn btn-secondary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        // Copy registration link to clipboard
+                                        const regLink = `${window.location.origin}${
+                                            window.location.pathname
+                                        }#/register?event=${encodeURIComponent(ev.id)}`;
+                                        navigator.clipboard
+                                            .writeText(regLink)
+                                            .then(() => {
+                                                showToast('Đã sao chép link đăng ký!', {
+                                                    type: 'success',
+                                                });
+                                            })
+                                            .catch(() => {
+                                                showToast('Không thể sao chép link', {
+                                                    type: 'error',
+                                                });
+                                            });
+                                    }}
+                                    type="button"
+                                    title="Sao chép link đăng ký"
+                                >
+                                    📋 Link
+                                </button>
+
+                                <button
+                                    className="ui-btn btn-secondary"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         const liveHash = `#/liveposter?event=${encodeURIComponent(
@@ -179,19 +236,46 @@ export default function EventList({ onSelectEvent } = {}) {
                                     }}
                                     type="button"
                                 >
-                                    Live Checkin
+                                    Live
+                                </button>
+
+                                <button
+                                    className="ui-btn btn-secondary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        // navigate to update page for this event
+                                        window.location.hash = `#/update?event=${encodeURIComponent(
+                                            ev.id
+                                        )}`;
+                                    }}
+                                    type="button"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    className="ui-btn danger btn-secondary "
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteEvent(ev.id);
+                                    }}
+                                    type="button"
+                                >
+                                    Delete
                                 </button>
                             </div>
-                        ) : null;
+                        );
 
                         return (
                             <EventCard
                                 key={ev.id}
                                 ev={ev}
                                 actions={actions}
-                                onClick={() =>
-                                    typeof onSelectEvent === 'function' ? onSelectEvent(ev) : null
-                                }
+                                onClick={() => {
+                                    // Admins go to the update page when clicking the card
+                                    window.location.hash = `#/update?event=${encodeURIComponent(
+                                        ev.id
+                                    )}`;
+                                }}
                             />
                         );
                     })}

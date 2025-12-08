@@ -10,9 +10,10 @@ import {
 } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { isSignedIn } from '../auth/index.js';
-import PageFrame from '../components/PageFrame.jsx';
-import { createLogger } from '../utils/logger.js';
 import AttendeeRow from '../components/AttendeeRow.jsx';
+import PageFrame from '../components/PageFrame/PageFrame.jsx';
+import { useToast } from '../contexts/ToastContext.jsx';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('CheckInStatistics');
 const enablePosterChannel = new BroadcastChannel('enable-live-poster');
@@ -55,7 +56,7 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
             async (snap) => {
                 posterEnabled = true;
                 enablePosterChannel.postMessage({ type: 'enable' });
-                
+
                 const rows = [];
                 for (const d of snap.docs) {
                     const data = d.data();
@@ -106,8 +107,10 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
         return () => unsub();
     }, [eventDoc, sortAsc]);
 
+    const { showToast } = useToast();
+
     async function togglePoster() {
-        if (!isSignedIn()) return alert('Admin access required');
+        if (!isSignedIn()) return showToast('Admin access required', { type: 'error' });
         try {
             if (posterEnabled) {
                 posterEnabled = false;
@@ -118,7 +121,7 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
             }
         } catch (err) {
             logger.error('Failed to clear live poster', err);
-            alert('Không thể xóa poster: ' + (err?.message || err));
+            showToast('Không thể xóa poster: ' + (err?.message || err), { type: 'error' });
         }
     }
 
@@ -139,10 +142,10 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
                         >
                             <div style={{ fontSize: 16, fontWeight: 700 }}>Danh sách check-in</div>
                             <div style={{ display: 'flex', gap: 8 }}>
-                                <button className="tds-btn" onClick={() => setSortAsc((s) => !s)}>
+                                <button className="btn" onClick={() => setSortAsc((s) => !s)}>
                                     {sortAsc ? 'Sort: Oldest' : 'Sort: Newest'}
                                 </button>
-                                <button className="tds-btn tds-btn-danger" onClick={togglePoster}>
+                                <button className="btn btn-danger" onClick={togglePoster}>
                                     Clear Live Poster
                                 </button>
                             </div>

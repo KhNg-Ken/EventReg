@@ -1,17 +1,10 @@
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import admin from 'firebase-admin';
-import { initializeApp } from 'firebase-admin/app';
 import { defineString } from 'firebase-functions/params';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
-import { createLogger } from '../utils/logger.js';
-
-const logger = createLogger('functions:registerUser');
 
 dotenv.config({ path: '.env' });
-
-// Initialize admin SDK (idempotent in Cloud Functions environment)
-initializeApp();
 
 // Safe .env accessor
 const env = import.meta.env || {};
@@ -39,10 +32,24 @@ const isNonEmptyString = (v) => typeof v === 'string' && v.trim().length > 0;
  * - extra: object (optional, will be shallow-merged)
  * - recaptchaToken: string (optional, verified if server-side secret is present)
  */
-export const registerUser = onCall(async (req) => {
-    const data = req.data || {};
-    const context = req.context || {};
+export const registerUser = onCall(async (request) => {
+    const data = request.data || {};
+    const auth = request.auth;
 
+    // Log authentication details for debugging
+    console.log('=== registerUser called ===');
+    console.log('Auth present:', !!auth);
+    console.log('Auth UID:', auth?.uid);
+    console.log('Auth provider:', auth?.token?.firebase?.sign_in_provider);
+    console.log('Is anonymous:', auth?.token?.firebase?.sign_in_provider === 'anonymous'); // Check authentication
+    if (!auth) {
+        console.error('Authentication check FAILED - no auth context');
+        throw new HttpsError('unauthenticated', 'Must be signed in to register');
+    }
+
+    console.log('Authentication check PASSED - UID:', auth.uid);
+
+    // Validate required fields
     const eventDoc = isNonEmptyString(data.eventDoc) ? data.eventDoc.trim() : null;
     const name = isNonEmptyString(data.name) ? data.name.trim() : null;
     const email = isNonEmptyString(data.email) ? data.email.trim().toLowerCase() : null;
@@ -87,7 +94,7 @@ export const registerUser = onCall(async (req) => {
         }
     } catch (err) {
         if (err instanceof HttpsError) throw err;
-        logger.error('Error during duplicate check', err);
+        console.error('Error during duplicate check', err);
         throw new HttpsError('internal', 'Failed to validate registration');
     }
 
@@ -104,15 +111,16 @@ export const registerUser = onCall(async (req) => {
         ...extra,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         createdBy: 'callable.registerUser',
-        clientApp: context.instanceIdToken || null,
+        uid: auth.uid,
     };
 
     try {
         await docRef.set(payload, { merge: true });
     } catch (err) {
-        logger.error('Failed to write registrant', err);
+        console.error('Failed to write registrant', err);
         throw new HttpsError('internal', 'Failed to save registration');
     }
 
+    console.log('Registration successful, inviteId:', inviteId);
     return { success: true, inviteId };
 });

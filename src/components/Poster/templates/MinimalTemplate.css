@@ -1,0 +1,144 @@
+.minimal-poster {
+    --poster-primary: #000000;
+    --poster-secondary: #666666;
+    --poster-bg: #ffffff;
+    --poster-text: #000000;
+
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--poster-bg);
+    color: var(--poster-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.minimal-poster-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.minimal-poster-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 40px;
+    text-align: center;
+}
+
+.minimal-poster-logo {
+    max-width: 100px;
+    opacity: 0.7;
+}
+
+.minimal-poster-logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+.minimal-poster-main {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.minimal-poster-photo {
+    flex-shrink: 0;
+    width: 140px;
+    height: 140px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--poster-primary);
+}
+
+.minimal-poster-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.minimal-poster-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.minimal-poster-name {
+    font-size: 42px;
+    font-weight: 600;
+    color: var(--poster-primary);
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.minimal-poster-company {
+    font-size: 20px;
+    color: var(--poster-secondary);
+    font-weight: 500;
+}
+
+.minimal-poster-position {
+    font-size: 16px;
+    color: var(--poster-secondary);
+    opacity: 0.85;
+}
+
+.minimal-poster-qr {
+    width: 100px;
+}
+
+.minimal-poster-qr img {
+    width: 100%;
+    height: auto;
+}
+
+.minimal-poster.empty .minimal-placeholder {
+    font-size: 24px;
+    opacity: 0.3;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .minimal-poster-name {
+        font-size: 32px;
+    }
+    .minimal-poster-company {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .minimal-poster-main {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .minimal-poster-text {
+        text-align: center;
+    }
+    .minimal-poster-photo {
+        width: 120px;
+        height: 120px;
+    }
+    .minimal-poster-name {
+        font-size: 24px;
+    }
+    .minimal-poster-company {
+        font-size: 14px;
+    }
+}
