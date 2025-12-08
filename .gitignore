@@ -65,3 +65,5 @@ secrets.json
 
 # Visual Studio Code workspace storage (may include secrets)
 .vscode/*.code-workspace
+
+*.md
