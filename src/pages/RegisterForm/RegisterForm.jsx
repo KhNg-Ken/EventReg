@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { queueEmail } from '../../utils/emailUtils.js';
-import { registerAttendee } from '../../utils/registrationUtils.js';
-import { listEvents, readEventConfig } from '../../utils/firestoreUtils.js';
-import PageFrame from '../../components/PageFrame.jsx';
+import { useEffect, useState } from 'react';
 import EventHeader from '../../components/EventHeader/EventHeader.jsx';
-import RegistrationFields from '../../components/RegisterField/RegistrationFields.jsx';
+import PageFrame from '../../components/PageFrame/PageFrame.jsx';
 import QRPanel from '../../components/QRPanel/QRPanel.jsx';
-import './RegisterForm.css';
+import RegistrationFields from '../../components/RegisterField/RegistrationFields.jsx';
+import { useToast } from '../../contexts/ToastContext.jsx';
+import { normalizedDateString } from '../../utils/dateUtils.js';
+import { sendGraphEmail } from '../../utils/emailUtils.js';
+import { readEventInfo } from '../../utils/firestoreUtils.js';
 import { createLogger } from '../../utils/logger.js';
-import { normalizedDateString } from '../../utils/stringUtils.js';
+import { registerAttendee } from '../../utils/registrationUtils.js';
+import './RegisterForm.css';
 
 const logger = createLogger('RegisterForm');
 
-function RegisterForm({ event: propEvent } = {}) {
+function RegisterForm() {
     const [formData, setFormData] = useState({
         name: '',
         position: '',
@@ -20,16 +21,13 @@ function RegisterForm({ event: propEvent } = {}) {
         email: '',
         phone: '',
     });
-    const [, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
-    const [selectedEventConfig, setSelectedEventConfig] = useState({
-        eventName: null,
-        imageRequired: false,
-    });
-    // determine eventID from (1) prop passed by router, (2) URL search, (3) hash fragment
-    const [urlEvent, setUrlEvent] = useState(() => {
+    const [selectedEventInfo, setSelectedEventInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    // Extract event ID from URL only
+    const urlEvent = (() => {
         try {
-            if (propEvent) return propEvent;
             const s = new URLSearchParams(window.location.search).get('event');
             if (s) return s;
             const raw = window.location.hash || '';
@@ -42,31 +40,58 @@ function RegisterForm({ event: propEvent } = {}) {
         } catch {
             return null;
         }
-    });
-
-    // respond to changes in propEventId or hash changes (so browser back/forward works)
-    useEffect(() => {
-        if (propEvent) setUrlEvent(propEvent);
-        function onHashChange() {
-            try {
-                const raw = window.location.hash || '';
-                const parts = raw.split('?');
-                if (parts.length > 1) {
-                    const sp = new URLSearchParams(parts[1]);
-                    setUrlEvent(sp.get('event'));
-                }
-            } catch {
-                // ignore
-            }
-        }
-        window.addEventListener('hashchange', onHashChange);
-        return () => window.removeEventListener('hashchange', onHashChange);
-    }, [propEvent]);
+    })();
     const [qrSrc, setQrSrc] = useState(null);
     const [inviteId, setInviteId] = useState(null);
     const [photoFile, setPhotoFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [optOutCompany, setOptOutCompany] = useState(false);
+    const [optOutPosition, setOptOutPosition] = useState(false);
+
+    // Derive event config flags from selectedEventInfo.config
+    const eventConfig = selectedEventInfo?.config || {};
+    const allowOptOutCompany = !!eventConfig.optionalCompany;
+    const allowOptOutPosition = !!eventConfig.optionalPosition;
+    const imageRequired = !!eventConfig.optionalImage;
+
+    // Check if all mandatory fields are filled
+    const isFormValid = () => {
+        const { name, position, company, email, phone } = formData;
+
+        // Basic required fields
+        if (!name.trim() || !email.trim() || !phone.trim()) {
+            return false;
+        }
+
+        // Position is required unless opted out
+        if (!allowOptOutPosition && !position.trim()) {
+            return false;
+        }
+        if (allowOptOutPosition && !optOutPosition && !position.trim()) {
+            return false;
+        }
+
+        // Company is required unless opted out
+        if (!allowOptOutCompany && !company.trim()) {
+            return false;
+        }
+        if (allowOptOutCompany && !optOutCompany && !company.trim()) {
+            return false;
+        }
+
+        // Image is required if event config demands it
+        if (imageRequired && !photoFile) {
+            return false;
+        }
+
+        // Event must be selected
+        if (!selectedEvent) {
+            return false;
+        }
+
+        return true;
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -75,25 +100,27 @@ function RegisterForm({ event: propEvent } = {}) {
 
     // QR data will be returned by `registerAttendee` (server-side/Firestore-backed helper)
 
+    const { showToast } = useToast();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { name, position, company, email, phone } = formData;
 
         // Basic validation (safeguard besides HTML required attrs)
         if (!name.trim() || !position.trim() || !company.trim() || !email.trim() || !phone.trim()) {
-            alert('Vui lòng điền tất cả các trường bắt buộc trước khi gửi.');
+            showToast('Vui lòng điền tất cả các trường bắt buộc trước khi gửi.', { type: 'error' });
             return;
         }
 
         // Enforce selected event
         if (!selectedEvent) {
-            alert('Vui lòng chọn sự kiện');
+            showToast('Vui lòng chọn sự kiện', { type: 'error' });
             return;
         }
 
         // Enforce image requirement from event config
-        if (selectedEventConfig.imageRequired && !photoFile) {
-            alert('Ảnh là bắt buộc cho sự kiện này. Vui lòng tải ảnh lên.');
+        if (imageRequired && !photoFile) {
+            showToast('Ảnh là bắt buộc cho sự kiện này. Vui lòng tải ảnh lên.', { type: 'error' });
             return;
         }
 
@@ -106,6 +133,11 @@ function RegisterForm({ event: propEvent } = {}) {
                 attendee: { name, position, company, email, phone },
                 photoFile,
                 onProgress: (p) => setUploadProgress(p),
+                config: {
+                    showCompany: !optOutCompany,
+                    showPosition: !optOutPosition,
+                    showImage: !!photoFile,
+                },
             });
             // registerAttendee now returns a hosted `qrCodeUrl` (falls back to data URI)
             const { inviteId, qrCodeUrl } = result;
@@ -118,12 +150,12 @@ function RegisterForm({ event: propEvent } = {}) {
                     if (email && qrCodeUrl) {
                         // Build event identifier YYMMDD (prefer eventID field, otherwise derive from eventDate or today)
                         let evt;
-                        if (selectedEventConfig && selectedEventConfig.eventID) {
-                            evt = selectedEventConfig.eventID;
+                        if (selectedEventInfo && selectedEventInfo.eventID) {
+                            evt = selectedEventInfo.eventID;
                         } else {
                             const d =
-                                selectedEventConfig && selectedEventConfig.eventDate
-                                    ? new Date(selectedEventConfig.eventDate)
+                                selectedEventInfo && selectedEventInfo.eventDate
+                                    ? new Date(selectedEventInfo.eventDate)
                                     : new Date();
                             const yy = String(d.getFullYear()).slice(-2);
                             const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -134,7 +166,7 @@ function RegisterForm({ event: propEvent } = {}) {
                         // Prefer a string location; fall back to common object fields or empty string
                         const eventLocation = (() => {
                             const loc =
-                                selectedEventConfig?.location ?? selectedEventConfig?.eventLocation;
+                                selectedEventInfo?.location ?? selectedEventInfo?.eventLocation;
                             if (!loc) return '';
                             if (typeof loc === 'string') return loc;
                             return (
@@ -145,23 +177,45 @@ function RegisterForm({ event: propEvent } = {}) {
                         // Template data (primitives only)
                         const templateData = {
                             name: name || '',
-                            eventName: selectedEventConfig?.name || '',
+                            eventName: selectedEventInfo?.name || '',
                             eventID: evt,
-                            eventDate: normalizedDateString(selectedEventConfig?.eventDate),
+                            eventDate: normalizedDateString(selectedEventInfo?.eventDate),
                             eventLocation: eventLocation,
                             qrCodeUrl: qrCodeUrl,
+                            subject: `Mã mời sự kiện ${selectedEventInfo?.name || 'TDSouth'}`,
                         };
 
-                        await queueEmail({ to: email, data: templateData });
+                        await sendGraphEmail({
+                            to: email,
+                            templateName: 'registration-invite',
+                            templateData,
+                        });
                     }
                 } catch (mailErr) {
                     logger.warn('Failed to queue invite email (non-fatal):', mailErr);
                 }
             })();
-            alert('Đã gửi! Mã mời của bạn đã được tạo.');
+            showToast('Đã gửi! Mã mời của bạn đã được tạo.', { type: 'success' });
         } catch (err) {
             logger.error('Registration transaction failed:', err);
-            alert('Đăng ký thất bại. Không có dữ liệu nào được lưu. Vui lòng thử lại.');
+
+            // Check for specific error types
+            const errorMessage = err?.message || '';
+            const errorCode = err?.code || err?.original?.code;
+
+            // Handle duplicate email conflict (409/ALREADY_EXISTS)
+            if (
+                errorCode === 'already-exists' ||
+                errorMessage.toLowerCase().includes('already exists')
+            ) {
+                showToast('Email này đã được đăng ký cho sự kiện này.', {
+                    type: 'error',
+                });
+            } else {
+                showToast('Đăng ký thất bại. Vui lòng thử lại.', {
+                    type: 'error',
+                });
+            }
             return;
         } finally {
             setUploading(false);
@@ -170,76 +224,112 @@ function RegisterForm({ event: propEvent } = {}) {
         }
     };
 
-    // Load available events
+    // Load event info from Firestore based on URL parameter
     useEffect(() => {
         let mounted = true;
-        async function load() {
+
+        async function loadEventInfo() {
+            if (!urlEvent) {
+                setLoading(false);
+                logger.warn('No event ID in URL');
+                return;
+            }
+
+            setLoading(true);
+            setSelectedEvent(urlEvent);
+
             try {
-                const ev = await listEvents();
+                const cfg = await readEventInfo(urlEvent);
                 if (!mounted) return;
-                setEvents(ev);
-                if (urlEvent) {
-                    // if URL specified an event, try to select it (even if it's not in the list)
-                    setSelectedEvent(urlEvent);
-                    try {
-                        const cfg = await readEventConfig(urlEvent);
-                        if (!mounted) return;
-                        setSelectedEventConfig(
-                            cfg || { eventName: null, imageRequired: false, tableName: null }
-                        );
-                    } catch (e) {
-                        logger.warn('Failed to read config for URL event', e);
-                    }
-                } else if (ev && ev.length) {
-                    setSelectedEvent(ev[0].id);
-                    const cfg = await readEventConfig(ev[0].id);
-                    if (!mounted) return;
-                    setSelectedEventConfig(
-                        cfg || { eventName: ev[0].name, imageRequired: false, tableName: null }
-                    );
+
+                if (cfg) {
+                    setSelectedEventInfo(cfg);
+                } else {
+                    logger.warn('Event not found:', urlEvent);
+                    setSelectedEventInfo(null);
                 }
-            } catch (err) {
-                logger.warn('Failed to load events', err);
+            } catch (e) {
+                logger.error('Failed to load event info:', e);
+                setSelectedEventInfo(null);
+            } finally {
+                if (mounted) {
+                    setLoading(false);
+                }
             }
         }
-        load();
+
+        loadEventInfo();
+
         return () => {
             mounted = false;
         };
     }, [urlEvent]);
 
-    // when selectedEventId changes, reload config
-    useEffect(() => {
-        let mounted = true;
-        if (!selectedEvent) return;
-        async function loadCfg() {
-            try {
-                const cfg = await readEventConfig(selectedEvent);
-                if (!mounted) return;
-                setSelectedEventConfig(
-                    cfg || { eventName: null, imageRequired: false, tableName: null }
-                );
-            } catch (e) {
-                logger.warn('Failed to load event config', e);
-            }
-        }
-        loadCfg();
-        return () => {
-            mounted = false;
-        };
-    }, [selectedEvent]);
+    // Never show back button - this is a standalone registration page
+    const showBackButton = false;
+
+    // Show loading state
+    if (loading) {
+        return (
+            <PageFrame
+                title="Đăng ký sự kiện TDSouth"
+                subtitle="Đang tải thông tin sự kiện..."
+                minHeight={420}
+            >
+                <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                    <div className="spinner" />
+                </div>
+            </PageFrame>
+        );
+    }
+
+    // Show error if no event ID in URL
+    if (!urlEvent) {
+        return (
+            <PageFrame
+                title="Đăng ký sự kiện TDSouth"
+                subtitle="Thiếu thông tin sự kiện"
+                minHeight={420}
+            >
+                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                    <h3>Không tìm thấy sự kiện</h3>
+                    <p style={{ color: 'var(--gray)' }}>
+                        Vui lòng sử dụng link đăng ký chính thức từ ban tổ chức.
+                    </p>
+                </div>
+            </PageFrame>
+        );
+    }
+
+    // Show error if event doesn't exist
+    if (!selectedEventInfo) {
+        return (
+            <PageFrame
+                title="Đăng ký sự kiện TDSouth"
+                subtitle="Không tìm thấy sự kiện"
+                minHeight={420}
+            >
+                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                    <h3>Sự kiện không tồn tại</h3>
+                    <p style={{ color: 'var(--gray)' }}>
+                        Sự kiện này có thể đã bị xóa hoặc link không hợp lệ.
+                    </p>
+                </div>
+            </PageFrame>
+        );
+    }
+
     return (
         <PageFrame
             title="Đăng ký sự kiện TDSouth"
             subtitle="Đăng ký sự kiện — mã mời của bạn sẽ được tạo ngay lập tức"
-            showBack
-            onBack={() => (window.location.hash = '#/events')}
+            showBack={showBackButton}
             minHeight={420}
         >
             {/* Event title & description (moved to reusable component) */}
-            <EventHeader config={selectedEventConfig} />
-            <div className="tds-register-grid">
-                <form className="tds-form" onSubmit={handleSubmit}>
+            <EventHeader eventInfo={selectedEventInfo} />
+            <div className="register-grid">
+                <form className="register-form" onSubmit={handleSubmit}>
                     <RegistrationFields
                         formData={formData}
                         handleChange={handleChange}
@@ -247,13 +337,20 @@ function RegisterForm({ event: propEvent } = {}) {
                         setPhotoFile={setPhotoFile}
                         uploading={uploading}
                         uploadProgress={uploadProgress}
+                        optOutCompany={optOutCompany}
+                        setOptOutCompany={setOptOutCompany}
+                        optOutPosition={optOutPosition}
+                        setOptOutPosition={setOptOutPosition}
+                        allowOptOutCompany={allowOptOutCompany}
+                        allowOptOutPosition={allowOptOutPosition}
+                        imageRequired={imageRequired}
                     />
 
-                    <div className="tds-field tds-field-full tds-actions">
+                    <div className="register-actions field-full actions">
                         <button
-                            className="tds-btn tds-btn-primary"
+                            className="ui-btn btn-primary"
                             type="submit"
-                            disabled={uploading}
+                            disabled={uploading || !isFormValid()}
                         >
                             Đăng ký & Tạo vé
                         </button>

@@ -1,37 +1,36 @@
-import React from 'react';
+import { normalizedDateString } from '../../utils/dateUtils';
 import './EventHeader.css';
-import { normalizedDateString } from '../../utils/stringUtils';
 
-export default function EventHeader({ config = {} }) {
-    const title = config.eventName || config.name || 'Sự kiện';
-    const desc = config.description || config.eventDescription || '';
+export default function EventHeader({ eventInfo = {} }) {
+    const title = eventInfo.name;
+    const desc = eventInfo.description;
 
     return (
-        <div className="tds-event-header">
+        <div className="event-header">
             <div>
-                <div className="tds-event-title">{title}</div>
-                {desc ? <div className="tds-event-description">{desc}</div> : null}
+                <div className="event-title">{title}</div>
+                {desc ? <div className="event-description">{desc}</div> : null}
             </div>
 
-            <div className="tds-event-meta">
-                {config.location ? (
-                    <div className="tds-meta-item">
-                        <div className="tds-meta-label">Địa điểm</div>
-                        <div className="tds-meta-value">{config.location}</div>
+            <div className="event-meta">
+                {eventInfo.location ? (
+                    <div className="meta-item">
+                        <div className="meta-label">Địa điểm</div>
+                        <div className="meta-value">{eventInfo.location}</div>
                     </div>
                 ) : null}
 
-                {config.eventDate ? (
-                    <div className="tds-meta-item">
-                        <div className="tds-meta-label">Ngày sự kiện</div>
-                        <div className="tds-meta-value">{normalizedDateString(config.eventDate)}</div>
+                {eventInfo.eventDate ? (
+                    <div className="meta-item">
+                        <div className="meta-label">Ngày sự kiện</div>
+                        <div className="meta-value">{normalizedDateString(eventInfo.eventDate)}</div>
                     </div>
                 ) : null}
 
-                {config.endDate ? (
-                    <div className="tds-meta-item">
-                        <div className="tds-meta-label">Hết hạn đăng ký</div>
-                        <div className="tds-meta-value">{normalizedDateString(config.endDate)}</div>
+                {eventInfo.endDate ? (
+                    <div className="meta-item">
+                        <div className="meta-label">Hết hạn đăng ký</div>
+                        <div className="meta-value">{normalizedDateString(eventInfo.endDate)}</div>
                     </div>
                 ) : null}
             </div>

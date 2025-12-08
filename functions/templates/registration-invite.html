@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Mã mời sự kiện TDSouth</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f4f4f4;
+            }
+            .container {
+                background-color: #ffffff;
+                border-radius: 8px;
+                padding: 30px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+                text-align: center;
+                border-bottom: 3px solid #e74c3c;
+                padding-bottom: 20px;
+                margin-bottom: 30px;
+            }
+            .header h1 {
+                color: #e74c3c;
+                margin: 0;
+                font-size: 28px;
+            }
+            .content {
+                margin-bottom: 30px;
+            }
+            .content p {
+                margin: 10px 0;
+            }
+            .event-details {
+                background-color: #f9f9f9;
+                border-left: 4px solid #e74c3c;
+                padding: 15px;
+                margin: 20px 0;
+            }
+            .event-details strong {
+                color: #e74c3c;
+            }
+            .qr-section {
+                text-align: center;
+                margin: 30px 0;
+                padding: 20px;
+                background-color: #f9f9f9;
+                border-radius: 8px;
+            }
+            .qr-section img {
+                max-width: 250px;
+                height: auto;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                padding: 10px;
+                background-color: white;
+            }
+            .qr-section p {
+                margin-top: 15px;
+                font-size: 14px;
+                color: #666;
+            }
+            .footer {
+                text-align: center;
+                padding-top: 20px;
+                border-top: 1px solid #ddd;
+                font-size: 12px;
+                color: #999;
+            }
+            .button {
+                display: inline-block;
+                padding: 12px 30px;
+                background-color: #e74c3c;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                margin: 20px 0;
+                font-weight: bold;
+            }
+            .button:hover {
+                background-color: #c0392b;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🎉 Mã Mời Sự Kiện</h1>
+                <p style="color: #666; margin-top: 10px">TDSouth Event Registration</p>
+            </div>
+
+            <div class="content">
+                <p>Xin chào <strong>{{name}}</strong>,</p>
+
+                <p>
+                    Cảm ơn bạn đã đăng ký tham dự sự kiện của TDSouth. Dưới đây là thông tin chi
+                    tiết về sự kiện:
+                </p>
+
+                <div class="event-details">
+                    <p><strong>Tên sự kiện:</strong> {{eventName}}</p>
+                    <p><strong>Mã sự kiện:</strong> {{eventID}}</p>
+                    <p><strong>Ngày diễn ra:</strong> {{eventDate}}</p>
+                    <p><strong>Địa điểm:</strong> {{eventLocation}}</p>
+                </div>
+
+                <p>
+                    Vui lòng mang theo mã QR dưới đây khi tham dự sự kiện. Bạn có thể lưu ảnh này
+                    hoặc hiển thị trên điện thoại khi đến check-in.
+                </p>
+            </div>
+
+            <div class="qr-section">
+                <p><strong>Mã QR của bạn:</strong></p>
+                <img src="{{qrCodeUrl}}" alt="QR Code" />
+                <p>Quét mã này tại quầy đăng ký sự kiện</p>
+            </div>
+
+            <div class="content">
+                <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email này.</p>
+
+                <p style="margin-top: 30px">
+                    Trân trọng,<br />
+                    <strong>TDSouth Team</strong>
+                </p>
+            </div>
+
+            <div class="footer">
+                <p>Email này được gửi tự động, vui lòng không trả lời.</p>
+                <p>&copy; 2025 TDSouth. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+</html>

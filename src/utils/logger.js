@@ -1,25 +1,25 @@
-const enabled = import.meta.env.VITE_PROJECT_PROD;
+const inProduction = import.meta.env.VITE_PROJECT_PROD;
 
 export const createLogger = (namespace) => ({
     log: (...args) => {
-        if (enabled) {
+        if (!inProduction) {
             console.log(`[${namespace}]`, ...args);
         }
     },
 
     warn: (...args) => {
-        if (enabled) {
+        if (!inProduction) {
             console.warn(`[${namespace}]`, ...args);
         }
     },
 
     error: (...args) => {
-        if (enabled) {
+        if (!inProduction) {
             console.error(`[${namespace}]`, ...args);
         }
     },
     debug: (...args) => {
-        if (enabled) {
+        if (!inProduction) {
             console.debug(`[${namespace}]`, ...args);
         }
     },

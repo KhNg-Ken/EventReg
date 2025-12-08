@@ -6,7 +6,7 @@ export default function AdminControls({ sortAsc = false, onToggleSort, onClearPo
     return (
         <div style={{ display: 'flex', gap: 8 }}>
             <button
-                className="tds-btn"
+                className="ui-btn"
                 onClick={() => {
                     logger.debug('Toggle sort clicked, current:', sortAsc);
                     if (typeof onToggleSort === 'function') onToggleSort();
@@ -16,7 +16,7 @@ export default function AdminControls({ sortAsc = false, onToggleSort, onClearPo
             </button>
 
             <button
-                className="tds-btn tds-btn-danger"
+                className="ui-btn btn-danger"
                 onClick={() => {
                     logger.debug('Clear poster clicked');
                     if (typeof onClearPoster === 'function') onClearPoster();

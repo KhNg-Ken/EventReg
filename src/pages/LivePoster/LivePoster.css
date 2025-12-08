@@ -1,0 +1,29 @@
+/* Page specific styles for LivePoster (kept minimal to separate concerns) */
+.liveposter-root {
+    padding: 8px;
+}
+
+/* Hide admin navbar when in fullscreen poster mode */
+.liveposter-fullscreen .admin-nav {
+    display: none !important;
+}
+
+/* Remove top padding that would be present with admin navbar */
+.liveposter-fullscreen .app-content {
+    padding-top: 0 !important;
+}
+
+/* Fullscreen container for poster */
+.liveposter-fullscreen-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 9999;
+}
+
+/* Reuse `.page-centered` and poster classes from Poster.css which are imported by Poster.jsx */

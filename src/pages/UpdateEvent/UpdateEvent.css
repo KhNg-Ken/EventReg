@@ -1,0 +1,58 @@
+/* Reuse CreateEvent look-and-feel: map EventForm classes to create-* visual tokens
+   This keeps layout consistent while reusing the EventForm component. */
+
+.create-form .field {
+    margin-bottom: 12px;
+}
+
+.create-form .subtitle {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--foreground, #111);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.create-form .input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 8px;
+    background: var(--input-bg, #fff);
+    color: var(--foreground, #111);
+    outline: none;
+}
+
+.create-form textarea.input {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.create-form .row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.create-form .col-email,
+.create-form .col-phone {
+    flex: 1;
+    min-width: 180px;
+}
+
+.create-form .actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Keep buttons consistent with CreateEvent */
+.create-form .ui-btn.btn-primary {
+    padding: 8px 14px;
+}
+
+@media (max-width: 640px) {
+    .create-form .row {
+        flex-direction: column;
+    }
+}

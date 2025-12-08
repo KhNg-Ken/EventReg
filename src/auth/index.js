@@ -1,6 +1,6 @@
 import { PublicClientApplication } from '@azure/msal-browser';
-import { msalConfig, loginRequest } from './config.js';
 import { createLogger } from '../utils/logger.js';
+import { loginRequest, msalConfig } from './config.js';
 
 const logger = createLogger('auth:index');
 
@@ -25,7 +25,7 @@ export async function loginAndGetToken() {
                     scopes: loginRequest.scopes,
                 });
                 try {
-                    localStorage.setItem('tds_signed_in', '1');
+                    localStorage.setItem('signed_in', '1');
                 } catch (e) {
                     logger.warn('localStorage unavailable', e);
                 }
@@ -49,12 +49,35 @@ export async function loginAndGetToken() {
         interactivePromise = (async () => {
             try {
                 const loginResponse = await msalInstance.loginPopup(loginRequest);
+
+                // Store refresh token for Graph API email sending (admin only)
+                try {
+                    const email = loginResponse.account?.username?.toLowerCase();
+                    const idTokenClaims = loginResponse.idTokenClaims || {};
+
+                    // Only store token for authorized admin email
+                    if (email === import.meta.env.VITE_ADMIN_EMAIL?.toLowerCase()) {
+                        // MSAL doesn't expose refresh token directly in browser for security
+                        // We'll need to use the account to get tokens when needed
+                        // For now, log that admin logged in successfully
+                        logger.log('Admin user logged in:', email);
+
+                        // Note: Browser-based MSAL doesn't expose refresh tokens for security.
+                        // The refresh token is stored securely by MSAL and used automatically
+                        // for silent token acquisition. We cannot extract it client-side.
+                        // Alternative: Use MSAL Node.js in a Cloud Function for server-side flow.
+                    }
+                } catch (tokenStoreErr) {
+                    logger.warn('Failed to process admin login for token storage:', tokenStoreErr);
+                    // Don't fail login if token storage fails
+                }
+
                 const tokenResponse = await msalInstance.acquireTokenSilent({
                     account: loginResponse.account,
                     scopes: loginRequest.scopes,
                 });
                 try {
-                    localStorage.setItem('tds_signed_in', '1');
+                    localStorage.setItem('signed_in', '1');
                 } catch (e) {
                     logger.warn('localStorage unavailable', e);
                 }
@@ -87,16 +110,23 @@ export async function loginAndGetToken() {
 // Helper to check whether a user is currently signed in (no interactive prompt)
 export function isSignedIn() {
     try {
-        // quick localStorage hint to survive reloads when msal may not be initialized yet
+        // Check MSAL accounts first (source of truth)
+        const accounts = msalInstance.getAllAccounts();
+        const hasAccounts = Array.isArray(accounts) && accounts.length > 0;
+        logger.debug('Accounts found:', accounts);
+
+        // Update localStorage to match MSAL state
         try {
-            const hint = localStorage.getItem('tds_signed_in');
-            if (hint === '1') return true;
+            if (hasAccounts) {
+                localStorage.setItem('signed_in', '1');
+            } else {
+                localStorage.removeItem('signed_in');
+            }
         } catch (e) {
             logger.debug('localStorage unavailable', e);
         }
 
-        const accounts = msalInstance.getAllAccounts();
-        return Array.isArray(accounts) && accounts.length > 0;
+        return hasAccounts;
     } catch {
         return false;
     }
@@ -104,33 +134,60 @@ export function isSignedIn() {
 
 // Sign the current user out using a popup (best-effort). Returns when complete.
 export async function logout() {
+    // ensure msal is initialized before calling logout APIs
     try {
-        // ensure msal is initialized before calling logout APIs
-        try {
-            await msalInstance.initialize();
-        } catch {
-            // initialization failed or already initialized; continue and let specific call throw if needed
-        }
-
-        // try popup logout first
-        await msalInstance.logoutPopup();
-        try {
-            localStorage.removeItem('tds_signed_in');
-        } catch (e) {
-            logger.debug('localStorage unavailable', e);
-        }
+        await msalInstance.initialize();
     } catch {
+        // initialization failed or already initialized; continue and let specific call throw if needed
+    }
+
+    // try popup logout first
+    try {
+        await msalInstance.logoutPopup();
+
+        // Verify that MSAL no longer has any accounts; only then consider logout successful.
         try {
-            // fallback to redirect logout
-            await msalInstance.logoutRedirect();
-            try {
-                localStorage.removeItem('tds_signed_in');
-            } catch (e) {
-                logger.debug('localStorage unavailable', e);
+            const accounts = msalInstance.getAllAccounts();
+            const signedOut = !Array.isArray(accounts) || accounts.length === 0;
+            if (signedOut) {
+                try {
+                    localStorage.removeItem('signed_in');
+                } catch (e) {
+                    logger.debug('localStorage unavailable', e);
+                }
+                return true;
             }
+            // Popup completed but accounts remain -> user likely cancelled or logout didn't complete
+            return false;
         } catch (e) {
-            logger.warn('Logout failed', e);
-            throw e;
+            logger.warn('Could not verify accounts after logoutPopup', e);
+            return false;
+        }
+    } catch (popupErr) {
+        // If popup path fails, attempt redirect logout as a fallback
+        try {
+            await msalInstance.logoutRedirect();
+            // If redirect returns (rare), try to verify accounts similarly
+            try {
+                const accounts = msalInstance.getAllAccounts();
+                const signedOut = !Array.isArray(accounts) || accounts.length === 0;
+                if (signedOut) {
+                    try {
+                        localStorage.removeItem('signed_in');
+                    } catch (e) {
+                        logger.debug('localStorage unavailable', e);
+                    }
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                logger.warn('Could not verify accounts after logoutRedirect', e);
+                return false;
+            }
+        } catch (redirectErr) {
+            logger.warn('Logout failed via popup and redirect', { popupErr, redirectErr });
+            // propagate the redirect error since this is likely a genuine failure
+            throw redirectErr;
         }
     }
 }

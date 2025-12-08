@@ -1,6 +1,7 @@
 import { getApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { createLogger } from '../utils/logger.js';
+import { sendEmailViaGraph } from './graphEmailUtils.js';
 
 const logger = createLogger('emailUtils');
 
@@ -27,6 +28,20 @@ export async function queueEmail({ to, templateId, data, subject, bodyText, body
         await addDoc(col, payload);
     } catch (err) {
         logger.warn('queueEmail failed', err);
+        throw err;
+    }
+}
+
+/**
+ * Send email via Microsoft Graph API using stored admin refresh token.
+ * Alternative to queueEmail that uses Graph API instead of SendGrid.
+ * @param {{to:string, templateName?:string, templateData?:object}} opts
+ */
+export async function sendGraphEmail({ to, templateName = 'registration-invite', templateData = {} } = {}) {
+    try {
+        return await sendEmailViaGraph({ to, templateName, templateData });
+    } catch (err) {
+        logger.warn('sendGraphEmail failed', err);
         throw err;
     }
 }

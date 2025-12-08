@@ -1,14 +1,14 @@
 :root {
-    --tds-red: #c8102e;
-    --tds-black: #111111;
-    --tds-gray: #6b6b6b;
-    --tds-light: #f5f5f6;
-    --tds-white: #ffffff;
+    --red: #c8102e;
+    --black: #111111;
+    --gray: #6b6b6b;
+    --light: #f5f5f6;
+    --white: #ffffff;
     --card-radius: 12px;
     --max-width: 760px;
 }
 
-.tds-form-wrap {
+.form-wrap {
     display: flex;
     align-items: flex-start; /* use top space so content sits near top */
     justify-content: center;
@@ -17,26 +17,26 @@
     box-sizing: border-box;
 }
 
-.tds-card {
-    background: linear-gradient(180deg, var(--tds-white), var(--tds-light));
+.ui-card {
+    background: linear-gradient(180deg, var(--white), var(--light));
     border-radius: var(--card-radius);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
     width: 98%;
     max-width: 1200px; /* occupy more horizontal space */
     padding: 1.75rem 2.25rem; /* tighten internal padding so content sits higher */
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-        'Helvetica Neue', Arial;
-    color: var(--tds-black);
+    /* inherit the global font stack for consistency */
+    font-family: inherit;
+    color: var(--black);
 }
 
-.tds-header {
+.header {
     display: flex;
     align-items: center;
     gap: 1rem;
     margin-bottom: 1.25rem;
 }
 
-.tds-logo {
+.ui-logo {
     width: 84px;
     height: 84px;
     border-radius: 10px;
@@ -47,24 +47,24 @@
     padding: 0;
 }
 
-.tds-logo img {
+.ui-logo img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     border-radius: 8px;
 }
 
-.tds-title {
+.ui-title {
     font-size: 1.25rem;
     font-weight: 700;
 }
-.tds-subtitle {
+.register-subtitle {
     font-size: 0.875rem;
-    color: var(--tds-gray);
+    color: var(--gray);
     white-space: pre-line;
 }
 
-.tds-form {
+.register-form {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -73,7 +73,7 @@
 }
 
 /* Layout for the registration page: form on left, QR panel on right */
-.tds-register-grid {
+.register-grid {
     display: grid;
     grid-template-columns: 1fr 320px;
     gap: 1.25rem;
@@ -87,7 +87,7 @@
    - src/styles/QRPanel.css
    These files are imported by their respective components. */
 
-.tds-btn {
+.ui-btn {
     padding: 0.8rem 1.1rem;
     border-radius: 10px;
     border: none;
@@ -95,19 +95,19 @@
     font-weight: 700;
 }
 
-.tds-btn-primary {
-    background: var(--tds-red);
-    color: var(--tds-white);
+.ui-btn-primary {
+    background: var(--red);
+    color: var(--white);
     box-shadow: 0 8px 20px rgba(200, 16, 46, 0.12);
 }
-.tds-btn-secondary {
+.ui-btn-secondary {
     background: transparent;
-    color: var(--tds-black);
+    color: var(--black);
     border: 1px solid #e6e6e6;
 }
 
 /* small back button (icon-only) */
-.tds-back-btn {
+.back-btn {
     padding: 0.45rem 0.6rem;
     border-radius: 8px;
     font-size: 1rem;
@@ -118,7 +118,7 @@
     justify-content: center;
 }
 
-.tds-invite {
+.invite {
     margin-top: 1.25rem;
     padding: 1rem;
     border-radius: 10px;
@@ -126,7 +126,7 @@
     border: 1px solid #eee;
 }
 
-.tds-qr img {
+.qr img {
     max-width: 280px;
     height: auto;
     border-radius: 8px;
@@ -134,49 +134,49 @@
 }
 
 /* Event card styles - subtle 3D lift and pop on hover/focus */
-.tds-event-card {
+.event-card {
     background: linear-gradient(180deg, #ffffff, #fbfbfb);
     transition: transform 180ms cubic-bezier(0.2, 0.9, 0.2, 1),
         box-shadow 180ms cubic-bezier(0.2, 0.9, 0.2, 1), border-color 160ms ease;
     will-change: transform, box-shadow;
 }
-.tds-event-card:hover {
+.event-card:hover {
     transform: translateY(-6px) scale(1.01);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.14);
     border-color: rgba(200, 16, 46, 0.12);
 }
-.tds-event-card:focus {
+.event-card:focus {
     outline: none;
     transform: translateY(-6px) scale(1.01);
     box-shadow: 0 22px 46px rgba(0, 0, 0, 0.16);
-    border-color: var(--tds-red);
+    border-color: var(--red);
 }
 
 /* Ensure buttons inside the card don't inherit pointer cursor from parent */
-.tds-event-card button {
+.event-card button {
     cursor: pointer;
 }
 
 @media (max-width: 720px) {
-    .tds-form {
+    .register-form {
         grid-column: 1 / -1;
         grid-template-columns: 1fr;
     }
-    .tds-logo {
+    .logo {
         width: 52px;
         height: 52px;
     }
-    .tds-card {
+    .card {
         padding: 1rem;
         width: 94%;
     }
-    .tds-register-grid {
+    .register-grid {
         grid-template-columns: 1fr;
     }
-    .tds-event-header {
+    .event-header {
         grid-template-columns: 1fr;
     }
-    .tds-event-meta {
+    .event-meta {
         grid-column: 1 / -1;
         margin-top: 6px;
         gap: 6px;

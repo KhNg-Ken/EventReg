@@ -1,11 +1,10 @@
 import QRCode from 'qrcode';
+import { createLogger } from '../utils/logger.js';
 import { deleteByToken, uploadToCloudinary } from './cloudinaryUtils.js';
 import { registerUserProxy } from './registerProxy.js';
 import { normalizePhone, sanitizeString } from './stringUtils.js';
-import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('registrationUtils');
-
 
 /**
  * Generate an invite ID in the format `INV{eventID}-{first8CharsOfToken}`
@@ -63,7 +62,7 @@ export async function generateHmacToken(message) {
  * @param {string} token
  * @returns {Promise<string|null>} data URL of generated QR code
  */
-export async function generateQr(eventID, phoneLast4, token) {
+export async function generateRegisterQr(eventID, phoneLast4, token) {
     try {
         let resultStr = eventID + phoneLast4 + token;
         return await QRCode.toDataURL(resultStr);
@@ -142,7 +141,7 @@ export async function compressImage(file, maxBytes = 4 * 1024 * 1024) {
  * Register an attendee under events/{eventDoc}/registrants with optional photo upload.
  * Returns { inviteId, token, qrCodeUrl }
  */
-export async function registerAttendee({ eventDoc, attendee, photoFile, onProgress } = {}) {
+export async function registerAttendee({ eventDoc, attendee, photoFile, onProgress, config } = {}) {
     const phoneNormalized = normalizePhone(attendee.phone || '');
     const phoneLast4 = phoneNormalized.slice(-4);
 
@@ -190,7 +189,7 @@ export async function registerAttendee({ eventDoc, attendee, photoFile, onProgre
     }
 
     // Generate QR data URL (used as fallback or for upload)
-    const qrDataUrl = await generateQr(eventID, phoneLast4, token);
+    const qrDataUrl = await generateRegisterQr(eventID, phoneLast4, token);
 
     // Try to upload the generated QR (data URI) to Cloudinary using unsigned preset 'reg_qr'
     // so emails receive a public HTTPS URL instead of a data URI which many email clients block.
@@ -235,45 +234,30 @@ export async function registerAttendee({ eventDoc, attendee, photoFile, onProgre
                 position: attendee.position || null,
                 company: attendee.company || null,
                 phoneLast4: phoneLast4 || null,
+                // include registrant display config (show/hide fields)
+                config: config || null,
             },
         };
         const res = await registerUserProxy(payload);
         if (res && res.inviteId) serverInviteId = res.inviteId;
     } catch (err) {
-        logger.error('Server registration failed, falling back to local storage', err);
-        // Attempt to clean up uploaded photo if possible
-        try {
-            const cn = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-            if (photoUploadInfo && photoUploadInfo.delete_token && cn) {
-                try {
+        logger.error('Server registration failed', err);
+
+        // Rollback: Clean up uploaded photo if it exists
+        if (photoUploadInfo && photoUploadInfo.delete_token) {
+            try {
+                const cn = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+                if (cn) {
                     await deleteByToken(cn, photoUploadInfo.delete_token);
-                } catch (e) {
-                    logger.warn('Immediate delete_by_token failed', e);
+                    logger.log('Photo upload rolled back successfully');
                 }
+            } catch (cleanupErr) {
+                logger.warn('Photo cleanup failed during rollback', cleanupErr);
             }
-        } catch (cleanupErr) {
-            logger.warn('Photo cleanup attempt failed', cleanupErr);
         }
-        try {
-            const key = `tds_registrations_${eventDoc || 'default'}`;
-            const raw = localStorage.getItem(key);
-            const list = raw ? JSON.parse(raw) : [];
-            const fallbackId = `TMP-${Date.now().toString(36)}-${Math.random()
-                .toString(36)
-                .slice(2, 8)}`;
-            list.push({
-                inviteId: fallbackId,
-                token,
-                attendee,
-                photoUrl,
-                qrCodeUrl,
-                createdAt: new Date().toISOString(),
-            });
-            localStorage.setItem(key, JSON.stringify(list));
-            serverInviteId = fallbackId;
-        } catch (e) {
-            logger.warn('Local fallback failed', e);
-        }
+
+        // Re-throw the error to cancel all subsequent operations (e.g., email sending)
+        throw err;
     }
 
     return { inviteId: serverInviteId, qrCodeUrl };

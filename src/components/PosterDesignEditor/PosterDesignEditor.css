@@ -1,0 +1,215 @@
+.poster-design-editor {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid var(--gray-light);
+}
+
+.editor-header {
+    margin-bottom: 20px;
+}
+
+.editor-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--black);
+}
+
+.editor-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+/* Controls Section */
+.editor-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.control-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-label {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Template buttons */
+.template-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.template-btn {
+    padding: 8px 12px;
+    border: 2px solid var(--gray-light);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.template-btn:hover {
+    border-color: var(--gray);
+    background: var(--light);
+}
+
+.template-btn.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+}
+
+/* Color controls */
+.color-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.color-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-label {
+    font-size: 12px;
+    color: var(--gray);
+    min-width: 80px;
+    text-transform: capitalize;
+}
+
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.color-picker {
+    width: 40px;
+    height: 36px;
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.color-text {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    max-width: 100px;
+}
+
+/* Field toggles */
+.field-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.field-toggle input[type='checkbox'] {
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
+.field-toggle span {
+    text-transform: capitalize;
+    color: #555;
+}
+
+/* Preview Section */
+.editor-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fafafa;
+}
+
+.preview-label {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.preview-container {
+    flex: 1;
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .editor-container {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-container {
+        min-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .poster-design-editor {
+        padding: 12px;
+    }
+
+    .editor-container {
+        gap: 12px;
+    }
+
+    .editor-controls {
+        gap: 12px;
+    }
+
+    .control-section {
+        gap: 8px;
+    }
+
+    .color-picker-wrapper {
+        flex-direction: column;
+    }
+
+    .color-text {
+        width: 100%;
+    }
+
+    .preview-container {
+        min-height: 300px;
+    }
+}

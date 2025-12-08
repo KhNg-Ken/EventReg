@@ -38,13 +38,14 @@ export async function listEvents() {
     return [{ id: 'EVT000000', name: 'TDSouth - Sample Event' }];
 }
 
-export async function readEventConfig(event) {
+export async function readEventInfo(event) {
     if (!event) return { eventName: null, imageRequired: false, tableName: null };
     try {
         const app = getApp();
         const db = getFirestore(app);
         const dref = firestoreDoc(db, 'events', event);
         const snap = await getDoc(dref);
+        console.log('readEventInfo:', snap.data());
         if (snap.exists()) return snap.data();
     } catch {
         // ignore
