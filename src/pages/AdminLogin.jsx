@@ -3,7 +3,7 @@ import { isSignedIn, loginAndGetToken, logout, msalInstance } from '../auth/inde
 import PageFrame from '../components/PageFrame/PageFrame.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useToast } from '../contexts/ToastContext.jsx';
-import { exchangeMsalTokenForFirebase, setAdminCustomClaims } from '../utils/firebaseAuthProxy.js';
+import { completeMsalAuthSetup } from '../utils/firebaseAuthProxy.js';
 import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('AdminLogin');
@@ -13,6 +13,7 @@ export default function AdminLogin({ onSignedIn } = {}) {
     const [loading, setLoading] = useState(false);
     const [accountName, setAccountName] = useState(null);
     const { isAdmin, loading: authLoading } = useAuth();
+
     useEffect(() => {
         // async init so we can await msal initialize before calling instance APIs
         (async () => {
@@ -78,15 +79,21 @@ export default function AdminLogin({ onSignedIn } = {}) {
                 throw new Error('Could not retrieve email from MSAL login');
             }
 
-            // Exchange MSAL token for Firebase custom token and sign in
-            logger.log('Exchanging MSAL token for Firebase token...');
+            // Complete MSAL authentication setup (token exchange + admin claims in parallel)
+            logger.log('Setting up Firebase authentication and permissions...');
             try {
-                await exchangeMsalTokenForFirebase(msalToken, accountEmail);
-                logger.log('Successfully signed in to Firebase');
-            } catch (firebaseErr) {
-                logger.warn('Failed to exchange token for Firebase:', firebaseErr);
+                const result = await completeMsalAuthSetup(msalToken, accountEmail);
+                logger.log('Successfully completed Firebase setup:', result);
+                if (!result.admin) {
+                    logger.warn('User is not an admin');
+                    showToast('Cảnh báo: Tài khoản của bạn không có quyền quản trị viên.', {
+                        type: 'warning',
+                    });
+                }
+            } catch (setupErr) {
+                logger.warn('Failed to complete Firebase setup:', setupErr);
                 showToast(
-                    'Cảnh báo: Không thể kết nối Firebase. Một số tính năng có thể không khả dụng.',
+                    'Cảnh báo: Có lỗi khi thiết lập tài khoản. Một số tính năng có thể không khả dụng.',
                     {
                         type: 'warning',
                     }
@@ -94,27 +101,13 @@ export default function AdminLogin({ onSignedIn } = {}) {
                 // Don't fail the whole login - MSAL succeeded, Firebase sync is secondary
             }
 
-            // Set admin custom claims
-            try {
-                logger.log('Setting admin custom claims for:', accountEmail);
-                await setAdminCustomClaims(accountEmail);
-                logger.log('Admin claims set successfully');
-            } catch (claimsErr) {
-                logger.warn('Failed to set admin claims:', claimsErr);
-                showToast(
-                    'Cảnh báo: Không thể thiết lập quyền quản trị viên. Vui lòng liên hệ quản lý.',
-                    {
-                        type: 'warning',
-                    }
-                );
-            }
+            setLoading(false);
 
             if (typeof onSignedIn === 'function') onSignedIn();
             return msalToken;
         } catch (err) {
             logger.error('Login failed', err);
             showToast('Đăng nhập thất bại. Vui lòng thử lại.', { type: 'error' });
-        } finally {
             setLoading(false);
         }
     }
@@ -151,6 +144,44 @@ export default function AdminLogin({ onSignedIn } = {}) {
         );
     }
 
+    if (loading) {
+        return (
+            <div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 9999,
+                }}
+            >
+                <div
+                    style={{
+                        backgroundColor: 'white',
+                        borderRadius: 8,
+                        padding: 32,
+                        textAlign: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                        minWidth: 300,
+                    }}
+                >
+                    <span className="spinner" aria-hidden="true" />
+                    <div style={{ marginTop: 16, fontSize: 16, fontWeight: 500 }}>
+                        Đang hoàn tất đăng nhập...
+                    </div>
+                    <div style={{ marginTop: 8, fontSize: 14, color: 'var(--tds-gray)' }}>
+                        Vui lòng đợi trong khi chúng tôi thiết lập tài khoản của bạn
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <PageFrame
             title="Quản trị viên / Đăng nhập"
@@ -166,6 +197,7 @@ export default function AdminLogin({ onSignedIn } = {}) {
                         <div style={{ display: 'flex', gap: 8 }}>
                             <button
                                 className="ui-btn btn-primary"
+                                disabled={loading}
                                 onClick={() =>
                                     typeof onSignedIn === 'function' ? onSignedIn() : null
                                 }

@@ -86,7 +86,63 @@ export async function setAdminCustomClaims(email) {
     }
 }
 
+/**
+ * Complete MSAL to Firebase authentication and admin setup in parallel
+ * This runs token exchange and admin claims setup simultaneously for faster execution
+ *
+ * @param {string} msalAccessToken - Access token from MSAL
+ * @param {string} email - User's email from MSAL
+ * @returns {Promise<{uid: string, email: string, admin: boolean}>} Firebase user info with admin status
+ */
+export async function completeMsalAuthSetup(msalAccessToken, email) {
+    try {
+        if (!msalAccessToken || !email) {
+            throw new Error('msalAccessToken and email are required');
+        }
+
+        logger.log('Starting parallel MSAL authentication setup for:', email);
+
+        // Run both Cloud Functions in parallel
+        const [exchangeResult, claimsResult] = await Promise.allSettled([
+            exchangeMsalTokenForFirebase(msalAccessToken, email),
+            setAdminCustomClaims(email),
+        ]);
+
+        // Check token exchange result (critical)
+        if (exchangeResult.status === 'rejected') {
+            logger.error('Token exchange failed:', exchangeResult.reason);
+            throw exchangeResult.reason;
+        }
+
+        const tokenData = exchangeResult.value;
+        logger.log('Token exchange succeeded');
+
+        // Check claims result (non-critical - warn but don't fail)
+        let isAdmin = false;
+        if (claimsResult.status === 'rejected') {
+            logger.warn('Admin claims setup failed:', claimsResult.reason);
+        } else {
+            isAdmin = claimsResult.value?.success === true;
+            logger.log('Admin claims setup succeeded:', isAdmin);
+        }
+
+        return {
+            uid: tokenData.uid,
+            email: tokenData.email,
+            admin: isAdmin,
+        };
+    } catch (err) {
+        logger.error('Failed to complete MSAL authentication setup:', err);
+        throw {
+            message: err?.message || 'Authentication setup failed',
+            code: err?.code || 'SETUP_FAILED',
+            original: err,
+        };
+    }
+}
+
 export default {
     exchangeMsalTokenForFirebase,
     setAdminCustomClaims,
+    completeMsalAuthSetup,
 };
