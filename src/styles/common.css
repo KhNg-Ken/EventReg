@@ -131,6 +131,7 @@
 
 .attendee-name {
     font-weight: 700;
+    color : var(--black);
 }
 
 .attendee-meta {
@@ -141,7 +142,7 @@
 .attendee-time {
     width: 180px;
     text-align: right;
-    color: #444;
+    color: var(--dark-gray);
 }
 
 .avatar-root {
@@ -169,6 +170,7 @@
     --black: #0b0b0b;
     --white: #ffffff;
     --gray: #666666;
+    --dark-gray: #444444;
 }
 
 .btn-secondary.danger {

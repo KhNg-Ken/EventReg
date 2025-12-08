@@ -17,9 +17,9 @@ import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('CheckInStatistics');
 const enablePosterChannel = new BroadcastChannel('enable-live-poster');
-let posterEnabled = true;
 
 export default function CheckInStatistics({ event: propEvent } = {}) {
+    const [enablePoster, setEnablePoster] = useState(true);
     const [eventDoc, setEventDoc] = useState(() => {
         try {
             if (propEvent) return propEvent;
@@ -54,7 +54,7 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
         const unsub = onSnapshot(
             q,
             async (snap) => {
-                posterEnabled = true;
+                setEnablePoster(true);
                 enablePosterChannel.postMessage({ type: 'enable' });
 
                 const rows = [];
@@ -112,11 +112,11 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
     async function togglePoster() {
         if (!isSignedIn()) return showToast('Admin access required', { type: 'error' });
         try {
-            if (posterEnabled) {
-                posterEnabled = false;
+            if (enablePoster) {
+                setEnablePoster(false);
                 enablePosterChannel.postMessage({ type: 'disable' });
             } else {
-                posterEnabled = true;
+                setEnablePoster(true);
                 enablePosterChannel.postMessage({ type: 'enable' });
             }
         } catch (err) {
@@ -146,7 +146,7 @@ export default function CheckInStatistics({ event: propEvent } = {}) {
                                     {sortAsc ? 'Sort: Oldest' : 'Sort: Newest'}
                                 </button>
                                 <button className="btn btn-danger" onClick={togglePoster}>
-                                    Clear Live Poster
+                                    {enablePoster ? 'Disable Live Poster' : 'Enable Live Poster'}
                                 </button>
                             </div>
                         </div>
