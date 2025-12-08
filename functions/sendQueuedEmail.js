@@ -2,7 +2,7 @@ import sgMail from '@sendgrid/mail';
 import dotenv from 'dotenv';
 import admin from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
-import { defineString } from 'firebase-functions/params';
+import { defineSecret, defineString } from 'firebase-functions/params';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 
 
@@ -14,7 +14,7 @@ admin.initializeApp();
 const env = import.meta.env || {};
 
 // Import SendGrid API key and From address from environment variables or Firebase params
-const sendgridKeyParam = defineString('SENDGRID_API_KEY');
+const sendgridKeyParam = defineSecret('SENDGRID_API_KEY');
 const sendgridFromParam = defineString('SENDGRID_FROM');
 const sendgridTemplateIdParam = defineString('SENDGRID_TEMPLATE_ID');
 

@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import admin from 'firebase-admin';
-import { defineString } from 'firebase-functions/params';
+import { defineSecret } from 'firebase-functions/params';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
 
 dotenv.config({ path: '.env' });
@@ -10,7 +10,7 @@ dotenv.config({ path: '.env' });
 const env = import.meta.env || {};
 
 // Optional reCAPTCHA secret (set as Firebase Functions param or env var)
-const recaptchaSecretParam = defineString('RECAPTCHA_SECRET');
+const recaptchaSecretParam = defineSecret('RECAPTCHA_SECRET');
 const getRecaptchaSecret = () =>
     (typeof recaptchaSecretParam?.value === 'function'
         ? recaptchaSecretParam.value()

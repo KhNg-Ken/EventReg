@@ -187,7 +187,7 @@ function RegisterForm() {
 
                         await sendGraphEmail({
                             to: email,
-                            templateName: 'registration-invite',
+                            templateName: '/unlayer/index', // path under email templates
                             templateData,
                         });
                     }

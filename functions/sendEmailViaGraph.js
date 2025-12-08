@@ -31,17 +31,25 @@ export const sendEmailViaGraph = onCall(
         const data = req.data || {};
 
         const to = data.to?.trim()?.toLowerCase();
-        const templateName = data.templateName?.trim() || 'registration-invite';
+        const templateName = data.templateName?.trim() || 'unlayer/index';
         const templateData = data.templateData || {};
 
         if (!to) {
             throw new HttpsError('invalid-argument', 'Missing recipient email (to)');
         }
 
+        // Ensure sender mailbox is configured (default placeholder will fail)
+        const adminEmail = azureEmail.value();
+        if (!adminEmail || adminEmail === 'example@tds.com') {
+            throw new HttpsError(
+                'failed-precondition',
+                'Azure admin email not configured. Set AZURE_ADMIN_EMAIL secret/param.'
+            );
+        }
+
         try {
             // Get refresh token from Firebase Secrets (environment variable)
             const refreshToken = msalRefreshToken.value();
-            const adminEmail = azureEmail.value();
 
             if (!refreshToken) {
                 throw new HttpsError(
@@ -92,7 +100,13 @@ export const sendEmailViaGraph = onCall(
 
             // Load email template from functions/templates/ folder
             const templatePath = join(__dirname, 'templates', `${templateName}.html`);
-            let htmlContent = await readFile(templatePath, 'utf-8');
+            let htmlContent;
+            try {
+                htmlContent = await readFile(templatePath, 'utf-8');
+            } catch (readErr) {
+                console.error('Template load failed:', { templatePath, readErr });
+                throw new HttpsError('not-found', `Email template not found: ${templateName}.html`);
+            }
 
             // Replace template variables (simple string replacement)
             Object.keys(templateData).forEach((key) => {
@@ -131,7 +145,11 @@ export const sendEmailViaGraph = onCall(
 
             if (!graphResponse.ok) {
                 const errorText = await graphResponse.text();
-                console.error('Graph API send failed:', errorText);
+                console.error('Graph API send failed:', {
+                    status: graphResponse.status,
+                    statusText: graphResponse.statusText,
+                    body: errorText,
+                });
                 throw new HttpsError('internal', 'Failed to send email via Graph API');
             }
 
