@@ -47,6 +47,10 @@ export default function RegistrationFields({
                     placeholder="Họ và tên"
                     value={formData.name}
                     onChange={handleChange}
+                    minLength="2"
+                    maxLength="100"
+                    pattern="[\\p{L}\\s'-]+"
+                    title="Vui lòng nhập tên hợp lệ (từ 2-100 ký tự, chỉ chứa chữ cái, khoảng trắng, gạch ngang hoặc dấu ngoặc kép)"
                     required
                 />
             </div>
@@ -59,6 +63,10 @@ export default function RegistrationFields({
                     placeholder="Chức vụ"
                     value={formData.position}
                     onChange={handleChange}
+                    minLength="2"
+                    maxLength="100"
+                    pattern="[\\p{L}\\s0-9'-]+"
+                    title="Vui lòng nhập chức vụ hợp lệ (từ 2-100 ký tự)"
                     required
                 />
                 {allowOptOutPosition && (
@@ -80,13 +88,17 @@ export default function RegistrationFields({
             </div>
 
             <div className="reg-field">
-                <Label required> Công ty</Label>
+                <Label required>Công ty</Label>
                 <input
                     name="company"
                     className="reg-input"
                     placeholder="Công ty"
                     value={formData.company}
                     onChange={handleChange}
+                    minLength="2"
+                    maxLength="100"
+                    pattern="[\\p{L}\\s0-9.&'-]+"
+                    title="Vui lòng nhập tên công ty hợp lệ (từ 2-100 ký tự)"
                     required
                 />
                 {allowOptOutCompany && (
@@ -117,6 +129,8 @@ export default function RegistrationFields({
                         placeholder="Email"
                         value={formData.email}
                         onChange={handleChange}
+                        maxLength="254"
+                        title="Vui lòng nhập địa chỉ email hợp lệ (ví dụ: abc@example.com)"
                         required
                     />
                 </div>
@@ -125,9 +139,12 @@ export default function RegistrationFields({
                     <input
                         name="phone"
                         className="reg-input"
+                        type="tel"
                         placeholder="Số điện thoại"
                         value={formData.phone}
                         onChange={handleChange}
+                        pattern="[0-9]{10,11}"
+                        title="Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số)"
                         required
                     />
                 </div>

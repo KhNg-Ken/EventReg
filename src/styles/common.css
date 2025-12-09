@@ -171,6 +171,7 @@
     --white: #ffffff;
     --gray: #666666;
     --dark-gray: #444444;
+    --light-gray: #e2e2e2;
 }
 
 .btn-secondary.danger {

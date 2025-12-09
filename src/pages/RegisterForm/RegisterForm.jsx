@@ -348,7 +348,7 @@ function RegisterForm() {
 
                     <div className="register-actions field-full actions">
                         <button
-                            className="ui-btn btn-primary"
+                            className="ui-btn-primary"
                             type="submit"
                             disabled={uploading || !isFormValid()}
                         >
