@@ -16,11 +16,11 @@
 }
 .event-name {
     font-weight: 700;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     font-size: 1.2rem;
     color: var(--black);
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 .event-meta {
     color: var(--gray);

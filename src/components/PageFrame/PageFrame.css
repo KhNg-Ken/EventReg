@@ -48,7 +48,7 @@
     pointer-events: auto;
     width: auto;
     max-width: 720px; /* comfortable single-column title width */
-    padding: 0 24px; /* breathing room when viewport is narrow */
+    padding: 0 80px; /* reserve space for back button and actions on sides */
 }
 
 .page-title {
@@ -62,7 +62,9 @@
     font-size: 0.95rem;
     color: var(--gray);
     margin-top: 4px;
-    white-space: pre-line;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .page-actions {
