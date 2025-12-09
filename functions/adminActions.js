@@ -1,12 +1,12 @@
 import admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import { HttpsError } from 'firebase-functions/v2/https';
 
-export function ensureAdmin(context) {
-    if (!context || !context.auth || !context.auth.token) {
-        throw new functions.https.HttpsError('unauthenticated', 'Authentication required');
+export function ensureAdmin(auth) {
+    if (!auth || !auth.token) {
+        throw new HttpsError('unauthenticated', 'Authentication required');
     }
-    if (!context.auth.token.admin) {
-        throw new functions.https.HttpsError('permission-denied', 'Admin privileges required');
+    if (!auth.token.admin) {
+        throw new HttpsError('permission-denied', 'Admin privileges required');
     }
 }
 
@@ -18,11 +18,12 @@ export function slugifyName(name) {
         .slice(0, 80);
 }
 
-export async function adminCreateEvent(data, context) {
-    ensureAdmin(context);
+export async function adminCreateEvent(request) {
+    ensureAdmin(request.auth);
+    const data = request.data;
     const name = data?.name;
     if (!name || !String(name).trim()) {
-        throw new functions.https.HttpsError('invalid-argument', 'Event name required');
+        throw new HttpsError('invalid-argument', 'Event name required');
     }
 
     // Prefer ISO fields when provided (client should send eventDateISO and eventDateTimezone).
@@ -42,7 +43,7 @@ export async function adminCreateEvent(data, context) {
     const docRef = admin.firestore().doc(`events/${docId}`);
     const snap = await docRef.get();
     if (snap.exists) {
-        throw new functions.https.HttpsError('already-exists', 'Event with this ID already exists');
+        throw new HttpsError('already-exists', 'Event with this ID already exists');
     }
 
     // Build canonical stored fields: a Firestore Timestamp for queries and ISO/timezone metadata
@@ -81,14 +82,15 @@ export async function adminCreateEvent(data, context) {
     return { docId, eventID };
 }
 
-export async function adminUpdateEvent(data, context) {
-    ensureAdmin(context);
+export async function adminUpdateEvent(request) {
+    ensureAdmin(request.auth);
+    const data = request.data;
     const id = data?.id;
-    if (!id) throw new functions.https.HttpsError('invalid-argument', 'Event id required');
+    if (!id) throw new HttpsError('invalid-argument', 'Event id required');
 
     const docRef = admin.firestore().doc(`events/${id}`);
     const snap = await docRef.get();
-    if (!snap.exists) throw new functions.https.HttpsError('not-found', 'Event not found');
+    if (!snap.exists) throw new HttpsError('not-found', 'Event not found');
 
     const update = {};
     if (data?.name) update.name = String(data.name);
@@ -134,14 +136,15 @@ export async function adminUpdateEvent(data, context) {
     return { id };
 }
 
-export async function adminDeleteEvent(data, context) {
-    ensureAdmin(context);
+export async function adminDeleteEvent(request) {
+    ensureAdmin(request.auth);
+    const data = request.data;
     const id = data?.id;
-    if (!id) throw new functions.https.HttpsError('invalid-argument', 'Event id required');
+    if (!id) throw new HttpsError('invalid-argument', 'Event id required');
 
     const docRef = admin.firestore().doc(`events/${id}`);
     const snap = await docRef.get();
-    if (!snap.exists) throw new functions.https.HttpsError('not-found', 'Event not found');
+    if (!snap.exists) throw new HttpsError('not-found', 'Event not found');
 
     await docRef.delete();
     return { id };

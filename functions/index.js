@@ -1,13 +1,14 @@
 import admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
+import { onCall } from 'firebase-functions/v2/https';
 import * as adminActions from './adminActions.js';
 import * as authActions from './authActions.js';
 
 admin.initializeApp();
 
-export const adminCreateEvent = functions.https.onCall(adminActions.adminCreateEvent);
-export const adminUpdateEvent = functions.https.onCall(adminActions.adminUpdateEvent);
-export const adminDeleteEvent = functions.https.onCall(adminActions.adminDeleteEvent);
+export const adminCreateEvent = onCall(adminActions.adminCreateEvent);
+export const adminUpdateEvent = onCall(adminActions.adminUpdateEvent);
+export const adminDeleteEvent = onCall(adminActions.adminDeleteEvent);
 export const setAdminClaims = authActions.setAdminClaims;
 export const exchangeTokenForFirebase = authActions.exchangeTokenForFirebase;
 /**
