@@ -16,7 +16,7 @@ export default function RegistrationFields({
     // event config flags (from event document)
     allowOptOutCompany = false,
     allowOptOutPosition = false,
-    imageRequired = false,
+    allowOptOutImage = false,
 }) {
     const fileInputRef = useRef(null);
 
@@ -134,8 +134,8 @@ export default function RegistrationFields({
             </div>
 
             <div className="reg-field reg-field-full">
-                <Label required={imageRequired}>
-                    Tải ảnh của bản thân {imageRequired ? '' : '(tùy chọn)'}
+                <Label required={!allowOptOutImage}>
+                    Tải ảnh của bản thân {!allowOptOutImage ? '' : '(tùy chọn)'}
                 </Label>
                 <input
                     ref={fileInputRef}
@@ -146,7 +146,7 @@ export default function RegistrationFields({
                         const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
                         setPhotoFile(file);
                     }}
-                    required={imageRequired}
+                    required={!allowOptOutImage}
                 />
                 <div style={{ fontSize: 12, color: 'var(--gray)', marginTop: 6 }}>
                     Nếu tải ảnh, ảnh sẽ được lưu trong thư mục sự kiện và đổi tên theo định dạng

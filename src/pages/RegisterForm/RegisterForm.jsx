@@ -53,7 +53,7 @@ function RegisterForm() {
     const eventConfig = selectedEventInfo?.config || {};
     const allowOptOutCompany = !!eventConfig.optionalCompany;
     const allowOptOutPosition = !!eventConfig.optionalPosition;
-    const imageRequired = !!eventConfig.optionalImage;
+    const allowOptOutImage = !!eventConfig.optionalImage;
 
     // Check if all mandatory fields are filled
     const isFormValid = () => {
@@ -81,7 +81,7 @@ function RegisterForm() {
         }
 
         // Image is required if event config demands it
-        if (imageRequired && !photoFile) {
+        if (!allowOptOutImage && !photoFile) {
             return false;
         }
 
@@ -119,7 +119,7 @@ function RegisterForm() {
         }
 
         // Enforce image requirement from event config
-        if (imageRequired && !photoFile) {
+        if (allowOptOutImage && !photoFile) {
             showToast('Ảnh là bắt buộc cho sự kiện này. Vui lòng tải ảnh lên.', { type: 'error' });
             return;
         }
@@ -343,7 +343,7 @@ function RegisterForm() {
                         setOptOutPosition={setOptOutPosition}
                         allowOptOutCompany={allowOptOutCompany}
                         allowOptOutPosition={allowOptOutPosition}
-                        imageRequired={imageRequired}
+                        allowOptOutImage={allowOptOutImage}
                     />
 
                     <div className="register-actions field-full actions">
