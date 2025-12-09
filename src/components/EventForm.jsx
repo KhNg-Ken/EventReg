@@ -139,7 +139,7 @@ export default function EventForm({
             </div>
 
             <div className="field">
-                <label className="subtitle">Trường bắt buộc</label>
+                <label className="subtitle">Trường tùy chọn</label>
                 <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <input
@@ -147,7 +147,7 @@ export default function EventForm({
                             checked={optionalCompany}
                             onChange={(e) => setOptionalCompany(e.target.checked)}
                         />{' '}
-                        Bắt buộc công ty
+                        Ẩn công ty
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <input
@@ -155,7 +155,7 @@ export default function EventForm({
                             checked={optionalPosition}
                             onChange={(e) => setOptionalPosition(e.target.checked)}
                         />{' '}
-                        Bắt buộc chức danh
+                        Ẩn chức danh
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <input
@@ -163,7 +163,7 @@ export default function EventForm({
                             checked={optionalImage}
                             onChange={(e) => setOptionalImage(e.target.checked)}
                         />{' '}
-                        Bắt buộc ảnh
+                        Ẩn ảnh
                     </label>
                 </div>
             </div>
