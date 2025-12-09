@@ -69,7 +69,7 @@ function CreateEvent() {
             // prepare shareable URL (include eventId in query string)
             try {
                 const url = new URL(window.location.href);
-                url.search = `eventId=${res.docId || ''}`;
+                url.hash = `#/register?event=${encodeURIComponent(res.docId || '')}`;
                 const shareUrl = url.toString();
                 setResult((prev) => ({ ...prev, shareUrl }));
 
@@ -85,10 +85,11 @@ function CreateEvent() {
                         // Convert data URL to Blob for upload
                         const blob = await (await fetch(dataUrl)).blob();
 
-                        // Upload to Cloudinary (folder: event_qr, publicId: docId)
+                        // Upload to Cloudinary (folder: form_qr, publicId: docId)
                         const uploadRes = await uploadToCloudinary(blob, {
-                            folder: 'event_qr',
+                            folder: 'form_qr',
                             publicId: res.docId,
+                            uploadPreset: 'form_qr',
                         });
 
                         const qrUrl = uploadRes?.secure_url || uploadRes?.url || null;

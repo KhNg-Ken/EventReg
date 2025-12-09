@@ -2,6 +2,7 @@ import { collection, getDocs, getFirestore, orderBy, query } from 'firebase/fire
 import { useEffect, useState } from 'react';
 import EventCard from '../components/EventCard/EventCard.jsx';
 import PageFrame from '../components/PageFrame/PageFrame.jsx';
+import QRLinkButton from '../components/QRLinkButton/QRLinkButton.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useToast } from '../contexts/ToastContext.jsx';
 import { app } from '../firebase/config.js';
@@ -183,32 +184,10 @@ export default function EventList() {
                     {events.map((ev) => {
                         const actions = (
                             <div style={{ display: 'inline-flex', gap: 8 }}>
-                                <button
-                                    className="ui-btn btn-secondary"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        // Copy registration link to clipboard
-                                        const regLink = `${window.location.origin}${
-                                            window.location.pathname
-                                        }#/register?event=${encodeURIComponent(ev.id)}`;
-                                        navigator.clipboard
-                                            .writeText(regLink)
-                                            .then(() => {
-                                                showToast('Đã sao chép link đăng ký!', {
-                                                    type: 'success',
-                                                });
-                                            })
-                                            .catch(() => {
-                                                showToast('Không thể sao chép link', {
-                                                    type: 'error',
-                                                });
-                                            });
-                                    }}
-                                    type="button"
-                                    title="Sao chép link đăng ký"
-                                >
-                                    📋 Link
-                                </button>
+                                <QRLinkButton
+                                    eventId={ev.id}
+                                    onError={(msg) => showToast(msg, { type: 'error' })}
+                                />
 
                                 <button
                                     className="ui-btn btn-secondary"

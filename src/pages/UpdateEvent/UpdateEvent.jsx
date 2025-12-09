@@ -61,6 +61,7 @@ export default function UpdateEvent({ event: propEventDoc } = {}) {
 
     return (
         <PageFrame
+            style={{ overflow: 'auto' }}
             title="Update Event"
             subtitle={`Editing ${propEventDoc || ''}`}
             showBack
