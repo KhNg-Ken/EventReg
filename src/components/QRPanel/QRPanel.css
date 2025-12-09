@@ -79,3 +79,36 @@
     border-radius: 8px;
     border: 1px solid #ddd;
 }
+
+/* Mobile responsiveness */
+@media (max-width: 720px) {
+    .qr-panel {
+        grid-column: 1 / -1;
+        min-height: 280px;
+        margin-top: 1rem;
+    }
+
+    .qr-placeholder {
+        max-width: 100%;
+        height: 280px;
+    }
+
+    .invite .qr {
+        width: 100%;
+        max-width: 280px;
+        height: 280px;
+        margin: 0 auto;
+    }
+
+    .qr-empty-icon {
+        font-size: 40px;
+    }
+
+    .qr-empty-text {
+        font-size: 0.85rem;
+    }
+
+    .success-note {
+        font-size: 0.8rem;
+    }
+}

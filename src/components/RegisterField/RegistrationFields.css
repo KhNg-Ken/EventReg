@@ -75,3 +75,37 @@ input.reg-input:-webkit-autofill:focus {
     font-weight: 600;
     font-size: 0.95rem;
 }
+
+/* Mobile responsiveness */
+@media (max-width: 720px) {
+    .reg-row {
+        flex-direction: column;
+        gap: 0.875rem;
+    }
+
+    .reg-col-email,
+    .reg-col-phone {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .reg-input {
+        padding: 0.8rem;
+        font-size: 1rem;
+        width: 100%;
+    }
+
+    .reg-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .reg-actions button {
+        width: 100%;
+    }
+
+    .reg-subtitle {
+        font-size: 0.9rem;
+    }
+}
