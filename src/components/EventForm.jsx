@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { formatForDatetimeLocal, toDateObject } from '../utils/dateUtils.js';
 
 export default function EventForm({
@@ -31,24 +33,17 @@ export default function EventForm({
 
     function handleSubmit(e) {
         e && e.preventDefault();
-        // Build ISO/timezone metadata for server (Option B)
-        const tz =
-            typeof Intl !== 'undefined' && Intl.DateTimeFormat
-                ? Intl.DateTimeFormat().resolvedOptions().timeZone
-                : null;
-
-        const eventDateISO = eventDate ? new Date(eventDate).toISOString() : null;
-        const endDateISO = endDate ? new Date(endDate).toISOString() : null;
+        // Convert datetime-local string (YYYY-MM-DDTHH:mm) to Date object to preserve local time
+        const eventDateObj = eventDate ? new Date(eventDate) : null;
+        const endDateObj = endDate ? new Date(endDate) : null;
 
         const payload = {
             name: name.trim(),
             description: description || '',
             location: location || '',
-            // Prefer ISO/timezone pair; server will create Firestore Timestamp from ISO
-            eventDateISO: eventDateISO,
-            eventDateTimezone: eventDateISO ? tz : null,
-            endDateISO: endDateISO,
-            endDateTimezone: endDateISO ? tz : null,
+            // Send Date objects directly - Firestore will store as Timestamp in local time
+            eventDate: eventDateObj,
+            endDate: endDateObj,
             optionalCompany,
             optionalPosition,
             optionalImage,
@@ -84,20 +79,52 @@ export default function EventForm({
             <div className="row">
                 <div className="field col-email">
                     <label className="subtitle">Ngày diễn ra</label>
-                    <input
-                        type="datetime-local"
-                        className="input"
-                        value={eventDate}
-                        onChange={(e) => setEventDate(e.target.value)}
+                    <DatePicker
+                        selected={eventDate ? new Date(eventDate) : null}
+                        onChange={(date) => {
+                            if (date) {
+                                // Format: YYYY-MM-DDTHH:mm for datetime-local format
+                                const year = date.getFullYear();
+                                const month = String(date.getMonth() + 1).padStart(2, '0');
+                                const day = String(date.getDate()).padStart(2, '0');
+                                const hours = String(date.getHours()).padStart(2, '0');
+                                const minutes = String(date.getMinutes()).padStart(2, '0');
+                                const iso = `${year}-${month}-${day}T${hours}:${minutes}`;
+                                setEventDate(iso);
+                            } else {
+                                setEventDate('');
+                            }
+                        }}
+                        showTimeSelect
+                        timeIntervals={15}
+                        dateFormat="dd/MM/yyyy hh:mm a"
+                        placeholderText="Chọn ngày diễn ra"
+                        className="input datepicker-input"
                     />
                 </div>
                 <div className="field col-phone">
                     <label className="subtitle">Kết thúc đăng ký</label>
-                    <input
-                        type="datetime-local"
-                        className="input"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
+                    <DatePicker
+                        selected={endDate ? new Date(endDate) : null}
+                        onChange={(date) => {
+                            if (date) {
+                                // Format: YYYY-MM-DDTHH:mm for datetime-local format
+                                const year = date.getFullYear();
+                                const month = String(date.getMonth() + 1).padStart(2, '0');
+                                const day = String(date.getDate()).padStart(2, '0');
+                                const hours = String(date.getHours()).padStart(2, '0');
+                                const minutes = String(date.getMinutes()).padStart(2, '0');
+                                const iso = `${year}-${month}-${day}T${hours}:${minutes}`;
+                                setEndDate(iso);
+                            } else {
+                                setEndDate('');
+                            }
+                        }}
+                        showTimeSelect
+                        timeIntervals={15}
+                        dateFormat="dd/MM/yyyy hh:mm a"
+                        placeholderText="Chọn hạn đăng ký"
+                        className="input datepicker-input"
                     />
                 </div>
             </div>

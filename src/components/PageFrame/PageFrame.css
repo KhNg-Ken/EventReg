@@ -94,9 +94,6 @@
 }
 
 :root.admin-theme .page-header {
-    z-index: 1200;
-    backdrop-filter: blur(6px);
-    background: rgba(255, 255, 255, 0.66);
     padding-top: 40px;
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.04);

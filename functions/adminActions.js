@@ -26,13 +26,8 @@ export async function adminCreateEvent(request) {
         throw new HttpsError('invalid-argument', 'Event name required');
     }
 
-    // Prefer ISO fields when provided (client should send eventDateISO and eventDateTimezone).
-    // Fall back to legacy `eventDate` when ISO is not present.
-    const eventDateForId = data?.eventDateISO
-        ? new Date(data.eventDateISO)
-        : data?.eventDate
-        ? new Date(data.eventDate)
-        : new Date();
+    // Handle date for event ID generation
+    const eventDateForId = data?.eventDate ? new Date(data.eventDate) : new Date();
 
     const yy = String(eventDateForId.getFullYear()).slice(-2);
     const mm = String(eventDateForId.getMonth() + 1).padStart(2, '0');
@@ -46,25 +41,20 @@ export async function adminCreateEvent(request) {
         throw new HttpsError('already-exists', 'Event with this ID already exists');
     }
 
-    // Build canonical stored fields: a Firestore Timestamp for queries and ISO/timezone metadata
-    const eventDateISO =
-        data?.eventDateISO || (data?.eventDate ? new Date(data.eventDate).toISOString() : null);
-    const eventDateTz = data?.eventDateTimezone || null;
-    const endDateISO =
-        data?.endDateISO || (data?.endDate ? new Date(data.endDate).toISOString() : null);
-    const endDateTz = data?.endDateTimezone || null;
+    // Convert Date objects to Firestore Timestamps
+    const eventDateTimestamp = data?.eventDate
+        ? admin.firestore.Timestamp.fromDate(new Date(data.eventDate))
+        : null;
+    const endDateTimestamp = data?.endDate
+        ? admin.firestore.Timestamp.fromDate(new Date(data.endDate))
+        : null;
 
     const payload = {
         name: String(name),
         description: data?.description || '',
-        // Timestamp fields for querying/sorting
-        eventDate: eventDateISO ? admin.firestore.Timestamp.fromDate(new Date(eventDateISO)) : null,
-        endDate: endDateISO ? admin.firestore.Timestamp.fromDate(new Date(endDateISO)) : null,
-        // ISO and timezone metadata (Option B - client formats for display)
-        eventDateISO: eventDateISO,
-        eventDateTimezone: eventDateTz,
-        endDateISO: endDateISO,
-        endDateTimezone: endDateTz,
+        // Timestamp fields for querying/sorting - stored in local time
+        eventDate: eventDateTimestamp,
+        endDate: endDateTimestamp,
         eventID,
         // New structured config object (optionalX = true means the field is optional for users)
         config: {
@@ -100,17 +90,7 @@ export async function adminUpdateEvent(request) {
         update.location = data.location || '';
     if (data?.eventDate)
         update.eventDate = admin.firestore.Timestamp.fromDate(new Date(data.eventDate));
-    if (data?.eventDateISO) {
-        update.eventDate = admin.firestore.Timestamp.fromDate(new Date(data.eventDateISO));
-        update.eventDateISO = data.eventDateISO;
-        update.eventDateTimezone = data.eventDateTimezone || null;
-    }
     if (data?.endDate) update.endDate = admin.firestore.Timestamp.fromDate(new Date(data.endDate));
-    if (data?.endDateISO) {
-        update.endDate = admin.firestore.Timestamp.fromDate(new Date(data.endDateISO));
-        update.endDateISO = data.endDateISO;
-        update.endDateTimezone = data.endDateTimezone || null;
-    }
     if (Object.prototype.hasOwnProperty.call(data, 'requireCompany'))
         update.requireCompany = !!data.requireCompany;
     if (Object.prototype.hasOwnProperty.call(data, 'requirePosition'))

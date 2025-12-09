@@ -37,13 +37,9 @@ function CreateEvent() {
             setResult(null);
 
             // Call server callable to create event document
-            const tz =
-                typeof Intl !== 'undefined' && Intl.DateTimeFormat
-                    ? Intl.DateTimeFormat().resolvedOptions().timeZone
-                    : null;
-            // Convert YYYY-MM-DDTHH:mm format to ISO string by appending :00.000Z
-            const eventDateISO = eventDate ? `${eventDate}:00.000Z` : null;
-            const endDateISO = endDate ? `${endDate}:00.000Z` : null;
+            // Convert YYYY-MM-DDTHH:mm format to Date object to preserve local time
+            const eventDateObj = eventDate ? new Date(eventDate) : null;
+            const endDateObj = endDate ? new Date(endDate) : null;
 
             const res = await adminCreateEvent({
                 name: eventName.trim(),
@@ -57,11 +53,9 @@ function CreateEvent() {
                 },
                 // Default poster configuration for new events
                 posterConfig: DEFAULT_POSTER_CONFIG,
-                // include ISO/timezone fields so server can persist Timestamp + metadata
-                eventDateISO: eventDateISO,
-                eventDateTimezone: eventDateISO ? tz : null,
-                endDateISO: endDateISO,
-                endDateTimezone: endDateISO ? tz : null,
+                // Send Date objects directly - Firestore will store as Timestamp in local time
+                eventDate: eventDateObj,
+                endDate: endDateObj,
                 status: 'ongoing',
             });
 
