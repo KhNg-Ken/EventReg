@@ -130,7 +130,7 @@ export default function AdminLogin({ onSignedIn } = {}) {
     if (authLoading) {
         return (
             <PageFrame
-                title="Quản trị viên / Đăng nhập"
+                title="Đăng nhập quản trị viên"
                 subtitle="Đang kiểm tra trạng thái đăng nhập…"
                 minHeight={360}
             >
@@ -184,11 +184,10 @@ export default function AdminLogin({ onSignedIn } = {}) {
 
     return (
         <PageFrame
-            title="Quản trị viên / Đăng nhập"
-            subtitle="Đăng nhập bằng Microsoft để quản lý sự kiện"
-            minHeight={360}
+            title="Đăng nhập quản trị viên"
+            subtitle="Đăng nhập bằng tài khoản công ty để tiếp tục"
         >
-            <div style={{ marginTop: 12 }}>
+            <div style={{ width: 'auto'}}>
                 {signedIn ? (
                     <div>
                         <div style={{ marginBottom: 8, fontSize: 14 }}>
@@ -214,18 +213,14 @@ export default function AdminLogin({ onSignedIn } = {}) {
                         </div>
                     </div>
                 ) : (
-                    <div>
-                        <div style={{ marginBottom: 12, color: 'var(--gray)' }}>
-                            Đăng nhập bằng tài khoản Microsoft để truy cập trang quản lý sự kiện.
-                        </div>
-                        <button
-                            className="ui-btn btn-primary"
-                            onClick={handleSignIn}
-                            disabled={loading}
-                        >
-                            {loading ? 'Đang đăng nhập...' : 'Đăng nhập bằng Microsoft'}
-                        </button>
-                    </div>
+                    <button
+                        className="ui-btn btn-primary"
+                        onClick={handleSignIn}
+                        disabled={loading}
+                    >
+                        {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                    </button>
+
                 )}
             </div>
         </PageFrame>

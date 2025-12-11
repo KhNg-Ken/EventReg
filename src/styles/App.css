@@ -1,8 +1,29 @@
-#root {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 2rem;
-    text-align: center;
+.app-content {
+    height: 100%;
+    min-width: 100%;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(240, 240, 240, 0);
+    color: var(--white);
+    overflow: visible;
+}
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    flex: 1;
+    padding-top: 0;
+    margin: 0;
+    transition: padding-top 0.18s ease;
+    box-sizing: border-box;
+}
+
+.page-wrapper.has-admin-nav {
+    padding-top: var(--admin-nav-offset);
 }
 
 .logo {
@@ -38,5 +59,31 @@
 }
 
 .read-the-docs {
-    color: #888;
+    color: #0000;
+}
+
+/* Don't use shorthand padding on page-wrapper */
+@media (max-width: 1920px) {
+    .page-wrapper {
+        padding-left: 28px;
+        padding-right: 28px;
+        padding-bottom: 28px;
+        /* padding-top is controlled by has-admin-nav */
+    }
+}
+
+@media (min-width: 1921px) and (max-width: 2560px) {
+    .page-wrapper {
+        padding-left: 36px;
+        padding-right: 36px;
+        padding-bottom: 36px;
+    }
+}
+
+@media (min-width: 2561px) {
+    .page-wrapper {
+        padding-left: 48px;
+        padding-right: 48px;
+        padding-bottom: 48px;
+    }
 }

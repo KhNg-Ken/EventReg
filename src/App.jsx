@@ -7,20 +7,25 @@ import { ToastProvider } from './contexts/ToastContext.jsx';
 import AdminLogin from './pages/AdminLogin.jsx';
 import CheckInStatistics from './pages/CheckInStatistics.jsx';
 import CreateEvent from './pages/CreateEvent/CreateEvent.jsx';
-import EventList from './pages/EventList.jsx';
+import EventList from './pages/EventList/EventList.jsx';
 import LivePoster from './pages/LivePoster/LivePoster.jsx';
 import PosterDesign from './pages/PosterDesign/PosterDesign.jsx';
 import RegisterForm from './pages/RegisterForm/RegisterForm.jsx';
 import UpdateEvent from './pages/UpdateEvent/UpdateEvent.jsx';
+import WorkInProgress from './pages/WorkInProgress.jsx';
+import './styles/App.css';
 import { createLogger } from './utils/logger.js';
 
 const logger = createLogger('App');
+
+// Toggle this to switch between WorkInProgress and full app
+const SHOW_WIP = import.meta.env.VITE_WIP_MODE === 'true';
 
 function parseHash() {
     const raw = window.location.hash || '#/events';
     const noHash = raw.startsWith('#') ? raw.slice(1) : raw;
     const [path, q] = noHash.split('?');
-    const page = (path || '/login').replace(/\//g, '') || 'login';
+    const page = (path || '/empty').replace(/\//g, '') || 'empty';
     const params = {};
     if (q) {
         try {
@@ -68,7 +73,7 @@ function AppContent() {
         window.addEventListener('hashchange', onHash);
         // sync initial: if there's no hash, route to the public events list
         if (!window.location.hash || window.location.hash === '#') {
-            navigateTo('/events');
+            navigateTo('/empty');
         }
         onHash();
         return () => window.removeEventListener('hashchange', onHash);
@@ -141,51 +146,71 @@ function AppContent() {
     }
 
     return (
-        <div>
-            {logger.log('Admin status:', isAdmin)}
-            <AdminNavBar
-                accountName={accountName}
-                handleLogout={handleLogout}
-                navigateTo={navigateTo}
-            />
-            <main className="app-content">
-                {page === 'login' && <AdminLogin onSignedIn={handleSignedIn} />}
-                {page === 'events' && (
-                    <EventList
-                        onSelectEvent={(ev) => {
-                            // navigate with event in hash so RegisterForm can read it from URL
-                            navigateTo(`/register?event=${encodeURIComponent(ev.id)}`);
-                        }}
-                    />
-                )}
-                {page === 'register' && <RegisterForm event={selectedEvent} />}
-                {page === 'create' && (
-                    <ProtectedRoute adminOnly loadingFallback={null}>
-                        <CreateEvent />
-                    </ProtectedRoute>
-                )}
+        <main className={`app-content`}>
+            {isAdmin && (
+                <AdminNavBar
+                    accountName={accountName}
+                    handleLogout={handleLogout}
+                    navigateTo={navigateTo}
+                />
+            )}
 
-                {page === 'update' && (
-                    <ProtectedRoute adminOnly loadingFallback={null}>
-                        <UpdateEvent event={selectedEvent} />
-                    </ProtectedRoute>
-                )}
+            <div className={`page-wrapper ${isAdmin ? 'has-admin-nav' : ''}`}>
+                {SHOW_WIP ? (
+                    <WorkInProgress />
+                ) : (
+                    <>
+                        {page === 'login' && <AdminLogin onSignedIn={handleSignedIn} />}
+                        {page === 'events' && (
+                            <EventList
+                                onSelectEvent={(ev) => {
+                                    // navigate with event in hash so RegisterForm can read it from URL
+                                    navigateTo(`/register?event=${encodeURIComponent(ev.id)}`);
+                                }}
+                            />
+                        )}
+                        {page === 'register' && <RegisterForm event={selectedEvent} />}
+                        {page === 'create' && (
+                            <ProtectedRoute adminOnly loadingFallback={null}>
+                                <CreateEvent />
+                            </ProtectedRoute>
+                        )}
 
-                {page === 'liveposter' && <LivePoster />}
+                        {page === 'update' && (
+                            <ProtectedRoute adminOnly loadingFallback={null}>
+                                <UpdateEvent event={selectedEvent} />
+                            </ProtectedRoute>
+                        )}
 
-                {page === 'posterdesign' && (
-                    <ProtectedRoute adminOnly loadingFallback={null}>
-                        <PosterDesign />
-                    </ProtectedRoute>
-                )}
+                        {page === 'liveposter' && <LivePoster />}
 
-                {page === 'checkin-statistics' && (
-                    <ProtectedRoute adminOnly loadingFallback={null}>
-                        <CheckInStatistics event={selectedEvent} />
-                    </ProtectedRoute>
+                        {page === 'posterdesign' && (
+                            <ProtectedRoute adminOnly loadingFallback={null}>
+                                <PosterDesign />
+                            </ProtectedRoute>
+                        )}
+
+                        {page === 'checkin-statistics' && (
+                            <ProtectedRoute adminOnly loadingFallback={null}>
+                                <CheckInStatistics event={selectedEvent} />
+                            </ProtectedRoute>
+                        )}
+
+                        {/* Default fallback for all other routes */}
+                        {![
+                            'login',
+                            'events',
+                            'register',
+                            'create',
+                            'update',
+                            'liveposter',
+                            'posterdesign',
+                            'checkin-statistics',
+                        ].includes(page) && <div className="empty-page">Page not found.</div>}
+                    </>
                 )}
-            </main>
-        </div>
+            </div>
+        </main>
     );
 }
 

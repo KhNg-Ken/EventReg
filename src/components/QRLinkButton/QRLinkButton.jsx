@@ -38,7 +38,7 @@ export default function QRLinkButton({ eventId, onError = null }) {
     return (
         <div className="qr-link-button-group">
             <button
-                className="qr-link-button qr-button"
+                className="qr-link-button qr-copy-btn"
                 onClick={(e) => {
                     e.stopPropagation();
                     generateAndDownloadQR();
@@ -47,11 +47,11 @@ export default function QRLinkButton({ eventId, onError = null }) {
                 title="Download QR code"
                 type="button"
             >
-                {isGenerating ? '⏳' : '📱'} QR Code
+                {isGenerating ? '⏳' : '📱'} QR
             </button>
             <div className="qr-link-divider" />
             <button
-                className="qr-link-button link-button"
+                className="qr-link-button link-copy-btn"
                 onClick={(e) => {
                     e.stopPropagation();
                     // Copy registration link to clipboard

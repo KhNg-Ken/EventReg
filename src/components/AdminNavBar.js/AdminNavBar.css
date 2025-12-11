@@ -1,12 +1,18 @@
 /* AdminNavBar specific styles (moved out of common.css) */
+:root.has-admin-nav {
+    --admin-nav-offset: 64px; /* height of admin nav bar to offset page content */
+}
+
 .admin-nav {
+    box-sizing: border-box;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 99999; /* ensure nav is top-most and cannot be overlapped */
     display: flex;
-    height: 64px; /* fixed height to match header sticky offset */
+    height: 64px;
+    min-height: 56px;
     align-items: center;
     justify-content: space-between;
     padding: 8px 16px;
@@ -67,27 +73,31 @@
     box-shadow: 0 4px 18px rgba(2, 6, 23, 0.45);
 }
 
-/* Ensure content below nav isn't obscured (App.jsx renders nav first) */
-
-/* Global rule when admin nav is present - ensure app content is pushed down */
-.has-admin-nav {
-    /* expose a CSS variable so other components can size against the nav */
-    --admin-nav-offset: 88px;
-}
-
-.has-admin-nav .app-content {
-    padding-top: var(--admin-nav-offset) !important; /* reserve nav height + breathing room */
-}
-
-/* default padding for app content so pages keep their spacing without inline style */
-.app-content {
-    padding: 20px;
-}
-
 .admin-nav-hidden {
     display: none;
 }
 
 .admin-nav-visible {
     display: flex;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    :root.has-admin-nav {
+        --admin-nav-offset: 56px;
+    }
+    .admin-nav {
+        height: 56px;
+        padding: 10px 12px;
+    }
+}
+
+@media (min-width: 1921px) {
+    :root.has-admin-nav {
+        --admin-nav-offset: 72px;
+    }
+    .admin-nav {
+        height: 72px;
+        padding: 14px 20px;
+    }
 }

@@ -131,7 +131,7 @@
 
 .attendee-name {
     font-weight: 700;
-    color : var(--black);
+    color: var(--black);
 }
 
 .attendee-meta {
@@ -174,7 +174,7 @@
     --light-gray: #e2e2e2;
 }
 
-.btn-secondary.danger {
+.btn-danger {
     background: #e03e3e;
     color: var(--white);
     box-shadow: 0 8px 20px rgba(224, 62, 62, 0.12);

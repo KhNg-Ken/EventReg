@@ -232,7 +232,7 @@ export default function EventList() {
                                     Edit
                                 </button>
                                 <button
-                                    className="ui-btn danger btn-secondary "
+                                    className="ui-btn btn-danger btn-secondary "
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         handleDeleteEvent(ev.id);

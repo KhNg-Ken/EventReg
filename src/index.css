@@ -1,4 +1,10 @@
 :root {
+    height: 100%;
+    width: 100%;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
+
     /* Harmonized, readable stack with Vietnamese support */
     font-family: 'Inter', 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto,
         'Helvetica Neue', Arial, sans-serif;
@@ -24,13 +30,16 @@ a:hover {
     color: #535bf2;
 }
 
+html,
 body {
+    min-width: 100%;
+    min-height: 100%;
     margin: 0;
     display: flex;
-    align-items: center; /* vertical centering */
-    justify-content: center; /* horizontal centering */
-    min-width: 320px;
-    min-height: 100vh;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
 }
 
 h1 {

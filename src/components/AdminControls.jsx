@@ -22,7 +22,7 @@ export default function AdminControls({ sortAsc = false, onToggleSort, onClearPo
                     if (typeof onClearPoster === 'function') onClearPoster();
                 }}
             >
-                Clear Live Poster
+                Toggle Live Poster
             </button>
         </div>
     );

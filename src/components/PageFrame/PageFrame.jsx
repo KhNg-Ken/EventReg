@@ -5,7 +5,6 @@ export default function PageFrame({
     subtitle,
     actions,
     children,
-    minHeight = 360,
     showBack = false,
     onBack = null,
 }) {
@@ -45,13 +44,6 @@ export default function PageFrame({
             <main
                 className="page-content"
                 role="main"
-                style={{
-                    padding: 16,
-                    minHeight,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 12,
-                }}
             >
                 {children}
             </main>

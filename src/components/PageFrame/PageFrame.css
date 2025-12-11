@@ -1,8 +1,7 @@
 /* PageFrame component styles */
 
 :root {
-    --page-max-width: 1400px;
-    --page-gutter: 20px;
+    --page-gutter: 2%;
     /* default page vertical offset; prefers `--admin-nav-offset` when present */
     --page-vertical-offset: var(--admin-nav-offset, 0px);
 }
@@ -10,13 +9,8 @@
 .page {
     box-sizing: border-box;
     width: 100%;
-    max-width: var(--page-max-width);
-    /* ensure the full-page frame fills the viewport excluding the admin nav height
-       when present. Uses `--admin-nav-offset` set on the root when admin nav exists. */
-    min-height: calc(100vh - var(--page-vertical-offset));
-    /* rely on .app-content padding to reserve space for the navbar; remove top margin */
-    margin: 0 auto 40px;
-    padding: 18px var(--page-gutter);
+    height: auto;
+    padding: var(--page-gutter);
     display: block;
     background: var(--white);
     /* ensure the white background doesn't bleed behind rounded corners or borders */
@@ -29,7 +23,7 @@
     /* centered title with anchored left/right controls: header is a positioned block */
     position: relative;
     display: block;
-    padding: 36px 0 18px; /* extra top/bottom padding so title clears rounded corner and spacing below */
+    padding: 0% 0 1%; /* extra top/bottom padding so title clears rounded corner and spacing below */
     background: transparent;
     transition: box-shadow 160ms ease, background 160ms ease;
 }
@@ -89,41 +83,185 @@
 }
 
 .page-content {
-    width: 100%;
     box-sizing: border-box;
-    padding-top: 28px; /* increased gap to prevent overlap with header */
-    padding-bottom: 18px;
+    width: 100%;
+    padding-top: 40px;
+    padding-bottom: 32px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+    gap: 12px;
+    flex: 0 1 auto;
 }
 
 :root.admin-theme .page-header {
-    padding-top: 40px;
-    padding-bottom: 10px;
+    padding-top: 28px;
+    padding-bottom: 18px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-@media (max-width: 720px) {
+/* Large screens (1200px+) - optimize spacing */
+@media (min-width: 1200px) {
+    :root {
+        --page-gutter: 3%;
+    }
+
     .page {
-        padding-left: 12px;
-        padding-right: 12px;
-        margin: 12px auto;
+        border-radius: 16px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
     }
+
     .page-title {
-        font-size: 1.25rem;
+        font-size: 1.75rem;
     }
-    /* On small screens, ensure header content flows vertically and side controls are inline */
+
+    .page-title-block {
+        padding: 0 100px;
+    }
+
+    .page-actions {
+        right: 24px;
+    }
+
+    .page-header .ui-back-btn {
+        left: 24px;
+    }
+}
+
+/* Medium screens (900px - 1199px) - balanced layout */
+@media (min-width: 900px) and (max-width: 1199px) {
+    :root {
+        --page-gutter: 2.5%;
+    }
+
+    .page-title-block {
+        padding: 0 70px;
+    }
+}
+
+/* Tablet screens (768px - 899px) - moderate adjustments */
+@media (min-width: 768px) and (max-width: 899px) {
+    :root {
+        --page-gutter: 2%;
+    }
+
+    .page {
+        border-radius: 10px;
+    }
+
+    .page-title {
+        font-size: 1.35rem;
+    }
+
+    .page-title-block {
+        padding: 0 60px;
+        max-width: 100%;
+    }
+
+    .page-actions {
+        right: 12px;
+        gap: 6px;
+    }
+
+    .page-header .ui-back-btn {
+        left: 12px;
+    }
+
+    .page-content {
+        padding-top: 20px;
+    }
+}
+
+/* Small screens (480px - 767px) - compact mobile layout */
+@media (max-width: 767px) {
+    :root {
+        --page-gutter: 12px;
+    }
+
+    .page {
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+        margin: 8px auto;
+    }
+
     .page-header {
-        display: block;
         padding: 12px 0;
+        display: block;
     }
+
+    .page-title {
+        font-size: 1.15rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.85rem;
+    }
+
     .page-title-block {
         max-width: 100%;
-        margin: 6px 0;
+        padding: 0;
+        margin: 8px 0;
     }
+
     .page-header .ui-back-btn,
     .page-actions {
         position: static;
         transform: none;
         display: inline-flex;
         margin: 6px 0;
+        right: auto;
+        left: auto;
+    }
+
+    .page-actions {
+        gap: 6px;
+    }
+
+    .page-content {
+        width: 100%;
+        padding-top: 16px;
+        padding-bottom: 12px;
+    }
+
+    :root.admin-theme .page-header {
+        padding-top: 12px;
+        padding-bottom: 8px;
+    }
+}
+
+/* Extra small screens (<480px) - minimal mobile layout */
+@media (max-width: 479px) {
+    :root {
+        --page-gutter: 8px;
+    }
+
+    .page {
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin: 4px auto;
+    }
+
+    .page-title {
+        font-size: 1rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .page-content {
+        padding-top: 12px;
+        padding-bottom: 8px;
+    }
+
+    .page-actions {
+        gap: 4px;
+    }
+
+    :root.admin-theme .page-header {
+        padding-top: 8px;
+        padding-bottom: 6px;
     }
 }

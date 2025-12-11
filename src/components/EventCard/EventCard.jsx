@@ -1,10 +1,13 @@
-import { useAuth } from '../../contexts/AuthContext.jsx';
 import '../../pages/RegisterForm/RegisterForm.css';
 import { normalizedDateString } from '../../utils/dateUtils.js';
 import './EventCard.css';
 
-export default function EventCard({ ev, onClick, actions }) {
-    const { isAdmin } = useAuth();
+export default function EventCard({
+    ev,
+    onClick,
+    clientActions: clientActions,
+    changeActions: changeActions,
+}) {
     const eventDate = ev?.eventDate ? new Date(ev.eventDate) : null;
     const endDate = ev?.endDate ? new Date(ev.endDate) : null;
 
@@ -23,38 +26,22 @@ export default function EventCard({ ev, onClick, actions }) {
                     <div className="event-name">{ev?.name || 'Untitled event'}</div>
                     <div className="event-meta">
                         <div>
-                            Ngày sự kiện:
-                            <br />
-                            {eventDate ? normalizedDateString(eventDate) : 'TBD'}
+                            <span className="event-meta-label">Ngày sự kiện:</span>
+                            {eventDate ? normalizedDateString(eventDate).split(',')[0] : 'TBD'}
+                        </div>
+                        <div>
+                            <span className="event-meta-label">Hạn đăng ký:</span>
+                            {endDate ? normalizedDateString(endDate).split(',')[0] : '—'}
                         </div>
                         <div className="event-location">
-                            Địa điểm:
-                            <br />
+                            <span className="event-meta-label">Địa điểm:</span>
                             {ev?.location || 'TBD'}
                         </div>
                     </div>
                 </div>
                 <div className="event-card-right">
-                    <div className="event-right-meta">
-                        Hạn đăng ký:
-                        <br />
-                        {endDate ? normalizedDateString(endDate) : '—'}
-                    </div>
-                    <div className="event-actions">
-                        {actions}
-                        {!isAdmin ? (
-                            <button
-                                className="ui-btn btn-primary"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (typeof onClick === 'function') onClick(ev);
-                                }}
-                                type="button"
-                            >
-                                Đăng ký
-                            </button>
-                        ) : null}
-                    </div>
+                    <div className="event-actions-column">{clientActions}</div>
+                    <div className="event-actions-column">{changeActions}</div>
                 </div>
             </div>
         </div>

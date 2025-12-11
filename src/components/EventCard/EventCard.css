@@ -1,69 +1,188 @@
 /* Styles specific to the EventCard component */
+:root {
+    --card-radius: 12px;
+    --max-width: 1200px;
+}
+
+.event-card {
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
 .event-card-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 14px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    gap: 16px;
+    justify-content: space-between;
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    height: 100%;
+    padding: 32px;
+    border-radius: var(--card-radius);
+    gap: 32px;
+    min-height: 160px;
+    max-height: 160px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .event-card-left {
+    flex: 1 1 0;
     min-width: 0;
-    width: 60%;
-    padding-right: 8px;
-}
-.event-name {
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--black);
-    word-break: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-}
-.event-meta {
-    color: var(--gray);
-    font-size: 13px;
-    margin-top: 15px;
-}
-.event-meta div {
-    line-height: 1.2;
-    white-space: normal;
-    min-width: 130px;
-}
-.event-location {
-    color: var(--gray);
-    font-size: 13px;
+    max-width: 60%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
 }
 
-.event-card-right {
-    text-align: right;
-    flex: 0 0 30%;
-    min-width: 160px;
+.event-name {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--black);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+    max-width: 100%;
 }
-.event-right-meta {
-    font-size: 13px;
+
+.event-meta {
     color: var(--gray);
+    font-size: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+    align-items: flex-start;
 }
-.event-actions {
-    margin-top: 8px;
+
+.event-meta > div {
     display: flex;
-    gap: 8px;
-    justify-content: flex-end;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.event-meta-label {
+    font-weight: 600;
+    color: var(--black);
+    white-space: nowrap;
+}
+
+.event-location {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Right panel - two columns: left (QRLink+Live) and right (Edit+Delete) */
+.event-card-right {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    height: 100%;
+    align-items: flex-start;
+}
+
+/* Left column: QRLink and Live buttons */
+.event-actions-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+    min-width: 100px;
+}
+
+.event-live-btn {
+    background-color: var(--success, #22c55e);
+    color: white;
+}
+
+.event-live-btn:hover:not(:disabled) {
+    background-color: var(--success-dark, #16a34a);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .event-card-row {
+        min-height: 150px;
+        max-height: 150px;
+        padding: 28px;
+        gap: 28px;
+    }
+
+    .event-meta {
+        gap: 12px;
+    }
 }
 
 @media (max-width: 720px) {
     .event-card-row {
         flex-direction: column;
         align-items: stretch;
-        gap: 8px;
+        gap: 16px;
+        min-height: auto;
+        max-height: none;
+        padding: 16px;
     }
+
+    .event-card-left {
+        gap: 10px;
+        max-width: 100%;
+    }
+
+    .event-meta {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .event-name {
+        font-size: 1rem;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .event-card-right {
-        text-align: left;
-        min-width: 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .event-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .event-card-row {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .event-name {
+        font-size: 0.95rem;
+    }
+
+    .event-meta,
+    .event-location,
+    .event-end-date {
+        font-size: 0.8rem;
+    }
+
+    .event-actions button {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
     }
 }

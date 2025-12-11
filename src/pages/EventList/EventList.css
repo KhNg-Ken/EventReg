@@ -1,0 +1,158 @@
+/* EventList skeleton loading state */
+.skeleton-list {
+    display: grid;
+    gap: 18px;
+}
+
+.skeleton-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    background: #fafafa;
+    min-height: 64px;
+}
+
+.skeleton-content {
+    width: 60%;
+}
+
+.skeleton-title {
+    height: 14px;
+    width: 60%;
+    background: #eee;
+    border-radius: 4px;
+}
+
+.skeleton-subtitle {
+    height: 12px;
+    width: 40%;
+    background: #f2f2f2;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.skeleton-action {
+    text-align: right;
+}
+
+.skeleton-button {
+    height: 28px;
+    width: 84px;
+    background: #eee;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* EventList empty state */
+.event-list-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 100%;
+}
+
+.event-list-empty-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.event-list-empty-message {
+    color: var(--gray);
+}
+
+.event-list-empty-action {
+    margin-top: 12px;
+}
+
+/* EventList grid container */
+.event-list-grid {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* EventList actions container */
+.event-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.event-actions button {
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+/* Loading state message */
+.event-loading-message {
+    margin-bottom: 8px;
+    color: var(--gray);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 1024px) {
+    .event-actions {
+        gap: 4px;
+    }
+
+    .event-actions button {
+        padding: 0.55rem 0.9rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .event-actions {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 6px;
+    }
+
+    .event-actions button {
+        flex: 0 1 auto;
+        min-width: auto;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .event-actions {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .event-actions button {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .skeleton-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .skeleton-content {
+        width: 100%;
+    }
+
+    .skeleton-action {
+        width: 100%;
+        text-align: left;
+    }
+
+    .skeleton-button {
+        width: 100%;
+    }
+}
