@@ -198,7 +198,7 @@ export default function LivePoster() {
     if (!isAdmin) {
         return (
             <div className="liveposter-fullscreen-container">
-                <div style={{ color: 'white', textAlign: 'center', paddingTop: '40vh', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ color: 'white', textAlign: 'center' }}>
                     <div style={{ fontSize: 24, marginBottom: 16 }}>Access Denied</div>
                     <div>Please sign in as admin to view the live poster.</div>
                 </div>
