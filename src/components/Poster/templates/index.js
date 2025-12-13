@@ -25,6 +25,8 @@ export const DEFAULT_POSTER_CONFIG = {
     },
     logo: null,
     backgroundImage: null,
+    eventLocation: null,
+    eventDateTime: null,
 };
 
 export function getDefaultConfig(overrides = {}) {

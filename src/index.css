@@ -31,7 +31,8 @@ a:hover {
 }
 
 html,
-body {
+body, 
+#root {
     min-width: 100%;
     min-height: 100%;
     margin: 0;
@@ -40,6 +41,7 @@ body {
     align-items: center;
     justify-content: flex-start;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 h1 {

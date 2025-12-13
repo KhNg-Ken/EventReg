@@ -46,6 +46,30 @@ export default function UpdateEvent({ event: propEventDoc } = {}) {
         try {
             setSaving(true);
             // payload already contains ISO/timezone pairs from EventForm
+
+            // Update posterConfig with new location and eventDateTime
+            const updatedPosterConfig = { ...data?.posterConfig };
+            if (payload.location !== undefined) {
+                updatedPosterConfig.eventLocation = payload.location;
+            }
+            if (payload.eventDate) {
+                const dateObj =
+                    payload.eventDate instanceof Date
+                        ? payload.eventDate
+                        : new Date(payload.eventDate);
+                updatedPosterConfig.eventDateTime = `${dateObj.toLocaleDateString(
+                    'vi-VN'
+                )} - ${dateObj.toLocaleTimeString('vi-VN', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                })}`;
+            }
+
+            // Add posterConfig to payload if it was updated
+            if (Object.keys(updatedPosterConfig).length > 0) {
+                payload.posterConfig = updatedPosterConfig;
+            }
+
             await adminUpdateEvent({ id: propEventDoc, ...payload });
             showToast('Saved', { type: 'success' });
             window.location.hash = '#/events';

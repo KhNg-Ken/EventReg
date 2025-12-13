@@ -10,8 +10,8 @@ import {
     query,
 } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { ensureMsalInitialized, isSignedIn } from '../../auth/index.js';
 import Poster from '../../components/Poster/Poster.jsx';
+import { useAuth } from '../../contexts/AuthContext.jsx';
 import { createLogger } from '../../utils/logger.js';
 import './LivePoster.css';
 
@@ -19,8 +19,8 @@ const logger = createLogger('LivePoster');
 const enablePosterChannel = new BroadcastChannel('enable-live-poster');
 
 export default function LivePoster() {
+    const { isAdmin, loading: authLoading } = useAuth();
     const [enablePoster, setEnablePoster] = useState(true);
-    const [hasAccessChecked, setHasAccessChecked] = useState(false);
     const [registrant, setRegistrant] = useState(null);
     const [eventId, setEventId] = useState(null);
     const [posterConfig, setPosterConfig] = useState(null);
@@ -163,25 +163,7 @@ export default function LivePoster() {
     }, [eventId]);
 
     // simple guard to hide content if not signed in
-    useEffect(() => {
-        async function checkAuth() {
-            try {
-                // Ensure MSAL is initialized first
-                await ensureMsalInitialized();
-
-                // Small delay to ensure MSAL accounts are loaded
-                await new Promise((resolve) => setTimeout(resolve, 100));
-
-                const signedIn = isSignedIn();
-                logger.log('Auth check result:', signedIn);
-                setHasAccessChecked(true);
-            } catch (err) {
-                logger.error('Auth check failed:', err);
-                setHasAccessChecked(true);
-            }
-        }
-        checkAuth();
-    }, []);
+    // auth context handles the auth state, no need for separate effect
 
     if (loading) {
         return (
@@ -203,7 +185,7 @@ export default function LivePoster() {
         );
     }
 
-    if (!hasAccessChecked) {
+    if (authLoading) {
         return (
             <div className="liveposter-fullscreen-container">
                 <div style={{ color: 'white', textAlign: 'center', paddingTop: '40vh' }}>
@@ -213,10 +195,10 @@ export default function LivePoster() {
         );
     }
 
-    if (!isSignedIn()) {
+    if (!isAdmin) {
         return (
             <div className="liveposter-fullscreen-container">
-                <div style={{ color: 'white', textAlign: 'center', paddingTop: '40vh' }}>
+                <div style={{ color: 'white', textAlign: 'center', paddingTop: '40vh', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ fontSize: 24, marginBottom: 16 }}>Access Denied</div>
                     <div>Please sign in as admin to view the live poster.</div>
                 </div>
@@ -226,10 +208,8 @@ export default function LivePoster() {
 
     return (
         <div className="liveposter-fullscreen-container">
-            <div className="page-centered">
-                <div className={enablePoster ? 'poster-visible' : 'poster-hidden'}>
-                    <Poster registrant={registrant} config={posterConfig} />
-                </div>
+            <div className={enablePoster ? 'poster-visible' : 'poster-hidden'}>
+                <Poster registrant={registrant} config={posterConfig} />
             </div>
         </div>
     );

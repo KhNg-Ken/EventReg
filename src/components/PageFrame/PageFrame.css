@@ -8,8 +8,11 @@
 
 .page {
     box-sizing: border-box;
-    width: 100%;
-    height: auto;
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: var(--page-gutter);
     display: block;
     background: var(--white);

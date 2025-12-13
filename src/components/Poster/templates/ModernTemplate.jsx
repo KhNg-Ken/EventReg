@@ -1,66 +1,97 @@
+import './ModernTemplate.css';
 export default function ModernTemplate({ registrant, config }) {
     if (!registrant) {
         return (
             <div className="modern-poster empty">
-                <div className="modern-poster-content">
+                <div className="modern-poster-top">
                     <div className="modern-placeholder">Awaiting first check-in...</div>
                 </div>
             </div>
         );
     }
 
-    const colors = config?.colors || {};
-    const posterStyle = {
-        '--poster-primary': colors.primary || '#FF6B6B',
-        '--poster-secondary': colors.secondary || '#4ECDC4',
-        '--poster-bg': colors.background || '#1A1A2E',
-        '--poster-text': colors.text || '#2c3e50',
-    };
-
     return (
-        <div className="modern-poster" style={posterStyle}>
-            <div className="modern-poster-content">
-                {config?.logo && (
-                    <div className="modern-poster-logo">
-                        <img src={config.logo} alt="Event Logo" />
+        <div className="modern-poster" style={{ backgroundImage: "url(src/assets/modern-bg.jpg)" }}>
+            <div className="modern-poster-overlay">
+                {/* Top Section: 2/9 - Company Logos and Event Name */}
+                <div className="modern-poster-top">
+                    <div className="modern-poster-event-name">ĐƠN VỊ TỔ CHỨC</div>
+                    <div className="modern-poster-logos">
+                        <img
+                            className="modern-poster-logo"
+                            src="https://content.kaspersky-labs.com/se/ru/content/ru-ru/images/homepage/kaspersky-logo/kaspersky-logo-v2.svg"
+                            alt="Kaspersky Logo"
+                        />
+                        <img
+                            className="modern-poster-logo"
+                            src="https://s3.amazonaws.com/cms.ipressroom.com/219/files/202512/692f56b83d6332f881bbc58b_nvidia-logo-horiz-blk-16x9+1/nvidia-logo-horiz-blk-16x9+1_3b6e36c5-dc74-4a75-86f4-5faefc2a7f7d-prv.png"
+                            alt="Nvidia Logo"
+                        />
+                        <img
+                            className="modern-poster-logo"
+                            src="https://images.glints.com/unsafe/glints-dashboard.oss-ap-southeast-1.aliyuncs.com/company-logo/84b2580fc91bc2ee5cfcc4e7618264fd.png"
+                            alt="VNG Logo"
+                        />
+                        <img
+                            className="modern-poster-logo"
+                            src="https://companieslogo.com/img/orig/ZBRA_BIG-f7a54900.png?t=1720244494"
+                            alt="Zebra Technologies Logo"
+                        />
+                        <img
+                            className="modern-poster-logo"
+                            src="https://news.tdsynnex.com/wp-content/uploads/2024/03/Tech-Data-New-Logo.jpg"
+                            alt="Tech Data Logo"
+                        />
                     </div>
-                )}
-
-                {config?.showFields?.photo !== false && registrant.photoUrl && (
-                    <div className="modern-poster-photo">
-                        <img src={registrant.photoUrl} alt={registrant.name} />
-                    </div>
-                )}
-
-                <div className="modern-poster-info">
-                    <div className="modern-poster-name">{registrant.name}</div>
-
-                    {config?.showFields?.company !== false && registrant.company && (
-                        <div className="modern-poster-company">{registrant.company}</div>
-                    )}
-
-                    {config?.showFields?.position !== false && registrant.position && (
-                        <div className="modern-poster-position">{registrant.position}</div>
-                    )}
-
-                    {config?.showFields?.email !== false && registrant.email && (
-                        <div className="modern-poster-email">{registrant.email}</div>
-                    )}
                 </div>
 
-                {config?.showFields?.qrCode !== false && registrant.qrCode && (
-                    <div className="modern-poster-qr">
-                        <img src={registrant.qrCode} alt="QR Code" />
+                {/* Middle Section: 5/9 - Attendee Info */}
+                <div className="modern-poster-middle">
+                    <div className="modern-poster-greeting">CHÀO MỪNG</div>
+                    {config?.showFields?.photo !== false && registrant.photoUrl && (
+                        <div className="modern-poster-photo-large">
+                            <img src={registrant.photoUrl} alt={registrant.name} />
+                        </div>
+                    )}
+                    <div className="modern-poster-attendee-label">KHÁCH MỜI</div>
+                    <div className="modern-poster-attendee-info">
+                        <div className="modern-poster-name">{registrant.name}</div>
+
+                        <div className="modern-poster-details">
+                            {config?.showFields?.position !== false && registrant.position && (
+                                <div className="modern-poster-position">{registrant.position}</div>
+                            )}
+
+                            {config?.showFields?.company !== false && registrant.company && (
+                                <div className="modern-poster-company">{registrant.company}</div>
+                            )}
+
+                            {config?.showFields?.email !== false && registrant.email && (
+                                <div className="modern-poster-email">{registrant.email}</div>
+                            )}
+                        </div>
                     </div>
+                </div>
+
+                {/* Bottom Section: 2/9 - Event Information */}
+                <div className="modern-poster-bottom">
+                    <div className="modern-poster-event-info">
+                        {config?.eventLocation && (
+                            <div className="modern-event-location">{config.eventLocation}</div>
+                        )}
+                        {config?.eventDateTime && (
+                            <div className="modern-event-datetime">{config.eventDateTime}</div>
+                        )}
+                    </div>
+                </div>
+
+                {config?.backgroundImage && (
+                    <div
+                        className="modern-poster-bg"
+                        style={{ backgroundImage: `url(${config.backgroundImage})` }}
+                    />
                 )}
             </div>
-
-            {config?.backgroundImage && (
-                <div
-                    className="modern-poster-bg"
-                    style={{ backgroundImage: `url(${config.backgroundImage})` }}
-                />
-            )}
         </div>
     );
 }

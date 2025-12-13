@@ -5,8 +5,10 @@ export default function WorkInProgress() {
             flexDirection: 'column', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            minHeight: '100vh',
-            backgroundColor: '#f5f5f5'
+            height: '100%',
+            width: '100%',
+            backgroundColor: '#000000ff',
+            font: '24px Oswald, sans-serif'
         }}>
             <h1>Work In Progress</h1>
             <p style={{ fontSize: '18px', color: '#666' }}>

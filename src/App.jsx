@@ -73,7 +73,7 @@ function AppContent() {
         window.addEventListener('hashchange', onHash);
         // sync initial: if there's no hash, route to the public events list
         if (!window.location.hash || window.location.hash === '#') {
-            navigateTo('/empty');
+            navigateTo('/');
         }
         onHash();
         return () => window.removeEventListener('hashchange', onHash);

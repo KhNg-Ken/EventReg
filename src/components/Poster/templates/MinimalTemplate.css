@@ -1,6 +1,6 @@
 .minimal-poster {
-    --poster-primary: #000000;
-    --poster-secondary: #666666;
+    --poster-primary: #d32f2f;
+    --poster-secondary: #757575;
     --poster-bg: #ffffff;
     --poster-text: #000000;
 
@@ -34,14 +34,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
-    padding: 40px;
+    gap: 25px;
+    padding: 40px 30px;
     text-align: center;
+    width: 100%;
 }
 
 .minimal-poster-logo {
-    max-width: 100px;
+    max-width: 70px;
     opacity: 0.7;
+    flex-shrink: 0;
 }
 
 .minimal-poster-logo img {
@@ -51,15 +53,17 @@
 
 .minimal-poster-main {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 40px;
+    gap: 20px;
+    width: 100%;
 }
 
 .minimal-poster-photo {
     flex-shrink: 0;
-    width: 140px;
-    height: 140px;
-    border-radius: 8px;
+    width: 73px;
+    height: 73px;
+    border-radius: 6px;
     overflow: hidden;
     border: 1px solid var(--poster-primary);
 }
@@ -73,26 +77,28 @@
 .minimal-poster-text {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    text-align: left;
+    gap: 8px;
+    text-align: center;
+    width: 100%;
 }
 
 .minimal-poster-name {
-    font-size: 42px;
+    font-size: 56px;
     font-weight: 600;
     color: var(--poster-primary);
     margin: 0;
     letter-spacing: -0.5px;
+    line-height: 1.2;
 }
 
 .minimal-poster-company {
-    font-size: 20px;
+    font-size: 28px;
     color: var(--poster-secondary);
     font-weight: 500;
 }
 
 .minimal-poster-position {
-    font-size: 16px;
+    font-size: 20px;
     color: var(--poster-secondary);
     opacity: 0.85;
 }

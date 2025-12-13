@@ -1,8 +1,8 @@
 .classic-poster {
-    --poster-primary: #2c3e50;
-    --poster-secondary: #e74c3c;
-    --poster-bg: #ecf0f1;
-    --poster-text: #2c3e50;
+    --poster-primary: #d32f2f;
+    --poster-secondary: #000000;
+    --poster-bg: #ffffff;
+    --poster-text: #000000;
 
     width: 100%;
     height: 100%;
@@ -16,14 +16,14 @@
 .classic-poster-header {
     background: var(--poster-primary);
     color: white;
-    padding: 30px;
+    padding: 20px;
     text-align: center;
     border-bottom: 4px solid var(--poster-secondary);
     flex-shrink: 0;
 }
 
 .classic-poster-logo {
-    max-width: 100px;
+    max-width: 70px;
 }
 
 .classic-poster-logo img {
@@ -34,10 +34,11 @@
 .classic-poster-body {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px;
-    gap: 60px;
+    padding: 40px 30px;
+    gap: 30px;
 }
 
 .classic-poster-left {
@@ -45,8 +46,8 @@
 }
 
 .classic-poster-photo {
-    width: 180px;
-    height: 200px;
+    width: 87px;
+    height: 100px;
     overflow: hidden;
     border: 3px solid var(--poster-primary);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -63,10 +64,11 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    width: 100%;
 }
 
 .classic-poster-name {
-    font-size: 44px;
+    font-size: 56px;
     font-weight: bold;
     color: var(--poster-primary);
     margin: 0;
@@ -74,29 +76,29 @@
 }
 
 .classic-poster-company {
-    font-size: 22px;
+    font-size: 28px;
     color: var(--poster-secondary);
     font-weight: 600;
-    margin: 8px 0 0 0;
+    margin: 6px 0 0 0;
 }
 
 .classic-poster-position {
-    font-size: 18px;
+    font-size: 20px;
     color: var(--poster-text);
     opacity: 0.85;
 }
 
 .classic-poster-email {
-    font-size: 14px;
+    font-size: 16px;
     color: var(--poster-text);
     opacity: 0.7;
-    margin-top: 12px;
+    margin-top: 8px;
     font-family: 'Courier New', monospace;
 }
 
 .classic-poster-qr {
-    margin-top: 20px;
-    width: 100px;
+    margin-top: 12px;
+    width: 70px;
 }
 
 .classic-poster-qr img {
@@ -107,13 +109,13 @@
 .classic-poster-footer {
     background: white;
     border-top: 2px solid var(--poster-secondary);
-    padding: 12px;
+    padding: 10px;
     text-align: center;
     flex-shrink: 0;
 }
 
 .classic-footer-line {
-    height: 2px;
+    height: 1px;
     background: var(--poster-secondary);
     max-width: 80%;
     margin: 0 auto;
@@ -127,10 +129,6 @@
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-    .classic-poster-body {
-        gap: 40px;
-        padding: 30px;
-    }
     .classic-poster-name {
         font-size: 32px;
     }

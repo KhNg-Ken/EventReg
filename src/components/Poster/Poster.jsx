@@ -12,10 +12,6 @@ export default function Poster({ registrant, config } = {}) {
     logger.debug('Registrant:', registrant?.name || '(empty)');
 
     return (
-        <div className="page-centered">
-            <div className="poster-card poster-visible">
-                <Template registrant={registrant} config={posterConfig} />
-            </div>
-        </div>
+        <Template registrant={registrant} config={posterConfig} />
     );
 }

@@ -41,6 +41,21 @@ function CreateEvent() {
             const eventDateObj = eventDate ? new Date(eventDate) : null;
             const endDateObj = endDate ? new Date(endDate) : null;
 
+            // Format event date/time for poster display
+            const eventDateTime = eventDateObj
+                ? `${eventDateObj.toLocaleDateString('vi-VN')} - ${eventDateObj.toLocaleTimeString(
+                      'vi-VN',
+                      { hour: '2-digit', minute: '2-digit' }
+                  )}`
+                : '';
+
+            // Create posterConfig with event details
+            const posterConfigWithDetails = {
+                ...DEFAULT_POSTER_CONFIG,
+                eventLocation: location || '',
+                eventDateTime: eventDateTime,
+            };
+
             const res = await adminCreateEvent({
                 name: eventName.trim(),
                 description: description || '',
@@ -51,8 +66,8 @@ function CreateEvent() {
                     optionalPosition: !!optionalPosition,
                     optionalImage: !!optionalImage,
                 },
-                // Default poster configuration for new events
-                posterConfig: DEFAULT_POSTER_CONFIG,
+                // Poster configuration with event details
+                posterConfig: posterConfigWithDetails,
                 // Send Date objects directly - Firestore will store as Timestamp in local time
                 eventDate: eventDateObj,
                 endDate: endDateObj,
