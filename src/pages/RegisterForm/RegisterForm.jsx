@@ -245,7 +245,8 @@ function RegisterForm() {
                 if (!mounted) return;
 
                 if (cfg) {
-                    if (!(cfg.status === 'completed' || cfg.status === 'hiatus')) {
+                    if (!(cfg.status === 'completed' || cfg.status === 'hiatus' ||
+                        new Date(cfg.eventDate) < new Date() || new Date(cfg.endDate) < new Date())) {
                         setSelectedEventInfo(cfg);
                         setFormDoesNotExist(false);
                     }
