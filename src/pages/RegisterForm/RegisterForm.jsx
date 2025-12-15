@@ -9,6 +9,7 @@ import { sendGraphEmail } from '../../utils/emailUtils.js';
 import { readEventInfo } from '../../utils/firestoreUtils.js';
 import { createLogger } from '../../utils/logger.js';
 import { registerAttendee } from '../../utils/registrationUtils.js';
+import FormDoesNotExist from './FormDoesNotExist.jsx';
 import './RegisterForm.css';
 
 const logger = createLogger('RegisterForm');
@@ -24,6 +25,7 @@ function RegisterForm() {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [selectedEventInfo, setSelectedEventInfo] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [formDoesNotExist, setFormDoesNotExist] = useState(true);
 
     // Extract event ID from URL only
     const urlEvent = (() => {
@@ -243,7 +245,10 @@ function RegisterForm() {
                 if (!mounted) return;
 
                 if (cfg) {
-                    setSelectedEventInfo(cfg);
+                    if (!(cfg.status === 'completed' || cfg.status === 'hiatus')) {
+                        setSelectedEventInfo(cfg);
+                        setFormDoesNotExist(false);
+                    }
                 } else {
                     logger.warn('Event not found:', urlEvent);
                     setSelectedEventInfo(null);
@@ -281,6 +286,11 @@ function RegisterForm() {
                 </div>
             </PageFrame>
         );
+    }
+
+    // Show error if form does not exist
+    if (formDoesNotExist) {
+        return <FormDoesNotExist/>;
     }
 
     // Show error if no event ID in URL
