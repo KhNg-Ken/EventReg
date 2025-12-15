@@ -1,19 +1,29 @@
 /* Styles specific to the EventCard component */
 :root {
-    --card-radius: 12px;
-    --max-width: 1200px;
+    --card-radius: 16px;
+    --max-width: 1000px;
+    --min-width: 1000px;
 }
 
 .event-card {
-    max-width: 100%;
+    max-width: var(--max-width);
+    min-width: var(--min-width);
     width: 100%;
     display: flex;
     flex-direction: column;
     background: var(--white);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     border-radius: var(--card-radius);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     overflow: hidden;
     box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.event-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
 .event-card-row {
@@ -24,11 +34,11 @@
     max-width: var(--max-width);
     margin: 0 auto;
     height: 100%;
-    padding: 32px;
+    padding: 28px 32px;
     border-radius: var(--card-radius);
     gap: 32px;
-    min-height: 160px;
-    max-height: 160px;
+    min-height: 140px;
+    max-height: 140px;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -44,22 +54,23 @@
 }
 
 .event-name {
-    font-weight: 800;
-    font-size: 1.5rem;
+    font-weight: 700;
+    font-size: 1.35rem;
     color: var(--black);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.3;
+    line-height: 1.4;
     max-width: 100%;
+    letter-spacing: -0.02em;
 }
 
 .event-meta {
     color: var(--gray);
-    font-size: 1rem;
+    font-size: 0.9rem;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 24px;
+    gap: 20px;
     width: 100%;
     align-items: flex-start;
 }
@@ -67,45 +78,21 @@
 .event-meta > div {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
 
 .event-meta-label {
     font-weight: 600;
-    color: var(--black);
+    font-size: 0.75rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     white-space: nowrap;
 }
 
 .event-location {
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-/* Right panel - two columns: left (QRLink+Live) and right (Edit+Delete) */
-.event-card-right {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    height: 100%;
-    align-items: flex-start;
-}
-
-/* Left column: QRLink and Live buttons */
-.event-actions-column {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex-shrink: 0;
-    min-width: 100px;
-}
-
-.event-live-btn {
-    background-color: var(--success, #22c55e);
-    color: white;
-}
-
-.event-live-btn:hover:not(:disabled) {
-    background-color: var(--success-dark, #16a34a);
 }
 
 /* Responsive adjustments */

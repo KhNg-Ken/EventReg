@@ -30,6 +30,12 @@ export default function EventForm({
         initial.config?.optionalImage ? initial.config.optionalImage : false
     );
     const [status, setStatus] = useState(initial.status || 'ongoing');
+    const [bannerUrl, setBannerUrl] = useState(initial.bannerUrl || '');
+    const [primaryColor, setPrimaryColor] = useState(initial.colors?.primary || 'var(--primary)');
+    const [secondaryColor, setSecondaryColor] = useState(
+        initial.colors?.secondary || 'var(--secondary-dark)'
+    );
+    const [accentColor, setAccentColor] = useState(initial.colors?.accent || 'var(--secondary)');
 
     function handleSubmit(e) {
         e && e.preventDefault();
@@ -48,6 +54,12 @@ export default function EventForm({
             optionalPosition,
             optionalImage,
             status,
+            bannerUrl: bannerUrl || '',
+            colors: {
+                primary: primaryColor || 'var(--primary)',
+                secondary: secondaryColor || 'var(--secondary-dark)',
+                accent: accentColor || 'var(--secondary)',
+            },
         };
         // Include optional QR URL when provided (Cloudinary upload result)
         const qr = propQrCodeUrl || initial?.qrCodeUrl || null;
@@ -179,6 +191,56 @@ export default function EventForm({
                     <option value="hiatus">Tạm dừng</option>
                     <option value="completed">Hoàn thành</option>
                 </select>
+            </div>
+
+            <div className="field">
+                <label className="subtitle">Banner URL</label>
+                <input
+                    className="input"
+                    type="url"
+                    value={bannerUrl}
+                    onChange={(e) => setBannerUrl(e.target.value)}
+                    placeholder="https://example.com/banner.jpg"
+                />
+            </div>
+
+            <div className="field">
+                <label className="subtitle">Màu sắc</label>
+                <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                    <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: 12, marginBottom: 4, display: 'block' }}>
+                            Primary
+                        </label>
+                        <input
+                            type="color"
+                            value={primaryColor}
+                            onChange={(e) => setPrimaryColor(e.target.value)}
+                            style={{ width: '100%', height: 40 }}
+                        />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: 12, marginBottom: 4, display: 'block' }}>
+                            Secondary
+                        </label>
+                        <input
+                            type="color"
+                            value={secondaryColor}
+                            onChange={(e) => setSecondaryColor(e.target.value)}
+                            style={{ width: '100%', height: 40 }}
+                        />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: 12, marginBottom: 4, display: 'block' }}>
+                            Accent
+                        </label>
+                        <input
+                            type="color"
+                            value={accentColor}
+                            onChange={(e) => setAccentColor(e.target.value)}
+                            style={{ width: '100%', height: 40 }}
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="field actions" style={{ marginTop: 12 }}>

@@ -21,6 +21,10 @@ function CreateEvent() {
     const [location, setLocation] = useState('');
     const [eventDate, setEventDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [bannerUrl, setBannerUrl] = useState('');
+    const [primaryColor, setPrimaryColor] = useState('#0000FF');
+    const [secondaryColor, setSecondaryColor] = useState('#FF0000');
+    const [accentColor, setAccentColor] = useState('#00FF00');
     const [creating, setCreating] = useState(false);
     const [qrUploading, setQrUploading] = useState(false);
     const [result, setResult] = useState(null);
@@ -72,6 +76,12 @@ function CreateEvent() {
                 eventDate: eventDateObj,
                 endDate: endDateObj,
                 status: 'ongoing',
+                bannerUrl: bannerUrl || '',
+                colors: {
+                    primary: primaryColor || '#0000FF',
+                    secondary: secondaryColor || '#FF0000',
+                    accent: accentColor || '#00FF00',
+                },
             });
 
             setResult({
@@ -229,9 +239,7 @@ function CreateEvent() {
 
                 <div className="create-field">
                     <label className="create-subtitle">Tùy chọn biểu mẫu đăng ký</label>
-                    <div
-                        style={{ display: 'flex', gap: 12, flexDirection: 'column', marginTop: 8 }}
-                    >
+                    <div className="create-checkbox-group">
                         <label className="checkbox-label">
                             <input
                                 type="checkbox"
@@ -260,6 +268,52 @@ function CreateEvent() {
                     </div>
                 </div>
 
+                <div className="create-design-header">Design</div>
+
+                <div className="create-field">
+                    <label className="create-subtitle">Banner URL</label>
+                    <input
+                        className="create-input"
+                        type="url"
+                        value={bannerUrl}
+                        onChange={(e) => setBannerUrl(e.target.value)}
+                        placeholder="https://example.com/banner.jpg"
+                    />
+                </div>
+
+                <div className="create-field">
+                    <label className="create-subtitle">Màu sắc</label>
+                    <div className="create-color-picker-group">
+                        <div className="create-color-picker-item">
+                            <label className="create-color-picker-label">Primary</label>
+                            <input
+                                type="color"
+                                value={primaryColor}
+                                onChange={(e) => setPrimaryColor(e.target.value)}
+                                className="create-color-input"
+                            />
+                        </div>
+                        <div className="create-color-picker-item">
+                            <label className="create-color-picker-label">Secondary</label>
+                            <input
+                                type="color"
+                                value={secondaryColor}
+                                onChange={(e) => setSecondaryColor(e.target.value)}
+                                className="create-color-input"
+                            />
+                        </div>
+                        <div className="create-color-picker-item">
+                            <label className="create-color-picker-label">Accent</label>
+                            <input
+                                type="color"
+                                value={accentColor}
+                                onChange={(e) => setAccentColor(e.target.value)}
+                                className="create-color-input"
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div className="create-field create-actions">
                     <button
                         className="create-btn create-btn-primary"
@@ -279,7 +333,7 @@ function CreateEvent() {
             </div>
 
             {result && result.success && (
-                <div style={{ marginTop: 12 }}>
+                <div className="create-result-section">
                     <div>
                         Đã tạo sự kiện: <strong>{result.docId || result.eventID || ''}</strong>
                     </div>
@@ -290,7 +344,7 @@ function CreateEvent() {
                     {result && result.endDateISO && <div>Hạn đăng ký: {result.endDateISO}</div>}
                     <div>
                         Cấu hình:
-                        <ul style={{ marginTop: 6 }}>
+                        <ul className="create-result-list">
                             <li>
                                 optionalCompany: {result.config?.optionalCompany ? 'true' : 'false'}
                             </li>
@@ -304,20 +358,13 @@ function CreateEvent() {
                         </ul>
                     </div>
                     {result.shareUrl && (
-                        <div style={{ marginTop: 8 }}>
-                            <div style={{ fontSize: 13 }}>Shareable link</div>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    gap: 8,
-                                    marginTop: 6,
-                                    alignItems: 'center',
-                                }}
-                            >
+                        <div className="create-result-content">
+                            <div className="create-section-title">Shareable link</div>
+                            <div className="create-url-container">
                                 <input
                                     readOnly
                                     value={result.shareUrl}
-                                    style={{ flex: 1, padding: 8, border: '1px solid #ddd' }}
+                                    className="create-url-input"
                                 />
                                 <button
                                     className="create-btn create-btn-secondary"
@@ -331,28 +378,22 @@ function CreateEvent() {
                         </div>
                     )}
                     {(qrUploading || (result && result.qrUploading)) && (
-                        <div style={{ marginTop: 8 }}>Đang tải QR lên Cloudinary...</div>
+                        <div className="create-result-content">Đang tải QR lên Cloudinary...</div>
                     )}
                     {result && result.qrCodeUrl && (
-                        <div style={{ marginTop: 8 }}>
-                            <div style={{ fontSize: 13 }}>QR code</div>
-                            <div style={{ marginTop: 6 }}>
+                        <div className="create-result-content">
+                            <div className="create-section-title">QR code</div>
+                            <div className="create-result-content">
                                 <img
                                     src={result.qrCodeUrl}
                                     alt="Event QR"
-                                    style={{
-                                        width: 200,
-                                        height: 200,
-                                        objectFit: 'contain',
-                                        border: '1px solid #ddd',
-                                        borderRadius: 8,
-                                    }}
+                                    className="create-qr-image"
                                 />
                             </div>
                         </div>
                     )}
                     {result && result.qrUploadError && (
-                        <div style={{ marginTop: 8, color: 'var(--red)' }}>
+                        <div className="create-result-content create-error-text">
                             Lỗi QR: {String(result.qrUploadError)}
                         </div>
                     )}
@@ -360,7 +401,7 @@ function CreateEvent() {
             )}
 
             {result && result.success === false && (
-                <div style={{ marginTop: 12, color: 'var(--red)' }}>
+                <div className="create-result-section create-error-text">
                     Lỗi: {String(result.error)}
                 </div>
             )}

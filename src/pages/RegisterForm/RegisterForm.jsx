@@ -355,6 +355,8 @@ function RegisterForm() {
                         allowOptOutCompany={allowOptOutCompany}
                         allowOptOutPosition={allowOptOutPosition}
                         allowOptOutImage={allowOptOutImage}
+                        bannerUrl={selectedEventInfo?.bannerUrl}
+                        colors={selectedEventInfo?.colors}
                     />
 
                     <div className="register-actions field-full actions">

@@ -52,7 +52,7 @@
 }
 
 .admin-nav-btn-primary.active {
-    background: linear-gradient(90deg, var(--red), #002c80);
+    background: linear-gradient(90deg, var(--primary), var(--secondary-dark));
     color: #ffffff;
     border: none;
 }

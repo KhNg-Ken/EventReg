@@ -1,13 +1,16 @@
 /* Shared variables and common UI styles used across components */
 :root {
-    --primary: #d32f2f;
-    --primary-dark: #b71c1c;
-    --primary-light: #e53935;
+    --primary: #203246;
+    --primary-dark: #0f1720;
+    --primary-light: #98C1D9;
+    --secondary: #E9BCB7;
+    --secondary-dark: #6F1D1B;
     --black: #000000;
     --gray: #757575;
-    --gray-light: #f5f5f5;
-    --light: #fafafa;
+    --gray-light: #dddddd;
+    --white-light: #adadad;
     --white: #ffffff;
+    --light-blue: #2761fe;
     --card-radius: 12px;
     --max-width: 760px;
 }
@@ -164,25 +167,10 @@
     align-items: center;
 }
 
-/* Admin theme override (blue / white / black) - apply by adding `admin-theme` class on the root element */
-:root.admin-theme {
-    --primary: #0b5fff; /* primary blue for admin */
-    --black: #0b0b0b;
-    --white: #ffffff;
-    --gray: #666666;
-    --dark-gray: #444444;
-    --light-gray: #e2e2e2;
-}
-
 .btn-danger {
     background: #e03e3e;
     color: var(--white);
     box-shadow: 0 8px 20px rgba(224, 62, 62, 0.12);
-}
-
-/* Tweak admin-theme color variables for admin pages (only primary color changed) */
-:root.admin-theme {
-    --primary: #0b5fff;
 }
 
 .select-input {

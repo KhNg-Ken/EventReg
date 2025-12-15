@@ -1,18 +1,18 @@
 import { collection, getDocs, getFirestore, orderBy, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
+import AdminButtonPanel from '../../components/AdminButtonPanel/AdminButtonPanel.jsx';
 import EventCard from '../../components/EventCard/EventCard.jsx';
 import PageFrame from '../../components/PageFrame/PageFrame.jsx';
-import QRLinkButton from '../../components/QRLinkButton/QRLinkButton.jsx';
 import { useAuth } from '../../contexts/AuthContext.jsx';
-import { useToast } from '../../contexts/ToastContext.jsx';
 import { app } from '../../firebase/config.js';
-import { adminDeleteEvent } from '../../utils/adminProxy.js';
+import keyboard_arrow_down from '../../assets/icons/keyboard_arrow_down_40.svg';
+
 import { createLogger } from '../../utils/logger.js';
 import './EventList.css';
 
 const logger = createLogger('EventList');
 
-function SkeletonList({ count = 3 }) {
+function SkeletonList({ count = 4 }) {
     return (
         <div className="skeleton-list">
             {Array.from({ length: count }).map((_, i) => (
@@ -33,9 +33,25 @@ function SkeletonList({ count = 3 }) {
 export default function EventList() {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [openAccordions, setOpenAccordions] = useState({
+        ongoing: true,
+        completed: false,
+        hiatus: false,
+    });
     const { isAdmin, loading: authLoading } = useAuth();
-    const { showToast } = useToast();
+    const statuses = ['ongoing', 'completed', 'hiatus'];
+    const vn_status_labels = {
+        ongoing: 'Đang diễn ra',
+        completed: 'Đã hoàn thành',
+        hiatus: 'Tạm ngưng',
+    };
 
+    const toggleAccordion = (status) => {
+        setOpenAccordions((prev) => ({
+            ...prev,
+            [status]: !prev[status],
+        }));
+    };
     // Redirect non-admins to home
     useEffect(() => {
         if (!authLoading && !isAdmin) {
@@ -80,20 +96,6 @@ export default function EventList() {
         }
     }, [authLoading, isAdmin]);
 
-    async function handleDeleteEvent(id) {
-        if (!confirm('Delete this event? This cannot be undone.')) return;
-        try {
-            setLoading(true);
-            await adminDeleteEvent({ id });
-            await load();
-        } catch (err) {
-            logger.error('Failed to delete event', err);
-            showToast(err?.message || 'Delete failed', { type: 'error' });
-        } finally {
-            setLoading(false);
-        }
-    }
-
     const subtitle = 'Quản lý các sự kiện của TDSouth';
 
     // Show loading while checking auth
@@ -133,93 +135,32 @@ export default function EventList() {
                     </div>
                 </div>
             ) : (
-                <div className="event-list-grid">
-                    {events.map((ev) => {
-                        const clientActions = (
-                            <>
-                                <QRLinkButton
-                                    eventId={ev.id}
-                                    onError={(msg) => showToast(msg, { type: 'error' })}
-                                />
+                <div className="event-list-flex">
+                    {statuses.map((status) => (
+                        <>
+                            <button
+                                className={`accordion ${openAccordions[status] ? 'active' : ''}`}
+                                onClick={() => toggleAccordion(status)}
+                            >
+                                <span>
+                                    {vn_status_labels[status]} (
+                                    {events.filter((ev) => ev.status === status).length})
+                                </span>
+                                <img src={keyboard_arrow_down} alt="Toggle Accordion" className="accordion-icon" />
+                            </button>
+                            <div
+                                className={`events-group ${openAccordions[status] ? 'panel' : ''}`}
+                            >
+                                {events.map((ev) => {
+                                    if (ev.status !== status) return null;
 
-                                <button
-                                    className="ui-btn btn-secondary event-live-btn"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        const liveHash = `#/liveposter?event=${encodeURIComponent(
-                                            ev.id
-                                        )}`;
-                                        const statsHash = `#/checkin-statistics?event=${encodeURIComponent(
-                                            ev.id
-                                        )}`;
-                                        // open poster in new window and navigate main tab to stats
-                                        try {
-                                            window.open(
-                                                window.location.origin +
-                                                    window.location.pathname +
-                                                    liveHash,
-                                                '_blank',
-                                                'noopener'
-                                            );
-                                        } catch {
-                                            window.open(liveHash, '_blank', 'noopener');
-                                        }
-                                        window.location.hash = statsHash;
-                                    }}
-                                    type="button"
-                                >
-                                    Live
-                                </button>
-                            </>
-                        );
-
-                        const changeActions = (
-                            <>
-                                <button
-                                    className="ui-btn event-square-btn"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        // navigate to update page for this event
-                                        window.location.hash = `#/update?event=${encodeURIComponent(
-                                            ev.id
-                                        )}`;
-                                    }}
-                                    type="button"
-                                >
-                                    Edit
-                                </button>
-                                
-                                <button
-                                    className="ui-btn btn-danger event-square-btn"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteEvent(ev.id);
-                                    }}
-                                    type="button"
-                                >
-                                    Delete
-                                </button>
-                                );
-                            </>
-                        );
-
-                        
-
-                        return (
-                            <EventCard
-                                key={ev.id}
-                                ev={ev}
-                                clientActions={clientActions}
-                                changeActions={changeActions}
-                                onClick={() => {
-                                    // Admins go to the update page when clicking the card
-                                    window.location.hash = `#/update?event=${encodeURIComponent(
-                                        ev.id
-                                    )}`;
-                                }}
-                            />
-                        );
-                    })}
+                                    return (
+                                        <EventCard ev={ev} setLoading={setLoading} load={load} />
+                                    );
+                                })}
+                            </div>
+                        </>
+                    ))}
                 </div>
             )}
         </PageFrame>

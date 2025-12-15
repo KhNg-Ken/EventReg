@@ -17,6 +17,9 @@ export default function RegistrationFields({
     allowOptOutCompany = false,
     allowOptOutPosition = false,
     allowOptOutImage = false,
+    // styling props
+    bannerUrl = null,
+    colors = {},
 }) {
     const fileInputRef = useRef(null);
 
@@ -37,9 +40,30 @@ export default function RegistrationFields({
             }
         }
     }, [photoFile]);
+
+    const styleVars = {
+        '--reg-primary': colors.primary || '#b40000ff',
+        '--reg-secondary': colors.secondary || '#000000ff',
+        '--reg-accent': colors.accent || '#000275ff',
+    };
+
     return (
         <>
-            <div className="reg-field">
+            {bannerUrl && (
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: 16 }}>
+                    <img
+                        src={bannerUrl}
+                        alt="Event Banner"
+                        style={{
+                            maxWidth: '100%',
+                            height: 'auto',
+                            borderRadius: 8,
+                            objectFit: 'cover',
+                        }}
+                    />
+                </div>
+            )}
+            <div className="reg-field" style={styleVars}>
                 <Label required>Họ và tên</Label>
                 <input
                     name="name"

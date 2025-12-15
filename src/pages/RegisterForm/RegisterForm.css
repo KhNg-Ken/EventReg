@@ -1,13 +1,4 @@
-:root {
-    --red: #c8102e;
-    --black: #111111;
-    --gray: #6b6b6b;
-    --light: #f5f5f6;
-    --white: #ffffff;
-    --card-radius: 12px;
-    --max-width: 760px;
-}
-
+/* Container for the registration form page */
 .form-wrap {
     display: flex;
     align-items: flex-start; /* use top space so content sits near top */
@@ -87,43 +78,11 @@
    - src/styles/QRPanel.css
    These files are imported by their respective components. */
 
-.ui-btn {
-    padding: 0.8rem 1.1rem;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-weight: 700;
-}
-
-.ui-btn-primary {
-    background: var(--red);
-    color: var(--white);
-    box-shadow: 0 8px 20px rgba(200, 16, 46, 0.12);
-}
-
 .ui-btn-primary:disabled{
     background: var(--light-gray);
     color: var(--black);
     cursor: not-allowed;
     box-shadow: none;
-}
-
-.ui-btn-secondary {
-    background: transparent;
-    color: var(--black);
-    border: 1px solid #e6e6e6;
-}
-
-/* small back button (icon-only) */
-.back-btn {
-    padding: 0.45rem 0.6rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    line-height: 1;
-    min-width: 36px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .invite {

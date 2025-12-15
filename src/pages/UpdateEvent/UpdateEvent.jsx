@@ -70,6 +70,18 @@ export default function UpdateEvent({ event: propEventDoc } = {}) {
                 payload.posterConfig = updatedPosterConfig;
             }
 
+            // Include bannerUrl and colors if provided
+            if (payload.bannerUrl !== undefined) {
+                payload.bannerUrl = payload.bannerUrl || '';
+            }
+            if (payload.colors) {
+                payload.colors = {
+                    primary: payload.colors.primary || '#0000FF',
+                    secondary: payload.colors.secondary || '#FF0000',
+                    accent: payload.colors.accent || '#00FF00',
+                };
+            }
+
             await adminUpdateEvent({ id: propEventDoc, ...payload });
             showToast('Saved', { type: 'success' });
             window.location.hash = '#/events';

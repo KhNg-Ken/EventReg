@@ -56,22 +56,14 @@ button {
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
-    background-color: #1a1a1a;
+    background-color: #000000;
     cursor: pointer;
-    transition: border-color 0.25s;
 }
 /* Ensure native controls inherit the page font for consistent rendering */
 input,
 textarea,
 select {
     font-family: inherit;
-}
-button:hover {
-    border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
 }
 
 /* Inline spinner used across components (small, neutral coloring) */
@@ -85,6 +77,10 @@ button:focus-visible {
     vertical-align: middle;
     margin-right: 8px;
     animation: spin 0.8s linear infinite;
+}
+
+button:hover {
+    background-color: var(--primary-light);
 }
 
 @keyframes spin {

@@ -1,8 +1,4 @@
 /* Styles for the CreateEvent page to ensure good contrast and layout */
-:root {
-    --foreground: var(--foreground, #111);
-}
-
 /* CreateEvent page-scoped styles (prefixed with create-) */
 .create-field {
     margin-bottom: 12px;
@@ -250,6 +246,92 @@ input[readonly] {
     background: #f5f5f5;
     border-radius: 4px;
     padding: 8px;
+}
+
+/* Form sections */
+.create-design-header {
+    border-top: 1px solid var(--white-light);
+    padding-top: 16px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--black);
+}
+
+/* Checkbox options container */
+.create-checkbox-group {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    margin-top: 8px;
+}
+
+/* Color picker container */
+.create-color-picker-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.create-color-picker-item {
+    flex: 1;
+}
+
+.create-color-picker-label {
+    font-size: 12px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.create-color-input {
+    width: 100%;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Result sections */
+.create-result-section {
+    margin-top: 12px;
+}
+
+.create-result-content {
+    margin-top: 6px;
+}
+
+.create-result-list {
+    margin-top: 6px;
+}
+
+.create-section-title {
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.create-url-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    align-items: center;
+}
+
+.create-url-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.create-qr-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.create-error-text {
+    color: var(--red);
 }
 
 .react-datepicker__keyboard-shortcut {

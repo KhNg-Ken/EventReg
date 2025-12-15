@@ -1,0 +1,36 @@
+/* Right panel - two columns: left (QRLink+Live) and right (Edit+Delete) */
+.admin-button-panel {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    gap: 16px;
+    height: 100%;
+    align-items: flex-start;
+}
+
+/* Left column: QRLink and Live buttons */
+.client-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+    min-width: 100px;
+}
+
+.event-live-btn {
+    background-color: var(--success, #22c55e);
+    color: white;
+}
+
+.event-live-btn:hover:not(:disabled) {
+    background-color: var(--success-dark, #16a34a);
+}
+
+/* Right column: Edit and Delete buttons */
+.change-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+    min-width: 100px;
+}

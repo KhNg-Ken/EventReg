@@ -1,4 +1,5 @@
 import './PageFrame.css';
+import chevron_left from '../../assets/icons/chevron_left_40.svg';
 
 export default function PageFrame({
     title,
@@ -21,15 +22,7 @@ export default function PageFrame({
             <header className="page-header" role="banner">
                 <div className="page-header-inner">
                     {showBack ? (
-                        <button
-                            className="ui-btn btn-secondary ui-back-btn"
-                            type="button"
-                            onClick={handleBack}
-                            aria-label="Quay lại"
-                            title="Quay lại"
-                        >
-                            ‹
-                        </button>
+                        <img src={chevron_left} alt="Back" className="page-back-btn" onClick={handleBack} />
                     ) : null}
 
                     <div className="page-title-block">
@@ -41,10 +34,7 @@ export default function PageFrame({
                 {actions ? <div className="page-actions">{actions}</div> : null}
             </header>
 
-            <main
-                className="page-content"
-                role="main"
-            >
+            <main className="page-content" role="main">
                 {children}
             </main>
         </div>

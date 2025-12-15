@@ -34,7 +34,7 @@
 }
 .reg-input:focus {
     box-shadow: 0 4px 18px rgba(200, 16, 46, 0.08);
-    border-color: var(--red);
+    border-color: var(--reg-primary, var(--red));
 }
 
 /* Ensure inputs always remain black text on white background regardless of state */
@@ -62,7 +62,7 @@ input.reg-input:-webkit-autofill:focus {
 }
 
 .reg-required {
-    color: var(--red);
+    color: var(--reg-accent, var(--red));
     margin-left: 4px;
     font-weight: 700;
 }

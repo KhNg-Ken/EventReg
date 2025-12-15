@@ -1,12 +1,12 @@
 import '../../pages/RegisterForm/RegisterForm.css';
 import { normalizedDateString } from '../../utils/dateUtils.js';
+import AdminButtonPanel from '../AdminButtonPanel/AdminButtonPanel.jsx';
 import './EventCard.css';
 
 export default function EventCard({
     ev,
-    onClick,
-    clientActions: clientActions,
-    changeActions: changeActions,
+    setLoading,
+    load
 }) {
     const eventDate = ev?.eventDate ? new Date(ev.eventDate) : null;
     const endDate = ev?.endDate ? new Date(ev.endDate) : null;
@@ -15,11 +15,6 @@ export default function EventCard({
         <div
             className="event-card"
             tabIndex={0}
-            onClick={(e) => {
-                // allow button clicks to bubble separately
-                if (e.target.tagName.toLowerCase() === 'button') return;
-                if (typeof onClick === 'function') onClick(ev);
-            }}
         >
             <div className="event-card-row">
                 <div className="event-card-left">
@@ -39,10 +34,11 @@ export default function EventCard({
                         </div>
                     </div>
                 </div>
-                <div className="event-card-right">
-                    <div className="event-actions-column">{clientActions}</div>
-                    <div className="event-actions-column">{changeActions}</div>
-                </div>
+                <AdminButtonPanel
+                    eventId={ev?.id}
+                    setLoading={setLoading}
+                    load={load}
+                />
             </div>
         </div>
     );
