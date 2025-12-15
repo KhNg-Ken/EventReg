@@ -1,7 +1,7 @@
 .modern-poster {
     --poster-primary: #0000;
     --poster-secondary: #ffffff;
-    --poster-bg: linear-gradient(45deg, #008535, #00331f);
+    --poster-bg: linear-gradient(45deg, #002385, #001833);
     --poster-text: #E9C457;
 
     width: 100%;
@@ -18,18 +18,17 @@
     font-family: 'Oswald', sans-serif;
     padding: 20px;
     margin: 0px;
+    z-index: 0;
 }
 
 .modern-poster-bg {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    opacity: 0.1;
-    z-index: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0.25;
+    z-index: 1;
     pointer-events: none;
 }
 
@@ -37,88 +36,118 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     box-sizing: border-box;
     width: 100%;
     height: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgb(255, 255, 255);
+    z-index: 2;
 }
 
-/* Top Section: 2/9 - Company Logos and Event Name */
+/* Top Section: 1/9 - Company Logos */
 .modern-poster-top {
+    box-sizing: border-box;
     width: 100%;
-    height: 22.22%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 15px;
 }
 
 .modern-poster-logos {
     display: flex;
+    flex-direction: row;
+    flex: 0 1 auto;
     align-items: center;
     justify-content: center;
     gap: 5px;
     flex-wrap: nowrap;
     width: 100%;
     overflow: visible;
+    background: white;
 }
 
 .modern-poster-logo {
-    height: 45px;
-    width: auto;
-    max-width: 80px;
+    height: 100px;
+    max-width: 150px;
     object-fit: contain;
     opacity: 0.9;
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     min-width: 0;
-    background: white;
+    
     padding: 4px;
     border-radius: 4px;
 }
 
-.modern-poster-event-name {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--poster-text);
+/* Top Info Section: 1/9 */
+.modern-poster-info {
+    box-sizing: border-box;
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-right: 40px;
+    padding-left: 40px;
+    padding-top: 30px;
+    overflow: visible;
+}
+
+.modern-poster-event-info {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     text-align: center;
 }
 
-/* Middle Section: 5/9 - Attendee Info */
-.modern-poster-greeting {
-    font-size: 40px;
-    font-weight: 500;
+.modern-poster-event-name {
+    font-size: 55px;
+    font-weight: 450;
     color: var(--poster-text);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    line-height: 1.1;
+}
+
+
+
+/* Middle Section: 5/9 - Attendee Info */
+.modern-poster-middle {
+    box-sizing: border-box;
+    width: 100%;
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.modern-poster-greeting {
+    font-size: 70px;
+    font-weight: 700;
+    font-style: italic;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 1);
+    text-align: center;
 }
 
 .modern-poster-attendee-label {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 400;
     color: var(--poster-text);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.modern-poster-middle {
-    width: 100%;
-    height: 55.56%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    padding: 30px 15px;
-}
-
 .modern-poster-photo-large {
-    width: 140px;
-    height: 140px;
+    width: 450px;
+    height: 450px;
     border-radius: 50%;
     overflow: hidden;
     border: 5px solid var(--poster-primary);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
     flex-shrink: 0;
 }
 
@@ -136,13 +165,14 @@
 }
 
 .modern-poster-name {
-    font-size: 52px;
+    font-size: clamp(48px, 8vw, 64px);
     font-weight: 700;
     color: var(--poster-text);
     letter-spacing: -0.5px;
     margin: 0;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     line-height: 1.2;
+    text-align: center;
 }
 
 .modern-poster-details {
@@ -153,23 +183,29 @@
 }
 
 .modern-poster-company {
-    font-size: 26px;
-    font-weight: 600;
+    font-size: clamp(24px, 6vw, 32px);
+    font-weight: 500;
     color: var(--poster-secondary);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
 .modern-poster-position {
-    font-size: 20px;
+    font-size: clamp(32px, 7vw, 40px);
     font-weight: 500;
     color: rgba(255, 255, 255, 0.9);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
-.modern-poster-email {
-    font-size: 16px;
-    color: rgba(255, 255, 255, 0.7);
-    margin-top: 6px;
+.modern-poster-welcome {
+    max-width: 70%;
+    padding-left: 40px;
+    padding-right: 40px;
+    font-size: 30px;
+    font-weight: 400;
+    color: var(--poster-text);
+    text-align: center;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
@@ -182,7 +218,7 @@
 /* Bottom Section: 2/9 - Event Information */
 .modern-poster-bottom {
     width: 100%;
-    height: 22.22%;
+    height: 10%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -191,18 +227,10 @@
     padding: 15px;
 }
 
-.modern-poster-event-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    text-align: center;
-}
-
 .modern-event-location,
 .modern-event-datetime {
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 30px;
+    font-weight: 400;
     color: var(--poster-text);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
@@ -211,33 +239,4 @@
     font-size: 28px;
     opacity: 0.5;
     font-weight: 300;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-    .modern-poster-name {
-        font-size: 36px;
-    }
-    .modern-poster-company {
-        font-size: 20px;
-    }
-}
-
-@media (max-width: 768px) {
-    .modern-poster-content {
-        padding: 24px;
-    }
-    .modern-poster-photo {
-        width: 120px;
-        height: 120px;
-    }
-    .modern-poster-name {
-        font-size: 28px;
-    }
-    .modern-poster-company {
-        font-size: 16px;
-    }
-    .modern-poster-position {
-        font-size: 14px;
-    }
 }

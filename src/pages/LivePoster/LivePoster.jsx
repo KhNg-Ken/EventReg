@@ -89,7 +89,8 @@ export default function LivePoster() {
             .then((snap) => {
                 if (snap.exists()) {
                     const eventData = snap.data();
-                    setPosterConfig(eventData.posterConfig || null);
+                    setPosterConfig(eventData || null); 
+                    console.log('Fetched event config for LivePoster:', eventData);
                 }
             })
             .catch((err) => {

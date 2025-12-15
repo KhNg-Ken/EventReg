@@ -1,4 +1,5 @@
 import './ModernTemplate.css';
+import { normalizedDateString } from '../../../utils/dateUtils.js'
 export default function ModernTemplate({ registrant, config }) {
     if (!registrant) {
         return (
@@ -11,16 +12,16 @@ export default function ModernTemplate({ registrant, config }) {
     }
 
     return (
-        <div className="modern-poster" style={{ backgroundImage: "url(src/assets/modern-bg.jpg)" }}>
+        <div className="modern-poster">
+            <img className="modern-poster-bg" src="src/assets/dark-blue.jpg" alt="Background" />
             <div className="modern-poster-overlay">
                 {/* Top Section: 2/9 - Company Logos and Event Name */}
                 <div className="modern-poster-top">
-                    <div className="modern-poster-event-name">ĐƠN VỊ TỔ CHỨC</div>
                     <div className="modern-poster-logos">
                         <img
                             className="modern-poster-logo"
-                            src="https://content.kaspersky-labs.com/se/ru/content/ru-ru/images/homepage/kaspersky-logo/kaspersky-logo-v2.svg"
-                            alt="Kaspersky Logo"
+                            src="https://companieslogo.com/img/orig/ZBRA_BIG-f7a54900.png?t=1720244494"
+                            alt="Zebra Technologies Logo"
                         />
                         <img
                             className="modern-poster-logo"
@@ -30,12 +31,12 @@ export default function ModernTemplate({ registrant, config }) {
                         <img
                             className="modern-poster-logo"
                             src="https://images.glints.com/unsafe/glints-dashboard.oss-ap-southeast-1.aliyuncs.com/company-logo/84b2580fc91bc2ee5cfcc4e7618264fd.png"
-                            alt="VNG Logo"
+                            alt="TDS Logo"
                         />
                         <img
                             className="modern-poster-logo"
-                            src="https://companieslogo.com/img/orig/ZBRA_BIG-f7a54900.png?t=1720244494"
-                            alt="Zebra Technologies Logo"
+                            src="https://content.kaspersky-labs.com/se/ru/content/ru-ru/images/homepage/kaspersky-logo/kaspersky-logo-v2.svg"
+                            alt="Kaspersky Logo"
                         />
                         <img
                             className="modern-poster-logo"
@@ -44,11 +45,25 @@ export default function ModernTemplate({ registrant, config }) {
                         />
                     </div>
                 </div>
+                <div className="modern-poster-info">
+                    <div className="modern-poster-event-name">{config.name}</div>
+                </div>
+
+                {/* DIVIDER */}
+                <div
+                    style={{
+                        width: '65%',
+                        height: '1px',
+                        backgroundColor: '#E9C457',
+                        marginTop: '30px',
+                        marginBottom: '40px',
+                    }}
+                ></div>
 
                 {/* Middle Section: 5/9 - Attendee Info */}
                 <div className="modern-poster-middle">
-                    <div className="modern-poster-greeting">CHÀO MỪNG</div>
-                    {config?.showFields?.photo !== false && registrant.photoUrl && (
+                    <div className="modern-poster-greeting">NHIỆT LIỆT CHÀO MỪNG</div>
+                    {registrant?.config.showImage !== false && registrant.photoUrl && (
                         <div className="modern-poster-photo-large">
                             <img src={registrant.photoUrl} alt={registrant.name} />
                         </div>
@@ -58,39 +73,27 @@ export default function ModernTemplate({ registrant, config }) {
                         <div className="modern-poster-name">{registrant.name}</div>
 
                         <div className="modern-poster-details">
-                            {config?.showFields?.position !== false && registrant.position && (
+                            {registrant?.config.showPosition !== true && registrant.position && (
                                 <div className="modern-poster-position">{registrant.position}</div>
                             )}
 
-                            {config?.showFields?.company !== false && registrant.company && (
+                            {registrant?.config.showCompany !== true && registrant.company && (
                                 <div className="modern-poster-company">{registrant.company}</div>
-                            )}
-
-                            {config?.showFields?.email !== false && registrant.email && (
-                                <div className="modern-poster-email">{registrant.email}</div>
                             )}
                         </div>
                     </div>
                 </div>
-
                 {/* Bottom Section: 2/9 - Event Information */}
                 <div className="modern-poster-bottom">
-                    <div className="modern-poster-event-info">
-                        {config?.eventLocation && (
-                            <div className="modern-event-location">{config.eventLocation}</div>
-                        )}
-                        {config?.eventDateTime && (
-                            <div className="modern-event-datetime">{config.eventDateTime}</div>
-                        )}
-                    </div>
+                    {config?.location && (
+                        <div className="modern-event-location">{config.location}</div>
+                    )}
+                    {config?.eventDate && (
+                        <div className="modern-event-datetime">
+                            {normalizedDateString(config.eventDate)}
+                        </div>
+                    )}
                 </div>
-
-                {config?.backgroundImage && (
-                    <div
-                        className="modern-poster-bg"
-                        style={{ backgroundImage: `url(${config.backgroundImage})` }}
-                    />
-                )}
             </div>
         </div>
     );
