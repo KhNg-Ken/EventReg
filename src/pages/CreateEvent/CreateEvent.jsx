@@ -262,7 +262,7 @@ function CreateEvent() {
                                 checked={optionalImage}
                                 onChange={(e) => setOptionalImage(e.target.checked)}
                             />{' '}
-                            Bắt buộc đăng ảnh cá nhân
+                            Ẩn ảnh
                         </label>
                     </div>
                 </div>

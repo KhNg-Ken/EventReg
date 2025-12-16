@@ -20,6 +20,7 @@
 }
 
 .reg-input {
+    box-sizing: border-box;
     padding: 0.75rem 0.9rem;
     border-radius: 8px;
     border: 1px solid #e6e6e6;
@@ -77,7 +78,7 @@ input.reg-input:-webkit-autofill:focus {
 }
 
 /* Mobile responsiveness */
-@media (max-width: 720px) {
+@media (max-width: 900px) {
     .reg-row {
         flex-direction: column;
         gap: 0.875rem;

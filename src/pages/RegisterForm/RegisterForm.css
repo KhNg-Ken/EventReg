@@ -69,7 +69,8 @@
     grid-template-columns: 65% 30%;
     gap: 5%;
     align-items: start;
-    max-width: var(--max-width);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Event header styles moved to `src/styles/EventHeader.css` (imported by EventHeader.jsx) */
@@ -79,11 +80,21 @@
    - src/styles/QRPanel.css
    These files are imported by their respective components. */
 
-.ui-btn-primary:disabled{
-    background: var(--light-gray);
-    color: var(--black);
+.ui-btn-primary:disabled {
+    background: var(--light-gray) !important;
+    color: var(--gray-dark) !important;
     cursor: not-allowed;
     box-shadow: none;
+    opacity: 0.55;
+    border-color: var(--light-gray) !important;
+}
+
+@media (max-width: 720px) {
+    .ui-btn-primary:disabled {
+        opacity: 0.5;
+        background: #c0c0c0 !important;
+        color: #666 !important;
+    }
 }
 
 .invite {
@@ -131,6 +142,8 @@
     align-items: center;
     gap: 12px;
     width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
 }
 
 .register-banner {
@@ -172,6 +185,11 @@
         padding: 0.5rem;
     }
 
+    .register-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
     .ui-card {
         width: 100%;
         padding: 1rem;
@@ -198,7 +216,7 @@
 
     .register-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: 1.25rem;
     }
 
     .register-form {

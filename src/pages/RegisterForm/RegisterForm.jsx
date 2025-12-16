@@ -386,8 +386,8 @@ function RegisterForm() {
                                         selectedEventInfo?.colors?.secondary || '#d32f2f',
                                         0.12
                                     ),
-                                    background: 'var(--event-secondary)',
-                                    borderColor: 'var(--event-secondary)',
+                                    background: !(uploading || !isFormValid()) ? 'var(--event-secondary)' : undefined,
+                                    borderColor: !(uploading || !isFormValid()) ? 'var(--event-secondary)' : undefined,
                                 }}
                             >
                                 Đăng ký & Tạo vé

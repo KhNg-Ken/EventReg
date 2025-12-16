@@ -1,13 +1,14 @@
 /* Styles for the EventHeader component (moved from RegisterForm.css) */
 .event-header {
-    grid-column: 1 / 2;
+    width: 100%;
+    box-sizing: border-box;
     /* gradient driven by event accent color, fading to white */
     background: linear-gradient(
         90deg,
-        var(--event-primary-soft) 0%,
-        #ffffff 70%
+        var(--event-accent-soft, var(--event-primary-soft)) 0%,
+        #ffffff 130%
     );
-    border-left: 8px solid var(--event-primary);
+    border-left: 8px solid var(--event-accent, var(--event-primary));
     padding: 14px 16px;
     margin-bottom: 8px;
     border-radius: 10px;
@@ -16,7 +17,6 @@
     gap: 8px;
     align-items: start;
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
-    max-width: var(--max-width);
 }
 .event-title {
     color: var(--black);
@@ -27,6 +27,7 @@
     text-shadow: 0 2px 0 rgba(255, 255, 255, 0.4), 0 6px 18px rgba(200, 16, 46, 0.04);
     padding: 2px 6px;
     border-radius: 6px;
+    box-sizing: border-box;
 }
 .event-description {
     font-size: 13px;

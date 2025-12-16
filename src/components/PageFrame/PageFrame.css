@@ -29,6 +29,7 @@
     padding: 0% 0 1%; /* extra top/bottom padding so title clears rounded corner and spacing below */
     background: transparent;
     transition: box-shadow 160ms ease, background 160ms ease;
+    box-sizing: border-box;
 }
 
 .page-header-inner {

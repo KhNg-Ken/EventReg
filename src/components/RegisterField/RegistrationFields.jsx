@@ -173,10 +173,6 @@ export default function RegistrationFields({
                     }}
                     required={!allowOptOutImage}
                 />
-                <div style={{ fontSize: 12, color: 'var(--gray)', marginTop: 6 }}>
-                    Nếu tải ảnh, ảnh sẽ được lưu trong thư mục sự kiện và đổi tên theo định dạng
-                    Name_Company
-                </div>
             </div>
 
             {(uploading || uploadProgress > 0) && (
