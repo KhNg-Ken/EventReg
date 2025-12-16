@@ -69,6 +69,7 @@
     grid-template-columns: 65% 30%;
     gap: 5%;
     align-items: start;
+    max-width: var(--max-width);
 }
 
 /* Event header styles moved to `src/styles/EventHeader.css` (imported by EventHeader.jsx) */

@@ -117,6 +117,8 @@ export async function adminUpdateEvent(request) {
     if (Object.prototype.hasOwnProperty.call(data, 'status')) update.status = data.status;
     if (Object.prototype.hasOwnProperty.call(data, 'bannerUrl'))
         update.bannerUrl = data.bannerUrl || '';
+    if (Object.prototype.hasOwnProperty.call(data, 'qrCodeUrl'))
+        update.qrCodeUrl = data.qrCodeUrl || null;
     if (data?.colors) {
         update.colors = {
             primary: data.colors.primary || 'var(--primary)',

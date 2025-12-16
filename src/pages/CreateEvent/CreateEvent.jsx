@@ -8,6 +8,7 @@ import { useToast } from '../../contexts/ToastContext.jsx';
 import { adminCreateEvent, adminUpdateEvent } from '../../utils/adminProxy.js';
 import { uploadToCloudinary } from '../../utils/cloudinaryUtils.js';
 import { createLogger } from '../../utils/logger.js';
+import { buildRegisterUrl } from '../../utils/urlUtils.js';
 import './CreateEvent.css';
 
 const logger = createLogger('CreateEvent');
@@ -93,9 +94,7 @@ function CreateEvent() {
 
             // prepare shareable URL (include eventId in query string)
             try {
-                const url = new URL(window.location.href);
-                url.hash = `#/register?event=${encodeURIComponent(res.docId || '')}`;
-                const shareUrl = url.toString();
+                const shareUrl = buildRegisterUrl(res.docId || '');
                 setResult((prev) => ({ ...prev, shareUrl }));
 
                 // Generate QR image for the register link using local `qrcode` lib,

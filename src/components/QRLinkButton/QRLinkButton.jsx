@@ -1,5 +1,6 @@
 import { toDataURL } from 'qrcode';
 import { useState } from 'react';
+import { buildRegisterUrl } from '../../utils/urlUtils.js';
 import './QRLinkButton.css';
 
 export default function QRLinkButton({ eventId, onError = null }) {
@@ -9,9 +10,7 @@ export default function QRLinkButton({ eventId, onError = null }) {
         try {
             setIsGenerating(true);
             // Generate QR code for the registration form link
-            const regLink = `${window.location.origin}${
-                window.location.pathname
-            }#/register?event=${encodeURIComponent(eventId)}`;
+            const regLink = buildRegisterUrl(eventId);
             const dataUrl = await toDataURL(regLink, { width: 800 });
 
             // Convert data URL to blob and download
@@ -55,9 +54,7 @@ export default function QRLinkButton({ eventId, onError = null }) {
                 onClick={(e) => {
                     e.stopPropagation();
                     // Copy registration link to clipboard
-                    const regLink = `${window.location.origin}${
-                        window.location.pathname
-                    }#/register?event=${encodeURIComponent(eventId)}`;
+                    const regLink = buildRegisterUrl(eventId);
                     navigator.clipboard.writeText(regLink).catch((err) => {
                         console.error('Copy failed:', err);
                         if (typeof onError === 'function') {
