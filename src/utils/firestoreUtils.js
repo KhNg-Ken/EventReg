@@ -9,7 +9,7 @@ import {
     setDoc,
     where,
 } from 'firebase/firestore';
-import { normalizePhone, sanitizeString } from './stringUtils.js';
+import { normalizePhone, sanitizeString } from './conversionUtils.js';
 
 /**
  * List events from Firestore `events` collection. Falls back to localStorage if Firestore is not available.

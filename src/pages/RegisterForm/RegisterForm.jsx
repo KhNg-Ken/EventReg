@@ -4,6 +4,7 @@ import PageFrame from '../../components/PageFrame/PageFrame.jsx';
 import QRPanel from '../../components/QRPanel/QRPanel.jsx';
 import RegistrationFields from '../../components/RegisterField/RegistrationFields.jsx';
 import { useToast } from '../../contexts/ToastContext.jsx';
+import { toRgba } from '../../utils/conversionUtils.js';
 import { normalizedDateString } from '../../utils/dateUtils.js';
 import { sendGraphEmail } from '../../utils/emailUtils.js';
 import { readEventInfo } from '../../utils/firestoreUtils.js';
@@ -184,12 +185,12 @@ function RegisterForm() {
                             eventDate: normalizedDateString(selectedEventInfo?.eventDate),
                             eventLocation: eventLocation,
                             qrCodeUrl: qrCodeUrl,
-                            subject: `Mã mời sự kiện ${selectedEventInfo?.name || 'TDSouth'}`,
+                            subject: `Mã mời tham dự sự kiện Giải Pháp CNTT Khối Sản Xuất cùng TDSouth`,
                         };
 
                         await sendGraphEmail({
                             to: email,
-                            templateName: '/unlayer/index', // path under email templates
+                            templateName: 'ai_application_event', // path under email templates
                             templateData,
                         });
                     }
@@ -245,8 +246,14 @@ function RegisterForm() {
                 if (!mounted) return;
 
                 if (cfg) {
-                    if (!(cfg.status === 'completed' || cfg.status === 'hiatus' ||
-                        new Date(cfg.eventDate) < new Date() || new Date(cfg.endDate) < new Date())) {
+                    if (
+                        !(
+                            cfg.status === 'completed' ||
+                            cfg.status === 'hiatus' ||
+                            new Date(cfg.eventDate) < new Date() ||
+                            new Date(cfg.endDate) < new Date()
+                        )
+                    ) {
                         setSelectedEventInfo(cfg);
                         setFormDoesNotExist(false);
                     }
@@ -291,7 +298,7 @@ function RegisterForm() {
 
     // Show error if form does not exist
     if (formDoesNotExist) {
-        return <FormDoesNotExist/>;
+        return <FormDoesNotExist />;
     }
 
     // Show error if no event ID in URL
@@ -331,48 +338,67 @@ function RegisterForm() {
     }
 
     return (
-        <PageFrame
-            title="Đăng ký sự kiện TDSouth"
-            subtitle="Đăng ký sự kiện — mã mời của bạn sẽ được tạo ngay lập tức"
-            showBack={showBackButton}
-            minHeight={420}
-        >
-            {/* Event title & description (moved to reusable component) */}
-            <EventHeader eventInfo={selectedEventInfo} />
-            <div className="register-grid">
-                <form className="register-form" onSubmit={handleSubmit}>
-                    <RegistrationFields
-                        formData={formData}
-                        handleChange={handleChange}
-                        photoFile={photoFile}
-                        setPhotoFile={setPhotoFile}
-                        uploading={uploading}
-                        uploadProgress={uploadProgress}
-                        optOutCompany={optOutCompany}
-                        setOptOutCompany={setOptOutCompany}
-                        optOutPosition={optOutPosition}
-                        setOptOutPosition={setOptOutPosition}
-                        allowOptOutCompany={allowOptOutCompany}
-                        allowOptOutPosition={allowOptOutPosition}
-                        allowOptOutImage={allowOptOutImage}
-                        bannerUrl={selectedEventInfo?.bannerUrl}
-                        colors={selectedEventInfo?.colors}
-                    />
+        <div className="register-page-shell">
+            {selectedEventInfo?.bannerUrl ? (
+                <div className="register-banner">
+                    <img src={selectedEventInfo.bannerUrl} alt="Event banner" loading="lazy" />
+                </div>
+            ) : null}
 
-                    <div className="register-actions field-full actions">
-                        <button
-                            className="ui-btn-primary"
-                            type="submit"
-                            disabled={uploading || !isFormValid()}
-                        >
-                            Đăng ký & Tạo vé
-                        </button>
-                    </div>
-                </form>
+            <PageFrame
+                title="Đăng ký sự kiện TDSouth"
+                subtitle="Đăng ký sự kiện — mã mời của bạn sẽ được tạo ngay lập tức"
+                showBack={showBackButton}
+                minHeight={420}
+            >
+                {/* Event title & description (moved to reusable component) */}
+                <EventHeader eventInfo={selectedEventInfo} />
+                <div className="register-grid">
+                    <form className="register-form" onSubmit={handleSubmit}>
+                        <RegistrationFields
+                            formData={formData}
+                            handleChange={handleChange}
+                            photoFile={photoFile}
+                            setPhotoFile={setPhotoFile}
+                            uploading={uploading}
+                            uploadProgress={uploadProgress}
+                            optOutCompany={optOutCompany}
+                            setOptOutCompany={setOptOutCompany}
+                            optOutPosition={optOutPosition}
+                            setOptOutPosition={setOptOutPosition}
+                            allowOptOutCompany={allowOptOutCompany}
+                            allowOptOutPosition={allowOptOutPosition}
+                            allowOptOutImage={allowOptOutImage}
+                            bannerUrl={selectedEventInfo?.bannerUrl}
+                            colors={selectedEventInfo?.colors}
+                        />
 
-                <QRPanel qrSrc={qrSrc} inviteId={inviteId} />
-            </div>
-        </PageFrame>
+                        <div className="register-actions field-full actions">
+                            <button
+                                className="ui-btn-primary"
+                                type="submit"
+                                disabled={uploading || !isFormValid()}
+                                style={{
+                                    // Bind to event secondary color (fallback to red)
+                                    '--event-secondary':
+                                        selectedEventInfo?.colors?.secondary || '#d32f2f',
+                                    '--event-secondary-soft': toRgba(
+                                        selectedEventInfo?.colors?.secondary || '#d32f2f',
+                                        0.12
+                                    ),
+                                    background: 'var(--event-secondary)',
+                                    borderColor: 'var(--event-secondary)',
+                                }}
+                            >
+                                Đăng ký & Tạo vé
+                            </button>
+                        </div>
+                    </form>
+
+                    <QRPanel qrSrc={qrSrc} inviteId={inviteId} />
+                </div>
+            </PageFrame>
+        </div>
     );
 }
 

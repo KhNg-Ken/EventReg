@@ -1,12 +1,22 @@
 import { normalizedDateString } from '../../utils/dateUtils';
+import { toRgba } from '../../utils/conversionUtils.js';
 import './EventHeader.css';
 
 export default function EventHeader({ eventInfo = {} }) {
     const title = eventInfo.name;
     const desc = eventInfo.description;
 
+    const primary = eventInfo.colors.primary;
+    const primarySoft = toRgba(primary, 0.24);
+
     return (
-        <div className="event-header">
+        <div
+            className="event-header"
+            style={{
+                '--event-primary': primary,
+                '--event-primary-soft': primarySoft,
+            }}
+        >
             <div>
                 <div className="event-title">{title}</div>
                 {desc ? <div className="event-description">{desc}</div> : null}
@@ -23,7 +33,9 @@ export default function EventHeader({ eventInfo = {} }) {
                 {eventInfo.eventDate ? (
                     <div className="meta-item">
                         <div className="meta-label">Ngày sự kiện</div>
-                        <div className="meta-value">{normalizedDateString(eventInfo.eventDate)}</div>
+                        <div className="meta-value">
+                            {normalizedDateString(eventInfo.eventDate)}
+                        </div>
                     </div>
                 ) : null}
 

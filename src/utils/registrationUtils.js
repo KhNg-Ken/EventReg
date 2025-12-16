@@ -1,8 +1,8 @@
 import QRCode from 'qrcode';
 import { createLogger } from '../utils/logger.js';
 import { deleteByToken, uploadToCloudinary } from './cloudinaryUtils.js';
+import { normalizePhone, sanitizeString } from './conversionUtils.js';
 import { registerUserProxy } from './registerProxy.js';
-import { normalizePhone, sanitizeString } from './stringUtils.js';
 
 const logger = createLogger('registrationUtils');
 
@@ -171,7 +171,7 @@ export async function registerAttendee({ eventDoc, attendee, photoFile, onProgre
             const nameSource = (attendee && (attendee.name || attendee.company)) || 'attendee';
             const sanitized = sanitizeString(nameSource) || 'attendee';
             const last4 = phoneLast4 || '0000';
-            const publicId = `${sanitized}_${last4}`;
+            const publicId = `${sanitized}_${last4}_${eventID}`;
 
             const cloudRes = await uploadToCloudinary(compressed, {
                 folder,

@@ -65,6 +65,12 @@ export async function adminCreateEvent(request) {
         status: data?.status || 'ongoing',
         location: data?.location || '',
         qrCodeUrl: data?.qrCodeUrl || null,
+        bannerUrl: data?.bannerUrl || '',
+        colors: {
+            primary: data?.colors?.primary || 'var(--primary)',
+            secondary: data?.colors?.secondary || 'var(--secondary-dark)',
+            accent: data?.colors?.accent || 'var(--secondary)',
+        },
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
@@ -109,6 +115,15 @@ export async function adminUpdateEvent(request) {
         update.requirePhoto = !update.config.optionalImage;
     }
     if (Object.prototype.hasOwnProperty.call(data, 'status')) update.status = data.status;
+    if (Object.prototype.hasOwnProperty.call(data, 'bannerUrl'))
+        update.bannerUrl = data.bannerUrl || '';
+    if (data?.colors) {
+        update.colors = {
+            primary: data.colors.primary || 'var(--primary)',
+            secondary: data.colors.secondary || 'var(--secondary-dark)',
+            accent: data.colors.accent || 'var(--secondary)',
+        };
+    }
 
     update.editedAt = admin.firestore.FieldValue.serverTimestamp();
 

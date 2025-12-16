@@ -62,7 +62,7 @@ input.reg-input:-webkit-autofill:focus {
 }
 
 .reg-required {
-    color: var(--reg-accent, var(--red));
+    color: var(--red);
     margin-left: 4px;
     font-weight: 700;
 }

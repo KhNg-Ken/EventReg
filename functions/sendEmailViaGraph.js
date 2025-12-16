@@ -31,7 +31,7 @@ export const sendEmailViaGraph = onCall(
         const data = req.data || {};
 
         const to = data.to?.trim()?.toLowerCase();
-        const templateName = data.templateName?.trim() || 'unlayer/index';
+        const templateName = data.templateName?.trim() || 'ai_application_event';
         const templateData = data.templateData || {};
 
         if (!to) {
@@ -118,7 +118,7 @@ export const sendEmailViaGraph = onCall(
             const graphEndpoint = `https://graph.microsoft.com/v1.0/users/${adminEmail}/sendMail`;
             const emailPayload = {
                 message: {
-                    subject: templateData.subject || 'Mã mời sự kiện TDSouth',
+                    subject: templateData.subject || 'Mã mời tham dự sự kiện Giải Pháp CNTT Khối Sản Xuất cùng TDSouth',
                     body: {
                         contentType: 'HTML',
                         content: htmlContent,

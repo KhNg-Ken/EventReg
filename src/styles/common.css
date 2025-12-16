@@ -8,9 +8,11 @@
     --black: #000000;
     --gray: #757575;
     --gray-light: #dddddd;
+    --gray-dark: #444444;
     --white-light: #adadad;
     --white: #ffffff;
     --light-blue: #2761fe;
+    --red: #d32f2f;
     --card-radius: 12px;
     --max-width: 760px;
 }
