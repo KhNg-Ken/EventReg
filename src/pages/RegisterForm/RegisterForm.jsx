@@ -122,7 +122,7 @@ function RegisterForm() {
         }
 
         // Enforce image requirement from event config
-        if (allowOptOutImage && !photoFile) {
+        if (!allowOptOutImage && !photoFile) {
             showToast('Ảnh là bắt buộc cho sự kiện này. Vui lòng tải ảnh lên.', { type: 'error' });
             return;
         }
