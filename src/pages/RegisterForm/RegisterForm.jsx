@@ -185,7 +185,8 @@ function RegisterForm() {
                             eventDate: normalizedDateString(selectedEventInfo?.eventDate),
                             eventLocation: eventLocation,
                             qrCodeUrl: qrCodeUrl,
-                            subject: `Mã mời tham dự sự kiện Giải Pháp CNTT Khối Sản Xuất cùng TDSouth`,
+                            subject: `[Xác nhận đăng ký] Mã mời tham dự sự kiện Giải Pháp CNTT Khối Sản Xuất cùng TDSouth`,
+                            bannerUrl: selectedEventInfo?.bannerUrl || '',
                         };
 
                         await sendGraphEmail({
@@ -347,7 +348,7 @@ function RegisterForm() {
 
             <PageFrame
                 title="Đăng ký sự kiện TDSouth"
-                subtitle="Đăng ký sự kiện — mã mời của bạn sẽ được tạo ngay lập tức"
+                subtitle="Hãy điền thông tin của bạn bên dưới để đăng ký tham dự sự kiện."
                 showBack={showBackButton}
                 minHeight={420}
             >

@@ -20,28 +20,31 @@ export default function ModernTemplate({ registrant, config }) {
                     <div className="modern-poster-logos">
                         <img
                             className="modern-poster-logo"
-                            src="https://companieslogo.com/img/orig/ZBRA_BIG-f7a54900.png?t=1720244494"
-                            alt="Zebra Technologies Logo"
-                        />
-                        <img
-                            className="modern-poster-logo"
-                            src="https://s3.amazonaws.com/cms.ipressroom.com/219/files/202512/692f56b83d6332f881bbc58b_nvidia-logo-horiz-blk-16x9+1/nvidia-logo-horiz-blk-16x9+1_3b6e36c5-dc74-4a75-86f4-5faefc2a7f7d-prv.png"
-                            alt="Nvidia Logo"
-                        />
-                        <img
-                            className="modern-poster-logo"
-                            src="https://images.glints.com/unsafe/glints-dashboard.oss-ap-southeast-1.aliyuncs.com/company-logo/84b2580fc91bc2ee5cfcc4e7618264fd.png"
-                            alt="TDS Logo"
-                        />
-                        <img
-                            className="modern-poster-logo"
-                            src="https://content.kaspersky-labs.com/se/ru/content/ru-ru/images/homepage/kaspersky-logo/kaspersky-logo-v2.svg"
+                            src="https://res.cloudinary.com/danbr3geg/image/upload/v1765871057/Kaspersky_logo_green_CMYK.eps_4EA11AA3_t7u4mc.svg"
                             alt="Kaspersky Logo"
                         />
                         <img
                             className="modern-poster-logo"
-                            src="https://news.tdsynnex.com/wp-content/uploads/2024/03/Tech-Data-New-Logo.jpg"
-                            alt="Tech Data Logo"
+                            src="https://res.cloudinary.com/danbr3geg/image/upload/v1765871059/nvidia-logo-vert-pms-wht-no-reg-for-print_p8pymo.svg"
+                            alt="Nvidia Logo"
+                        />
+                        <img
+                            className="modern-poster-logo"
+                            style={{ minWidth: '500px', height: 'auto' }}
+                            src="https://res.cloudinary.com/danbr3geg/image/upload/v1765871058/TDSouth_-_W_jmdsq5.svg"
+                            alt="TDS Logo"
+                        />
+
+                        <img
+                            className="modern-poster-logo"
+                            src="https://res.cloudinary.com/danbr3geg/image/upload/v1765871059/Zebra_Logo_W_uxdudh.svg"
+                            alt="Zebra Technologies Logo"
+                        />
+
+                        <img
+                            className="modern-poster-logo"
+                            src="https://res.cloudinary.com/danbr3geg/image/upload/v1765871065/Logo_AITC-2_lzrzji.svg"
+                            alt="AITC Logo"
                         />
                     </div>
                 </div>
@@ -63,7 +66,7 @@ export default function ModernTemplate({ registrant, config }) {
                 {/* Middle Section: 5/9 - Attendee Info */}
                 <div className="modern-poster-middle">
                     <div className="modern-poster-greeting">NHIỆT LIỆT CHÀO MỪNG</div>
-                    {registrant?.config.showImage !== false && registrant.photoUrl && (
+                    {registrant?.config.showImage === true && registrant.photoUrl && (
                         <div className="modern-poster-photo-large">
                             <img src={registrant.photoUrl} alt={registrant.name} />
                         </div>
@@ -73,11 +76,11 @@ export default function ModernTemplate({ registrant, config }) {
                         <div className="modern-poster-name">{registrant.name}</div>
 
                         <div className="modern-poster-details">
-                            {registrant?.config.showPosition !== true && registrant.position && (
+                            {registrant?.config.showPosition === true && registrant.position && (
                                 <div className="modern-poster-position">{registrant.position}</div>
                             )}
 
-                            {registrant?.config.showCompany !== true && registrant.company && (
+                            {registrant?.config.showCompany === true && registrant.company && (
                                 <div className="modern-poster-company">{registrant.company}</div>
                             )}
                         </div>

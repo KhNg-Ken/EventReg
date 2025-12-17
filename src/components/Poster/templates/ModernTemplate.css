@@ -63,15 +63,13 @@
     flex-wrap: nowrap;
     width: 100%;
     overflow: visible;
-    background: white;
+    background: transparent;
 }
 
 .modern-poster-logo {
     height: 100px;
-    max-width: 150px;
     object-fit: contain;
     opacity: 0.9;
-    flex: 1 1 auto;
     min-width: 0;
     
     padding: 4px;
