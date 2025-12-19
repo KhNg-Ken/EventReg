@@ -185,7 +185,7 @@ function RegisterForm() {
                             eventDate: normalizedDateString(selectedEventInfo?.eventDate),
                             eventLocation: eventLocation,
                             qrCodeUrl: qrCodeUrl,
-                            subject: `[Xác nhận đăng ký] Mã mời tham dự sự kiện Giải Pháp CNTT Khối Sản Xuất cùng TDSouth`,
+                            subject: `[Xác nhận đăng ký] Sự kiện Ứng dụng AI, Giải pháp Bảo mật và Digital Logistics | 26.12.2025 tại Hotel Palace Saigon`,
                             bannerUrl: selectedEventInfo?.bannerUrl || '',
                         };
 

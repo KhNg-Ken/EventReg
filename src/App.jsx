@@ -11,6 +11,7 @@ import EventList from './pages/EventList/EventList.jsx';
 import LivePoster from './pages/LivePoster/LivePoster.jsx';
 import PosterDesign from './pages/PosterDesign/PosterDesign.jsx';
 import RegisterForm from './pages/RegisterForm/RegisterForm.jsx';
+import RegistrantList from './pages/RegistrantList/RegistrantList.jsx';
 import UpdateEvent from './pages/UpdateEvent/UpdateEvent.jsx';
 import WorkInProgress from './pages/WorkInProgress.jsx';
 import './styles/App.css';
@@ -197,6 +198,12 @@ function AppContent() {
                             </ProtectedRoute>
                         )}
 
+                        {page === 'registrants' && (
+                            <ProtectedRoute adminOnly loadingFallback={null}>
+                                <RegistrantList />
+                            </ProtectedRoute>
+                        )}
+
                         {/* Default fallback for all other routes */}
                         {![
                             'login',
@@ -207,6 +214,7 @@ function AppContent() {
                             'liveposter',
                             'posterdesign',
                             'checkin-statistics',
+                            'registrants',
                         ].includes(page) && <div className="empty-page">Page not found.</div>}
                     </>
                 )}

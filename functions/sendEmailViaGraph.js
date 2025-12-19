@@ -118,7 +118,9 @@ export const sendEmailViaGraph = onCall(
             const graphEndpoint = `https://graph.microsoft.com/v1.0/users/${adminEmail}/sendMail`;
             const emailPayload = {
                 message: {
-                    subject: templateData.subject || '[Xác nhận đăng ký] Mã mời tham dự sự kiện Giải Pháp CNTT Khối Sản Xuất cùng TDSouth',
+                    subject:
+                        templateData.subject ||
+                        '[Xác nhận đăng ký] Sự kiện Ứng dụng AI, Giải pháp Bảo mật và Digital Logistics | 26.12.2025 tại Hotel Palace Saigon',
                     body: {
                         contentType: 'HTML',
                         content: htmlContent,

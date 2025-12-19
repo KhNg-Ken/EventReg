@@ -26,11 +26,16 @@
     background-color: var(--success-dark, #16a34a);
 }
 
-/* Right column: Edit and Delete buttons */
+/* Right column: Edit and View buttons */
 .change-actions {
     display: flex;
     flex-direction: column;
     gap: 10px;
     flex-shrink: 0;
     min-width: 100px;
+}
+
+.view-registrants-btn {
+    background-color: var(--primary, #3b82f6);
+    color: white;
 }

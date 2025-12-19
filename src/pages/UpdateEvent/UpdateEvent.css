@@ -51,8 +51,44 @@
     padding: 8px 14px;
 }
 
+.update-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    gap: 1rem;
+}
+
+.update-actions .ui-btn {
+    padding: 0.75rem 1.5rem;
+}
+
+.update-actions .btn-danger {
+    background: #c1121f;
+    color: var(--white);
+    border-color: #c1121f;
+}
+
+.update-actions .btn-danger:hover:not(:disabled) {
+    background: #a00d1a;
+    border-color: #a00d1a;
+    box-shadow: 0 4px 12px rgba(193, 18, 31, 0.3);
+}
+
+.update-actions .btn-danger:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
 @media (max-width: 640px) {
     .create-form .row {
         flex-direction: column;
+    }
+
+    .update-actions {
+        flex-direction: column;
+    }
+
+    .update-actions .ui-btn {
+        width: 100%;
     }
 }

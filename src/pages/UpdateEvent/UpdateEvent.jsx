@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import EventForm from '../../components/EventForm.jsx';
 import PageFrame from '../../components/PageFrame/PageFrame.jsx';
 import { useToast } from '../../contexts/ToastContext.jsx';
-import { adminUpdateEvent } from '../../utils/adminProxy.js';
+import { adminDeleteEvent, adminUpdateEvent } from '../../utils/adminProxy.js';
 import { createLogger } from '../../utils/logger.js';
 import '../CreateEvent/CreateEvent.css';
 import './UpdateEvent.css';
@@ -40,6 +40,22 @@ export default function UpdateEvent({ event: propEventDoc } = {}) {
         }
         load();
     }, [propEventDoc]);
+
+    async function handleDeleteEvent() {
+        if (!propEventDoc) return;
+        if (!confirm('Delete this event? This cannot be undone.')) return;
+        try {
+            setSaving(true);
+            await adminDeleteEvent({ id: propEventDoc });
+            showToast('Event deleted successfully', { type: 'success' });
+            window.location.hash = '#/events';
+        } catch (err) {
+            logger.error('Delete failed', err);
+            showToast(err?.message || 'Delete failed', { type: 'error' });
+        } finally {
+            setSaving(false);
+        }
+    }
 
     async function handleSave(payload) {
         if (!propEventDoc) return;
@@ -107,7 +123,16 @@ export default function UpdateEvent({ event: propEventDoc } = {}) {
                 <div className="create-form">
                     <EventForm initial={data} onSubmit={handleSave} submitting={saving} />
 
-                    {/* feedback delivered via global toasts */}
+                    <div className="update-actions">
+                        <button
+                            className="ui-btn btn-danger"
+                            onClick={handleDeleteEvent}
+                            disabled={saving}
+                            type="button"
+                        >
+                            Delete Event
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div>Event not found.</div>
