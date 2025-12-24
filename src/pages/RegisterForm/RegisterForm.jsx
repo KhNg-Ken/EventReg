@@ -387,8 +387,12 @@ function RegisterForm() {
                                         selectedEventInfo?.colors?.secondary || '#d32f2f',
                                         0.12
                                     ),
-                                    background: !(uploading || !isFormValid()) ? 'var(--event-secondary)' : undefined,
-                                    borderColor: !(uploading || !isFormValid()) ? 'var(--event-secondary)' : undefined,
+                                    background: !(uploading || !isFormValid())
+                                        ? 'var(--event-secondary)'
+                                        : undefined,
+                                    borderColor: !(uploading || !isFormValid())
+                                        ? 'var(--event-secondary)'
+                                        : undefined,
                                 }}
                             >
                                 Đăng ký & Tạo vé
@@ -398,6 +402,38 @@ function RegisterForm() {
 
                     <QRPanel qrSrc={qrSrc} inviteId={inviteId} />
                 </div>
+
+                {/* Loading overlay while processing */}
+                {uploading && (
+                    <div className="register-loading-overlay">
+                        <div className="register-loading-content">
+                            <div className="spinner" />
+                            <p>Đang xử lý đăng ký...</p>
+                            {uploadProgress > 0 && uploadProgress < 100 && (
+                                <p
+                                    style={{
+                                        fontSize: '0.9rem',
+                                        color: 'var(--gray)',
+                                        marginTop: 8,
+                                    }}
+                                >
+                                    Tải ảnh: {Math.round(uploadProgress * 100)}%
+                                </p>
+                            )}
+                            {uploadProgress >= 100 && (
+                                <p
+                                    style={{
+                                        fontSize: '0.9rem',
+                                        color: 'var(--gray)',
+                                        marginTop: 8,
+                                    }}
+                                >
+                                    Đang tạo mã QR...
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                )}
             </PageFrame>
         </div>
     );

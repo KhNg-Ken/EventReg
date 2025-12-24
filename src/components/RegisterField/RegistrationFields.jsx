@@ -175,7 +175,7 @@ export default function RegistrationFields({
                 />
             </div>
 
-            {(uploading || uploadProgress > 0) && (
+            {photoFile && (uploading || uploadProgress > 0) && (
                 <div className="reg-field reg-field-full">
                     <div style={{ fontSize: 12, color: 'var(--gray)', marginBottom: 6 }}>
                         Tải ảnh: {Math.round(uploadProgress * 100)}%

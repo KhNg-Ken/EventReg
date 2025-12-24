@@ -65,7 +65,10 @@ export default function QRPanel({ inviteId, qrSrc }) {
                                     </div>
                                 </div>
                             ) : (
-                                <p>Đang tạo mã QR...</p>
+                                <div className="qr-loading">
+                                    <div className="spinner" />
+                                    <p>Đang tạo mã QR...</p>
+                                </div>
                             )}
                         </div>
                     </div>

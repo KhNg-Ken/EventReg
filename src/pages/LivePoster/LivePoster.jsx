@@ -89,7 +89,7 @@ export default function LivePoster() {
             .then((snap) => {
                 if (snap.exists()) {
                     const eventData = snap.data();
-                    setPosterConfig(eventData || null); 
+                    setPosterConfig(eventData || null);
                     console.log('Fetched event config for LivePoster:', eventData);
                 }
             })
@@ -196,12 +196,13 @@ export default function LivePoster() {
         );
     }
 
+    // LivePoster is admin-only
     if (!isAdmin) {
         return (
             <div className="liveposter-fullscreen-container">
-                <div style={{ color: 'white', textAlign: 'center' }}>
+                <div style={{ color: 'white', textAlign: 'center', paddingTop: '40vh' }}>
                     <div style={{ fontSize: 24, marginBottom: 16 }}>Access Denied</div>
-                    <div>Please sign in as admin to view the live poster.</div>
+                    <div>Admin sign-in required to view the live poster.</div>
                 </div>
             </div>
         );
