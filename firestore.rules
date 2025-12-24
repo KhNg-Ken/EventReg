@@ -1,17 +1,65 @@
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return request.auth != null && 
+             request.auth.token.admin == true;
+    }
+    
+    function isAnonymous() {
+      return request.auth != null && 
+             request.auth.token.firebase.sign_in_provider == 'anonymous';
+    }
+    
+    // ===== EVENTS COLLECTION =====
+    // Public read-only access to events
+    // Admins can create, update, delete events
+    match /events/{eventId} {
+      allow read: if true;  // Anyone can read events
+      allow create, update, delete: if isAdmin();  // Only admins can modify
+      
+      // Registrants subcollection - for admin check-in and registrant management
+      match /registrants/{registrantId} {
+        allow create: if isAuthenticated();  // Anyone authenticated (anonymous or admin) can register
+        allow read, update, delete: if isAdmin();  // Only admins can view/modify registrations
+      }
+      
+      // Attendants subcollection - for check-in tracking (admin-only)
+      match /attendants/{attendantId} {
+        allow read, write: if isAdmin();  // Only admins can read/write check-in records
+      }
+    }
+    
+    // ===== ALTERNATIVE: If using top-level registrations collection =====
+    // (Uncomment if you store registrations outside events)
+    // match /registrations/{registrationId} {
+    //   allow create: if isAuthenticated();
+    //   allow read, update, delete: if isAdmin();
+    // }
+    
+    // ===== ADMIN-ONLY COLLECTIONS =====
+    // Protect sensitive admin data
+    match /admin_config/{document=**} {
+      allow read, write: if isAdmin();
+    }
+    
+    match /audit_logs/{document=**} {
+      allow read, write: if isAdmin();
+    }
+    
+    match /email_queue/{document=**} {
+      allow read, write: if isAdmin();
+    }
+    
+    // ===== DENY ALL BY DEFAULT =====
     match /{document=**} {
-       allow read, write: if request.time < timestamp.date(2025, 12, 21);
+      allow read, write: if false;
     }
   }
 }

@@ -3,6 +3,7 @@ import * as functions from 'firebase-functions';
 import { onCall } from 'firebase-functions/v2/https';
 import * as adminActions from './adminActions.js';
 import * as authActions from './authActions.js';
+import { exportRegistrantsExcel } from './exportExcel.js';
 
 admin.initializeApp();
 
@@ -11,6 +12,7 @@ export const adminUpdateEvent = onCall(adminActions.adminUpdateEvent);
 export const adminDeleteEvent = onCall(adminActions.adminDeleteEvent);
 export const setAdminClaims = authActions.setAdminClaims;
 export const exchangeTokenForFirebase = authActions.exchangeTokenForFirebase;
+export { exportRegistrantsExcel };
 /**
  * Import function triggers from their respective submodules:
  *

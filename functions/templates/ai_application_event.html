@@ -92,9 +92,14 @@
             }
 
             .qr-section img {
-                max-width: 200px;
-                height: auto;
+                width: 200px;
+                height: 200px;
                 margin: 15px 0;
+            }
+
+            img {
+                max-width: 100%;
+                height: auto;
             }
 
             .footer {
@@ -131,13 +136,20 @@
                 }
 
                 .qr-section img {
-                    max-width: 150px;
+                    width: 150px;
+                    height: 150px;
                 }
 
-                .header img,
+                .header img {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    height: auto !important;
+                }
+
                 img[alt='Event Poster'] {
-                    max-width: 100%;
-                    height: auto;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    height: auto !important;
                 }
 
                 .footer {
@@ -190,16 +202,26 @@
                         <!-- Header with Banner -->
                         <tr>
                             <td class="header">
+                                <!--[if mso]>
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="500" align="center" style="width: 500px;">
+                                <tr><td>
+                                <![endif]-->
                                 <img
                                     style="
-                                        max-width: 100%;
+                                        width: 100%;
+                                        max-width: 500px;
                                         height: auto;
                                         display: block;
                                         margin: 0 auto;
                                     "
-                                    src={{bannerUrl}}
+                                    width="500"
+                                    height="auto"
+                                    src="{{bannerUrl}}"
                                     alt="Event Banner"
                                 />
+                                <!--[if mso]>
+                                </td></tr></table>
+                                <![endif]-->
                             </td>
                         </tr>
 
@@ -227,20 +249,51 @@
 
                                 <div class="qr-section">
                                     <p><strong>Mã QR đăng ký của quý khách:</strong></p>
-                                    <img src="{{qrCodeUrl}}" alt="QR Code" />
+                                    <!--[if mso]>
+                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="200" align="center" style="width: 200px;">
+                                    <tr><td>
+                                    <![endif]-->
+                                    <img
+                                        src="{{qrCodeUrl}}"
+                                        alt="QR Code"
+                                        width="200"
+                                        height="200"
+                                        style="
+                                            width: 200px;
+                                            height: 200px;
+                                            display: block;
+                                            margin: 0 auto;
+                                        "
+                                    />
+                                    <!--[if mso]>
+                                    </td></tr></table>
+                                    <![endif]-->
                                     <p>Quét mã này tại quầy đăng ký sự kiện</p>
                                 </div>
 
+                                <!--[if mso]>
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="500" align="center" style="width: 500px;">
+                                <tr><td>
+                                <![endif]-->
                                 <img
                                     style="
-                                        max-width: 100%;
+                                        width: 100%;
+                                        max-width: 500px;
                                         height: auto;
                                         margin-top: 20px;
                                         box-sizing: border-box;
+                                        display: block;
+                                        margin-left: auto;
+                                        margin-right: auto;
                                     "
-                                    src="https://res.cloudinary.com/danbr3geg/image/upload/v1766033480/Th%C6%B0_m%E1%BB%9Di_2_qkppsq.jpg"
+                                    width="500"
+                                    height="auto"
+                                    src="https://res.cloudinary.com/danbr3geg/image/upload/v1766135167/Th%C6%B0_m%E1%BB%9D_3_foheax.jpg"
                                     alt="Event Poster"
                                 />
+                                <!--[if mso]>
+                                </td></tr></table>
+                                <![endif]-->
                             </td>
                         </tr>
 
