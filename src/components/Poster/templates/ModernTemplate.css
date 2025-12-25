@@ -2,7 +2,7 @@
     --poster-primary: #0000;
     --poster-secondary: #ffffff;
     --poster-bg: linear-gradient(45deg, #002385, #001833);
-    --poster-text: #E9C457;
+    --poster-text: #e9c457;
 
     width: 100%;
     height: 100%;
@@ -12,24 +12,25 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: visible;
     flex: 1 1 auto;
     box-sizing: border-box;
     font-family: 'Oswald', sans-serif;
     padding: 20px;
     margin: 0px;
     z-index: 0;
+    overflow: hidden;
 }
 
 .modern-poster-bg {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    opacity: 0.25;
-    z-index: 1;
+    width: 100%;
+    height: fit-content;
+    z-index: 0;
     pointer-events: none;
+    object-fit: cover;
+    overflow: hidden;
 }
 
 .modern-poster-overlay {
@@ -55,24 +56,34 @@
 
 .modern-poster-logos {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex: 0 1 auto;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    flex-wrap: nowrap;
+    gap: 8px;
     width: 100%;
     overflow: visible;
     background: transparent;
 }
 
+.modern-poster-logos-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow: hidden;
+}
+
 .modern-poster-logo {
-    height: 100px;
+    height: 60px;
     object-fit: contain;
     opacity: 0.9;
     min-width: 0;
-    
-    padding: 4px;
+
+    padding: 1px;
     border-radius: 4px;
 }
 
@@ -110,43 +121,65 @@
     line-height: 1.1;
 }
 
-
-
 /* Middle Section: 5/9 - Attendee Info */
 .modern-poster-middle {
     box-sizing: border-box;
     width: 100%;
-    height: 70%;
+    height: 55%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    gap: 10px;
+    gap: 5px;
 }
 
 .modern-poster-greeting {
     font-size: 70px;
     font-weight: 700;
     font-style: italic;
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 1);
     text-align: center;
+    background: linear-gradient(
+        to bottom,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.8));
 }
 
 .modern-poster-attendee-label {
-    font-size: 30px;
+    font-size: 40px;
     font-weight: 400;
-    color: var(--poster-text);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(
+        to bottom,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
 }
 
 .modern-poster-photo-large {
-    width: 450px;
-    height: 450px;
+    width: 400px;
+    height: 400px;
     border-radius: 50%;
     overflow: hidden;
     border: 5px solid var(--poster-primary);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9);
     flex-shrink: 0;
+    align-content: center;
 }
 
 .modern-poster-photo-large img {
@@ -159,18 +192,30 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
 
 .modern-poster-name {
     font-size: clamp(48px, 8vw, 64px);
     font-weight: 700;
-    color: var(--poster-text);
+    background: linear-gradient(
+        to bottom,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
     letter-spacing: -0.5px;
     margin: 0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.8));
     line-height: 1.2;
     text-align: center;
+    margin-bottom: 20px;
 }
 
 .modern-poster-details {
@@ -181,18 +226,40 @@
 }
 
 .modern-poster-company {
-    font-size: clamp(24px, 6vw, 32px);
+    font-size: clamp(50px, 6vw, 70px);
     font-weight: 500;
-    color: var(--poster-secondary);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(
+        to bottom,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.8));
     text-align: center;
 }
 
 .modern-poster-position {
-    font-size: clamp(32px, 7vw, 40px);
+    font-size: clamp(50px, 7vw, 70px);
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(
+        to bottom,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.8));
     text-align: center;
 }
 
@@ -202,9 +269,20 @@
     padding-right: 40px;
     font-size: 30px;
     font-weight: 400;
-    color: var(--poster-text);
+    background: linear-gradient(
+        to bottom,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
     text-align: center;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.8));
 }
 
 .modern-poster-qr {
@@ -229,8 +307,30 @@
 .modern-event-datetime {
     font-size: 30px;
     font-weight: 400;
-    color: var(--poster-text);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(
+        to bottom,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 30%,
+        #ffffff 50%,
+        #e9c457 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.modern-poster-checked-in {
+    font-size: 100px;
+    font-weight: 700;
+    background: linear-gradient(to bottom, #4caf50 0%, #ffffff 20%, #4caf50 35%, #4caf50 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.8));
 }
 
 .modern-poster.empty .modern-placeholder {

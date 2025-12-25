@@ -48,8 +48,19 @@ function RegistrantList() {
             case 'checkedInAt': {
                 const attendantA = attendants.find((att) => att.registrantId === a.id);
                 const attendantB = attendants.find((att) => att.registrantId === b.id);
-                aValue = attendantA?.checkedInAt?.seconds || 0;
-                bValue = attendantB?.checkedInAt?.seconds || 0;
+
+                // Separate checked-in from unchecked-in
+                const aCheckedIn = attendantA?.checkedInAt?.seconds || 0;
+                const bCheckedIn = attendantB?.checkedInAt?.seconds || 0;
+
+                // If one has checked in and the other hasn't, unchecked-in goes to bottom
+                if ((aCheckedIn === 0) !== (bCheckedIn === 0)) {
+                    return aCheckedIn === 0 ? 1 : -1; // Unchecked-in goes to bottom (1), checked-in goes to top (-1)
+                }
+
+                // Both checked-in or both unchecked-in, sort by time
+                aValue = aCheckedIn;
+                bValue = bCheckedIn;
                 break;
             }
             default:
