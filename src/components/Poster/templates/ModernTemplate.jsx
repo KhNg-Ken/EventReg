@@ -12,7 +12,11 @@ export default function ModernTemplate({ registrant, config }) {
 
     return (
         <div className="modern-poster">
-            <img className="modern-poster-bg" src="src/assets/KV.png" alt="Background" />
+            <img
+                className="modern-poster-bg"
+                src="https://res.cloudinary.com/danbr3geg/image/upload/v1766689680/LivePosterKV_dwa8w1.png"
+                alt="Background"
+            />
             <div className="modern-poster-overlay" alt="Overlay">
                 {/* Top Section: 2/9 - Company Logos and Event Name */}
                 <div className="modern-poster-top">
@@ -79,7 +83,10 @@ export default function ModernTemplate({ registrant, config }) {
                         </div>
                     ) : (
                         <div className="modern-poster-photo-large">
-                            <img src="src/assets/person1.svg" alt="Default Profile" />
+                            <img
+                                src="https://res.cloudinary.com/danbr3geg/image/upload/v1766689690/person1_wen9y2.svg"
+                                alt="Default Profile"
+                            />
                         </div>
                     )}
 
